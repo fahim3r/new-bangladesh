@@ -873,9 +873,9 @@ document.getElementById("downloadBtn").onclick=()=>{
   const a=document.createElement("a"); a.download="new-bangladesh-card.png"; a.href=c.toDataURL("image/png"); a.click();
 };
 (async()=>{
+  if(picked && !streak.last) markVoteToday();
   applyLang();
   tickCountdown();
-  if(picked && !streak.last) markVoteToday();
   await fetchLiveCounts();
   await fetchDistrictVotes();
   const myVote = await fetchMyVote();
