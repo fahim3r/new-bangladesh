@@ -1245,6 +1245,25 @@ function fmtArchDate(iso){
   if(lang === "bn") return fmt(p[2]) + " " + BN_MONTHS[p[1]-1] + " " + yBn;
   return p[2] + " " + EN_MONTHS[p[1]-1] + " " + p[0];
 }
+let archiveLive = {}; // experiment id -> {optionKey: live votes from Supabase}
+async function fetchArchiveLiveCounts(){
+  if(!sb || !ARCHIVE) return;
+  try{
+    const ids = ARCHIVE.map(e=>e.id);
+    const {data, error} = await sb.from("votes").select("experiment_id, option_label").in("experiment_id", ids).limit(10000);
+    if(error || !data) return;
+    const m = {};
+    data.forEach(r=>{
+      const exp = ARCHIVE.find(e=>e.id === r.experiment_id);
+      if(!exp) return;
+      const o = exp.options.find(x=>x.en === r.option_label);
+      if(!o) return;
+      (m[r.experiment_id] || (m[r.experiment_id] = {}))[o.key] = ((m[r.experiment_id]||{})[o.key]||0)+1;
+    });
+    archiveLive = m;
+    renderArchive();
+  }catch(e){ /* archive keeps its seed counts */ }
+}
 async function loadArchive(){
   if(ARCHIVE) return ARCHIVE;
   try{
@@ -1256,8 +1275,9 @@ async function loadArchive(){
   return ARCHIVE;
 }
 function archiveCounts(exp){
+  const lv = archiveLive[exp.id] || ((CURRENT && exp.id === CURRENT.id) ? live : {});
   const opts = exp.options.map(o=>{
-    const c = (CURRENT && exp.id === CURRENT.id) ? o.base + (live[o.key]||0) : o.base;
+    const c = o.base + (lv[o.key]||0);
     return {...o, count:c};
   });
   const total = opts.reduce((s,o)=>s+o.count, 0);
@@ -1614,7 +1634,7 @@ function showView(v){
   document.getElementById("navRootsLink").classList.toggle("active", v === "roots");
   document.getElementById("navArchiveLink").classList.toggle("active", v === "archive");
   if(v === "archive"){
-    loadArchive().then(()=>{ renderArchive(); });
+    loadArchive().then(()=>{ renderArchive(); fetchArchiveLiveCounts(); });
     window.scrollTo({top:0});
   }
   if(v === "battles"){
@@ -1675,6 +1695,7 @@ if("IntersectionObserver" in window){
 (async()=>{
   await loadArchive();
   setupCurrent();
+  fetchArchiveLiveCounts();
   if(picked && !streak.last) markVoteToday();
   applyLang();
   tickCountdown();
