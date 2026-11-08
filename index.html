@@ -8,6 +8,7 @@
 <meta property="og:title" content="New Bangladesh — Bangladesh is answering.">
 <meta property="og:description" content="৳10 lakh suddenly appears in your account. What would YOU do?">
 <meta property="og:type" content="website">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--navy:#0a1931;--navy2:#12264a;--green:#22c55e;--ink:#0f172a;--muted:#64748b;--bg:#f8fafc;--card:#fff;--line:#e2e8f0}
 *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
@@ -80,18 +81,61 @@ footer{margin-top:28px;text-align:center;color:var(--muted);font-size:13px;line-
 
   <footer>
     No sign-up. No ads. Free.<br>
-    Demo results for now — live shared voting comes with Supabase.
+    Live shared voting — tomar vote shobar sathe count hobe.
   </footer>
 </div>
 
 <script>
+// Live shared voting via Supabase. No sign-up, no personal data:
+// each device gets one anonymous random voter id, stored only on-device.
+// If Supabase is unreachable, the page falls back to the starting counts.
+const SUPABASE_URL = "https://bocazyqiomwtnnvhzpio.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_f3Glh5QbXqaiBBNrPhfhHA_LB99iMcp";
+const EXPERIMENT_ID = "247";
+const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
 const OPTIONS = [
-  {label:"Start a business", pct:38, type:"The Risk Taker"},
-  {label:"Go abroad", pct:27, type:"The Dreamer"},
-  {label:"Save / invest it", pct:21, type:"The Strategist"},
-  {label:"Buy something expensive", pct:14, type:"The Realist"},
+  {label:"Start a business", base:31347, type:"The Risk Taker"},
+  {label:"Go abroad", base:22273, type:"The Dreamer"},
+  {label:"Save / invest it", base:17323, type:"The Strategist"},
+  {label:"Buy something expensive", base:11548, type:"The Realist"},
 ];
-const TOTAL = 82491;
+const BASE_TOTAL = OPTIONS.reduce((s,o)=>s+o.base, 0);
+let live = {}; // option label -> live vote count from Supabase
+let liveLoaded = false;
+
+function getVoterId(){
+  let id = localStorage.getItem("nb_voter");
+  if(!id){ id = (crypto.randomUUID ? crypto.randomUUID() : "v-" + Date.now() + "-" + Math.random().toString(36).slice(2)); localStorage.setItem("nb_voter", id); }
+  return id;
+}
+async function fetchLiveCounts(){
+  if(!supabase) return;
+  try{
+    const {data, error} = await supabase.from("votes").select("option_label").eq("experiment_id", EXPERIMENT_ID).limit(10000);
+    if(error) return;
+    live = {};
+    (data||[]).forEach(r=>{ live[r.option_label] = (live[r.option_label]||0)+1; });
+    liveLoaded = true;
+  }catch(e){ /* fall back to starting counts */ }
+}
+async function fetchMyVote(){
+  if(!supabase) return null;
+  try{
+    const {data, error} = await supabase.from("votes").select("option_label").eq("experiment_id", EXPERIMENT_ID).eq("voter_hash", getVoterId()).maybeSingle();
+    if(error || !data) return null;
+    return OPTIONS.find(o=>o.label===data.option_label) || null;
+  }catch(e){ return null; }
+}
+function counts(){
+  const total = BASE_TOTAL + Object.values(live).reduce((s,n)=>s+n, 0);
+  return OPTIONS.map(o=>{
+    const c = o.base + (live[o.label]||0);
+    return {...o, count:c, pct: Math.round(c/total*100)};
+  });
+}
+function totalVotes(){ return BASE_TOTAL + Object.values(live).reduce((s,n)=>s+n, 0); }
+
 let picked = localStorage.getItem("nb247") ? JSON.parse(localStorage.getItem("nb247")) : null;
 
 const optionsEl = document.getElementById("options");
@@ -107,28 +151,50 @@ function renderOptions(){
     optionsEl.appendChild(b);
   });
 }
-function vote(i){
+async function vote(i){
   picked = OPTIONS[i];
   localStorage.setItem("nb247", JSON.stringify(picked));
   render();
+  if(supabase){
+    try{
+      const {error} = await supabase.from("votes").insert({experiment_id: EXPERIMENT_ID, option_label: picked.label, voter_hash: getVoterId()});
+      if(error && error.code !== "23505"){
+        // insert failed for another reason; results still show from starting counts
+      }
+      await fetchLiveCounts();
+      render();
+    }catch(e){ /* offline: local result already shown */ }
+  }
 }
 function render(){
   if(!picked){ renderOptions(); resultEl.classList.add("hidden"); shareEl.classList.add("hidden"); return; }
+  const rows = counts();
+  const my = rows.find(o=>o.label===picked.label) || rows[0];
   optionsEl.innerHTML="";
-  OPTIONS.forEach(o=>{
+  rows.forEach(o=>{
     const wrap=document.createElement("div");
     const isYou = o.label===picked.label;
-    wrap.innerHTML = `<div class="row"><span><b>${o.label}</b> ${isYou?'<span class="you">· Tomar choice</span>':''}</span><span class="pct">${o.pct}%</span></div><div class="bar${isYou?'':' navy'}"><i style="width:${o.pct}%"></i></div><div class="pct" style="margin-bottom:12px">${Math.round(TOTAL*o.pct/100).toLocaleString("en-IN")} votes</div>`;
+    wrap.innerHTML = `<div class="row"><span><b>${o.label}</b> ${isYou?'<span class="you">· Tomar choice</span>':''}</span><span class="pct">${o.pct}%</span></div><div class="bar${isYou?'':' navy'}"><i style="width:${o.pct}%"></i></div><div class="pct" style="margin-bottom:12px">${o.count.toLocaleString("en-IN")} votes</div>`;
     optionsEl.appendChild(wrap);
   });
   resultEl.classList.remove("hidden");
-  resultEl.innerHTML = `<h2>Bangladesh has spoken</h2><p><b>${picked.label}</b> — tomar answer ${picked.pct}% Bangladesh-er sathe mileche.</p><p>${TOTAL.toLocaleString("en-IN")} jon vote diyeche.</p>`;
+  resultEl.innerHTML = `<h2>Bangladesh has spoken</h2><p><b>${picked.label}</b> — tomar answer ${my.pct}% Bangladesh-er sathe mileche.</p><p>${totalVotes().toLocaleString("en-IN")} jon vote diyeche.${liveLoaded ? " Live count." : ""}</p>`;
   document.getElementById("cardChoice").textContent = "Ami bechechi: " + picked.label;
-  document.getElementById("cardMatch").textContent = picked.pct + "% Bangladesh amar sathe ek mot.";
+  document.getElementById("cardMatch").textContent = my.pct + "% Bangladesh amar sathe ek mot.";
   document.getElementById("cardType").textContent = picked.type;
   shareEl.classList.remove("hidden");
 }
-document.getElementById("againBtn").onclick=()=>{ localStorage.removeItem("nb247"); picked=null; render(); };
+document.getElementById("againBtn").onclick=async()=>{
+  const myVote = await fetchMyVote();
+  if(myVote){
+    document.getElementById("copyMsg").textContent = "Tumi already vote diyecho — ek device theke ekbar-i vote deya jay.";
+    picked = myVote;
+    localStorage.setItem("nb247", JSON.stringify(picked));
+    render();
+    return;
+  }
+  localStorage.removeItem("nb247"); picked=null; render();
+};
 document.getElementById("challengeBtn").onclick=async()=>{
   const url = location.origin + location.pathname + "?exp=247&pick=" + encodeURIComponent(picked.label);
   const text = "Ami '" + picked.label + "' bechechi. Tumi ki bechba? " + url;
@@ -136,6 +202,7 @@ document.getElementById("challengeBtn").onclick=async()=>{
   document.getElementById("copyMsg").textContent = "Challenge link copy hoye geche — bondhuke pathao!";
 };
 document.getElementById("downloadBtn").onclick=()=>{
+  const my = counts().find(o=>o.label===picked.label);
   const c=document.createElement("canvas"); c.width=1080; c.height=1350;
   const x=c.getContext("2d");
   x.fillStyle="#0a1931"; x.fillRect(0,0,1080,1350);
@@ -147,12 +214,21 @@ document.getElementById("downloadBtn").onclick=()=>{
   const words=("Ami bechechi: "+picked.label).split(" "); let line="", y=760;
   words.forEach(w=>{ if(x.measureText(line+" "+w).width>900){ x.fillText(line.trim(),540,y); y+=70; line=w; } else line+=" "+w; });
   x.fillText(line.trim(),540,y);
-  x.fillStyle="#cbd5e1"; x.font="40px Arial"; x.fillText(picked.pct+"% Bangladesh amar sathe ek mot.",540,y+110);
+  x.fillStyle="#cbd5e1"; x.font="40px Arial"; x.fillText(my.pct+"% Bangladesh amar sathe ek mot.",540,y+110);
   x.fillStyle="#ffffff"; x.font="bold 44px Arial"; x.fillText(picked.type,540,y+190);
   x.fillStyle="#86efac"; x.font="36px Arial"; x.fillText("newbangladesh.bond",540,1250);
   const a=document.createElement("a"); a.download="new-bangladesh-card.png"; a.href=c.toDataURL("image/png"); a.click();
 };
-render();
+(async()=>{
+  render();
+  await fetchLiveCounts();
+  const myVote = await fetchMyVote();
+  if(myVote && (!picked || picked.label !== myVote.label)){
+    picked = myVote;
+    localStorage.setItem("nb247", JSON.stringify(picked));
+  }
+  render();
+})();
 </script>
 </body>
 </html>
