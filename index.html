@@ -348,7 +348,7 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
 
     <main class="vote reveal d4" id="vote">
       <div class="card">
-        <div class="eyebrow"><span data-i18n="exp">এক্সপেরিমেন্ট #২৪৭</span> · <span data-i18n="today">আজ</span></div>
+        <div class="eyebrow"><span id="expLabel">এক্সপেরিমেন্ট #২৪৭</span> · <span data-i18n="today">আজ</span></div>
         <div class="q" id="questionText">হঠাৎ তোমার অ্যাকাউন্টে ৳১০ লাখ এলো। তুমি কী করবে?</div>
         <div id="options"></div>
         <div id="guess" class="guess hidden">
@@ -370,7 +370,7 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
               <span class="mark"><img src="icon.png" alt="New Bangladesh"></span>
               <div><b>NEW BANGLADESH</b><span>newbangladesh.bond</span></div>
             </div>
-            <div class="eyebrow"><span data-i18n="exp_en">EXPERIMENT #247</span></div>
+            <div class="eyebrow"><span id="expLabelShare">EXPERIMENT #247</span></div>
             <h3 id="cardChoice">—</h3>
             <div class="sc-match"><b id="cardMatchBig">—</b><span id="cardMatch">—</span></div>
             <p><span class="sc-guess" id="cardGuess">—</span></p>
@@ -684,16 +684,16 @@ function fmt(n){ return lang === "bn" ? n.toLocaleString("bn-BD") : n.toLocaleSt
 // ---------- live shared voting via Supabase (no sign-up, no personal data) ----------
 const SUPABASE_URL = "https://bocazyqiomwtnnvhzpio.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_f3Glh5QbXqaiBBNrPhfhHA_LB99iMcp";
-const EXPERIMENT_ID = "247";
+let EXPERIMENT_ID = "247";
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
-const OPTIONS = [
+let OPTIONS = [
   {key:"business", bn:"ব্যবসা শুরু করব", en:"Start a business", typeBn:"ঝুঁকি নেওয়ার মানুষ", typeEn:"The Risk Taker", base:31347},
   {key:"abroad", bn:"বিদেশ যাব", en:"Go abroad", typeBn:"স্বপ্নবাজ", typeEn:"The Dreamer", base:22273},
   {key:"save", bn:"জমিয়ে / বিনিয়োগ করব", en:"Save / invest it", typeBn:"পরিকল্পনাকারী", typeEn:"The Strategist", base:17323},
   {key:"buy", bn:"দামি কিছু কিনব", en:"Buy something expensive", typeBn:"বাস্তববাদী", typeEn:"The Realist", base:11548},
 ];
-const DB_LABEL = {business:"Start a business", abroad:"Go abroad", save:"Save / invest it", buy:"Buy something expensive"};
+let DB_LABEL = {business:"Start a business", abroad:"Go abroad", save:"Save / invest it", buy:"Buy something expensive"};
 const OPTION_COLORS = {business:"#16a34a", abroad:"#0ea5e9", save:"#f59e0b", buy:"#e11d2e"};
 const NO_DATA_FILL = "#dcefe2";
 let districtVotes = {};   // en -> {counts:{key:n}, total, leader, leaderPct}
@@ -701,10 +701,10 @@ let districtCount = 0;
 let myDistrict = null;
 try{ myDistrict = localStorage.getItem("nb_district") || null; }catch(e){}
 let selectedDistrict = null;
-const BASE_TOTAL = OPTIONS.reduce((s,o)=>s+o.base, 0);
+let BASE_TOTAL = OPTIONS.reduce((s,o)=>s+o.base, 0);
 let live = {};
 let liveLoaded = false;
-try{ const c = localStorage.getItem("nb_live_cache"); if(c){ live = JSON.parse(c) || {}; liveLoaded = Object.keys(live).length > 0; } }catch(e){ live = {}; }
+// live counts cache is loaded per experiment by setupCurrent()
 
 function getVoterId(){
   let id = localStorage.getItem("nb_voter");
@@ -719,7 +719,7 @@ async function fetchLiveCounts(){
     live = {};
     (data||[]).forEach(r=>{ const o = OPTIONS.find(x=>DB_LABEL[x.key]===r.option_label); if(o) live[o.key] = (live[o.key]||0)+1; });
     liveLoaded = true;
-    try{ localStorage.setItem("nb_live_cache", JSON.stringify(live)); }catch(e){}
+    try{ localStorage.setItem("nb_live_cache_" + EXPERIMENT_ID, JSON.stringify(live)); }catch(e){}
   }catch(e){ /* fall back to starting counts */ }
 }
 async function fetchDistrictVotes(){
@@ -763,6 +763,46 @@ function counts(){
 function totalVotes(){ return BASE_TOTAL + Object.values(live).reduce((s,n)=>s+n, 0); }
 function label(o){ return lang === "bn" ? o.bn : o.en; }
 function typeName(o){ return lang === "bn" ? o.typeBn : o.typeEn; }
+
+
+// ---------- daily question rotation: today's experiment from the catalog ----------
+let CURRENT = null;
+function voteKey(id){ return "nb_vote_" + id; }
+function guessKey(id){ return "nb_guess_" + id; }
+function todayExperiment(){
+  if(!ARCHIVE || !ARCHIVE.length) return null;
+  const list = [...ARCHIVE].sort((a,b)=>a.date.localeCompare(b.date));
+  const today = dhakaParts().date;
+  const dated = list.find(e=>e.date === today);
+  if(dated) return dated;
+  const latest = list[list.length-1];
+  const d = dayDiff(today, latest.date);
+  const idx = (((list.indexOf(latest) + d) % list.length) + list.length) % list.length;
+  return list[idx];
+}
+function setupCurrent(){
+  CURRENT = todayExperiment();
+  if(!CURRENT) return; // keep the built-in #247 defaults
+  EXPERIMENT_ID = CURRENT.id;
+  OPTIONS = CURRENT.options.map(o=>({key:o.key, bn:o.bn, en:o.en, typeBn:o.typeBn||"", typeEn:o.typeEn||"", base:o.base}));
+  DB_LABEL = {};
+  OPTIONS.forEach(o=>{ DB_LABEL[o.key] = o.en; });
+  BASE_TOTAL = OPTIONS.reduce((s,o)=>s+o.base, 0);
+  live = {};
+  liveLoaded = false;
+  try{ const c = localStorage.getItem("nb_live_cache_" + CURRENT.id); if(c){ live = JSON.parse(c) || {}; liveLoaded = Object.keys(live).length > 0; } }catch(e){ live = {}; }
+  // migrate the old #247 keys once
+  try{
+    if(CURRENT.id === "247"){
+      if(localStorage.getItem("nb247") && !localStorage.getItem(voteKey("247"))) localStorage.setItem(voteKey("247"), localStorage.getItem("nb247"));
+      if(localStorage.getItem("nb247_guess") && !localStorage.getItem(guessKey("247"))) localStorage.setItem(guessKey("247"), localStorage.getItem("nb247_guess"));
+    }
+  }catch(e){}
+  picked = null;
+  try{ const p = JSON.parse(localStorage.getItem(voteKey(CURRENT.id)) || "null"); if(p && p.key) picked = OPTIONS.find(o=>o.key===p.key) || null; else if(p && p.label) picked = OPTIONS.find(o=>DB_LABEL[o.key]===p.label) || null; }catch(e){ picked = null; }
+  guess = null;
+  try{ const g = localStorage.getItem(guessKey(CURRENT.id)); guess = g === null ? null : parseInt(g, 10); }catch(e){ guess = null; }
+}
 
 // ---------- streak + countdown (Dhaka time, on-device only) ----------
 function dhakaParts(d){
@@ -808,12 +848,8 @@ function tickCountdown(){
 }
 setInterval(tickCountdown, 1000);
 
-let picked = null;
-try{ picked = localStorage.getItem("nb247") ? JSON.parse(localStorage.getItem("nb247")) : null; }catch(e){ picked = null; }
-if(picked && picked.key){ picked = OPTIONS.find(o=>o.key===picked.key) || null; }
-else if(picked && picked.label){ picked = OPTIONS.find(o=>DB_LABEL[o.key]===picked.label) || null; }
+let picked = null; // loaded per experiment by setupCurrent()
 let guess = null;
-try{ const g = localStorage.getItem("nb247_guess"); guess = g === null ? null : parseInt(g, 10); }catch(e){ guess = null; }
 let awaitingGuess = false; // user picked an answer, guess step is open, vote not submitted yet
 
 const optionsEl = document.getElementById("options");
@@ -843,7 +879,7 @@ function renderOptions(){
 }
 async function vote(i){
   picked = OPTIONS[i];
-  localStorage.setItem("nb247", JSON.stringify({key:picked.key}));
+  localStorage.setItem(voteKey(EXPERIMENT_ID), JSON.stringify({key:picked.key}));
   awaitingGuess = true;
   guessSlider.value = guess === null ? 25 : guess;
   syncSlider();
@@ -852,7 +888,7 @@ async function vote(i){
 async function submitVote(){
   markVoteToday();
   guess = parseInt(guessSlider.value, 10);
-  localStorage.setItem("nb247_guess", String(guess));
+  localStorage.setItem(guessKey(EXPERIMENT_ID), String(guess));
   awaitingGuess = false;
   render();
   burstConfetti();
@@ -866,7 +902,7 @@ async function submitVote(){
   }
 }
 document.getElementById("revealBtn").onclick=()=>submitVote();
-document.getElementById("backBtn").onclick=()=>{ awaitingGuess=false; picked=null; localStorage.removeItem("nb247"); render(); };
+document.getElementById("backBtn").onclick=()=>{ awaitingGuess=false; picked=null; localStorage.removeItem(voteKey(EXPERIMENT_ID)); render(); };
 function guessTier(diff){
   if(diff<=3) return t("guess_perfect");
   if(diff<=10) return t("guess_close");
@@ -874,7 +910,11 @@ function guessTier(diff){
   return t("guess_miss");
 }
 function render(){
-  document.getElementById("questionText").textContent = t("question");
+  document.getElementById("questionText").textContent = CURRENT ? (lang === "bn" ? CURRENT.q.bn : CURRENT.q.en) : t("question");
+  const expEl = document.getElementById("expLabel");
+  if(expEl && CURRENT) expEl.textContent = (lang === "bn" ? "এক্সপেরিমেন্ট #" : "EXPERIMENT #") + fmt(CURRENT.num);
+  const expShare = document.getElementById("expLabelShare");
+  if(expShare && CURRENT) expShare.textContent = (lang === "bn" ? "এক্সপেরিমেন্ট #" : "EXPERIMENT #") + fmt(CURRENT.num);
   animateStat(document.getElementById("statVotes"), totalVotes());
   document.getElementById("statOpts").textContent = fmt(4);
   document.getElementById("statQNum").textContent = fmt(1);
@@ -1026,7 +1066,7 @@ document.getElementById("againBtn").onclick=async()=>{
   const myVote = await fetchMyVote();
   if(myVote){
     picked = myVote;
-    localStorage.setItem("nb247", JSON.stringify({key:picked.key}));
+    localStorage.setItem(voteKey(EXPERIMENT_ID), JSON.stringify({key:picked.key}));
     render();
     return;
   }
@@ -1035,12 +1075,12 @@ document.getElementById("againBtn").onclick=async()=>{
     return;
   }
   // no vote on the server for this device (e.g. an old local pick): let them vote fresh
-  localStorage.removeItem("nb247"); localStorage.removeItem("nb247_guess"); picked=null; guess=null; awaitingGuess=false;
+  localStorage.removeItem(voteKey(EXPERIMENT_ID)); localStorage.removeItem(guessKey(EXPERIMENT_ID)); picked=null; guess=null; awaitingGuess=false;
   msg.textContent = ""; msg.className = "";
   render();
 };
 document.getElementById("challengeBtn").onclick=async()=>{
-  const url = location.origin + location.pathname + "?exp=247&pick=" + encodeURIComponent(DB_LABEL[picked.key]);
+  const url = location.origin + location.pathname + "?exp=" + EXPERIMENT_ID + "&pick=" + encodeURIComponent(DB_LABEL[picked.key]);
   const text = t("challenge_text").replace("{o}", label(picked)) + url;
   try{ await navigator.clipboard.writeText(text); }catch(e){}
   const m = document.getElementById("copyMsg");
@@ -1192,7 +1232,7 @@ document.getElementById("latestBattle").addEventListener("click", e=>{
   if(btn) voteBattle(btn.dataset.battle, btn.dataset.side);
 });
 // ---------- vote archive: every past question, filterable & searchable ----------
-const ARCHIVE_FALLBACK = {"experiments":[{"cat":"money","date":"2026-11-08","id":"247","num":247,"options":[{"base":31347,"bn":"ব্যবসা শুরু করব","en":"Start a business","key":"business"},{"base":22273,"bn":"বিদেশ যাব","en":"Go abroad","key":"abroad"},{"base":17323,"bn":"জমিয়ে / বিনিয়োগ করব","en":"Save / invest it","key":"save"},{"base":11548,"bn":"দামি কিছু কিনব","en":"Buy something expensive","key":"buy"}],"q":{"bn":"হঠাৎ তোমার অ্যাকাউন্টে ৳১০ লাখ এলো। তুমি কী করবে?","en":"৳10 lakh suddenly appears in your account. What would YOU do?"}},{"cat":"food","date":"2026-11-06","id":"246","num":246,"options":[{"base":39500,"bn":"ভাত-ডাল-ভাজি","en":"Rice, dal & bhaji","key":"rice"},{"base":33200,"bn":"পরোটা-ডিম","en":"Paratha & egg","key":"paratha"},{"base":16900,"bn":"রুটি-সবজি","en":"Roti & vegetables","key":"roti"},{"base":11300,"bn":"ব্রেড-জ্যাম","en":"Bread & jam","key":"bread"}],"q":{"bn":"সকালের নাস্তায় কী খেতে ভালোবাসো?","en":"What do you love for breakfast?"}},{"cat":"life","date":"2026-11-04","id":"245","num":245,"options":[{"base":58900,"bn":"ঈদ","en":"Eid","key":"eid"},{"base":27400,"bn":"পহেলা বৈশাখ","en":"Pohela Boishakh","key":"boishakh"},{"base":12300,"bn":"দুর্গাপূজা","en":"Durga Puja","key":"durga"},{"base":18700,"bn":"বিজয় দিবস","en":"Victory Day","key":"bijoy"}],"q":{"bn":"বাংলাদেশের সবচেয়ে বড় উৎসব কোনটা?","en":"Which is Bangladesh's biggest festival?"}},{"cat":"fun","date":"2026-11-02","id":"244","num":244,"options":[{"base":44100,"bn":"ঘুম","en":"Sleep","key":"sleep"},{"base":36800,"bn":"খিচুড়ি-ইলিশ","en":"Khichuri & ilish","key":"khichuri"},{"base":21500,"bn":"বৃষ্টিতে ভেজা","en":"Getting soaked in the rain","key":"rain"},{"base":13400,"bn":"বই পড়া","en":"Reading a book","key":"book"}],"q":{"bn":"বৃষ্টির দিনে কী করতে ভালো লাগে?","en":"What do you love doing on a rainy day?"}},{"cat":"sports","date":"2026-10-31","id":"243","num":243,"options":[{"base":52300,"bn":"মাশরাফি","en":"Mashrafe","key":"mashrafe"},{"base":38700,"bn":"সাকিব","en":"Shakib","key":"shakib"},{"base":15200,"bn":"তামিম","en":"Tamim","key":"tamim"},{"base":9800,"bn":"মুশফিক","en":"Mushfiq","key":"mushfiq"}],"q":{"bn":"বাংলাদেশের সেরা ক্রিকেট অধিনায়ক কে?","en":"Who is Bangladesh's greatest cricket captain?"}},{"cat":"career","date":"2026-10-29","id":"242","num":242,"options":[{"base":38900,"bn":"আমেরিকা","en":"USA","key":"usa"},{"base":31200,"bn":"কানাডা","en":"Canada","key":"canada"},{"base":19800,"bn":"ইংল্যান্ড","en":"England","key":"uk"},{"base":14600,"bn":"অস্ট্রেলিয়া","en":"Australia","key":"australia"}],"q":{"bn":"বিদেশে পড়তে গেলে কোন দেশ?","en":"Which country would you pick to study abroad?"}},{"cat":"money","date":"2026-10-27","id":"241","num":241,"options":[{"base":41200,"bn":"মাকে দেব","en":"Give it to my mother","key":"mom"},{"base":18450,"bn":"নিজের জন্য কিছু কিনব","en":"Buy something for myself","key":"self"},{"base":33780,"bn":"সেভ করব","en":"Save it","key":"save"},{"base":12940,"bn":"ঘুরতে যাব","en":"Go on a trip","key":"travel"}],"q":{"bn":"প্রথম বেতন পেলে কী করবে?","en":"What would you do with your first salary?"}}]};
+const ARCHIVE_FALLBACK = {"experiments":[{"cat":"money","date":"2026-11-08","id":"247","num":247,"options":[{"base":31347,"bn":"ব্যবসা শুরু করব","en":"Start a business","key":"business","typeBn":"ঝুঁকি নেওয়ার মানুষ","typeEn":"The Risk Taker"},{"base":22273,"bn":"বিদেশ যাব","en":"Go abroad","key":"abroad","typeBn":"স্বপ্নবাজ","typeEn":"The Dreamer"},{"base":17323,"bn":"জমিয়ে / বিনিয়োগ করব","en":"Save / invest it","key":"save","typeBn":"পরিকল্পনাকারী","typeEn":"The Strategist"},{"base":11548,"bn":"দামি কিছু কিনব","en":"Buy something expensive","key":"buy","typeBn":"বাস্তববাদী","typeEn":"The Realist"}],"q":{"bn":"হঠাৎ তোমার অ্যাকাউন্টে ৳১০ লাখ এলো। তুমি কী করবে?","en":"৳10 lakh suddenly appears in your account. What would YOU do?"}},{"cat":"food","date":"2026-11-06","id":"246","num":246,"options":[{"base":39500,"bn":"ভাত-ডাল-ভাজি","en":"Rice, dal & bhaji","key":"rice","typeBn":"ভাতের মানুষ","typeEn":"The Rice Person"},{"base":33200,"bn":"পরোটা-ডিম","en":"Paratha & egg","key":"paratha","typeBn":"পরোটাপ্রেমী","typeEn":"The Paratha Lover"},{"base":16900,"bn":"রুটি-সবজি","en":"Roti & vegetables","key":"roti","typeBn":"সহজ জীবন","typeEn":"The Simple Liver"},{"base":11300,"bn":"ব্রেড-জ্যাম","en":"Bread & jam","key":"bread","typeBn":"আধুনিক","typeEn":"The Modern One"}],"q":{"bn":"সকালের নাস্তায় কী খেতে ভালোবাসো?","en":"What do you love for breakfast?"}},{"cat":"life","date":"2026-11-04","id":"245","num":245,"options":[{"base":58900,"bn":"ঈদ","en":"Eid","key":"eid","typeBn":"ঈদের মানুষ","typeEn":"The Eid Person"},{"base":27400,"bn":"পহেলা বৈশাখ","en":"Pohela Boishakh","key":"boishakh","typeBn":"ঐতিহ্যপ্রেমী","typeEn":"The Tradition Lover"},{"base":12300,"bn":"দুর্গাপূজা","en":"Durga Puja","key":"durga","typeBn":"উৎসবের মানুষ","typeEn":"The Festival Soul"},{"base":18700,"bn":"বিজয় দিবস","en":"Victory Day","key":"bijoy","typeBn":"দেশপ্রেমী","typeEn":"The Patriot"}],"q":{"bn":"বাংলাদেশের সবচেয়ে বড় উৎসব কোনটা?","en":"Which is Bangladesh's biggest festival?"}},{"cat":"fun","date":"2026-11-02","id":"244","num":244,"options":[{"base":44100,"bn":"ঘুম","en":"Sleep","key":"sleep","typeBn":"ঘুমকাতুরে","typeEn":"The Sleep Lover"},{"base":36800,"bn":"খিচুড়ি-ইলিশ","en":"Khichuri & ilish","key":"khichuri","typeBn":"খাদ্যরসিক","typeEn":"The Foodie"},{"base":21500,"bn":"বৃষ্টিতে ভেজা","en":"Getting soaked in the rain","key":"rain","typeBn":"বৃষ্টিপ্রেমী","typeEn":"The Rain Lover"},{"base":13400,"bn":"বই পড়া","en":"Reading a book","key":"book","typeBn":"বইপোকা","typeEn":"The Bookworm"}],"q":{"bn":"বৃষ্টির দিনে কী করতে ভালো লাগে?","en":"What do you love doing on a rainy day?"}},{"cat":"sports","date":"2026-10-31","id":"243","num":243,"options":[{"base":52300,"bn":"মাশরাফি","en":"Mashrafe","key":"mashrafe","typeBn":"মাশরাফির ভক্ত","typeEn":"The Mashrafe Fan"},{"base":38700,"bn":"সাকিব","en":"Shakib","key":"shakib","typeBn":"অলরাউন্ডারের ভক্ত","typeEn":"The All-rounder Fan"},{"base":15200,"bn":"তামিম","en":"Tamim","key":"tamim","typeBn":"ওপেনারের ভক্ত","typeEn":"The Opener Fan"},{"base":9800,"bn":"মুশফিক","en":"Mushfiq","key":"mushfiq","typeBn":"লড়াকুর ভক্ত","typeEn":"The Fighter Fan"}],"q":{"bn":"বাংলাদেশের সেরা ক্রিকেট অধিনায়ক কে?","en":"Who is Bangladesh's greatest cricket captain?"}},{"cat":"career","date":"2026-10-29","id":"242","num":242,"options":[{"base":38900,"bn":"আমেরিকা","en":"USA","key":"usa","typeBn":"বড় স্বপ্নবাজ","typeEn":"The Big Dreamer"},{"base":31200,"bn":"কানাডা","en":"Canada","key":"canada","typeBn":"শান্ত জীবনের খোঁজে","typeEn":"The Calm Seeker"},{"base":19800,"bn":"ইংল্যান্ড","en":"England","key":"uk","typeBn":"ঐতিহ্যের ভক্ত","typeEn":"The Classic Soul"},{"base":14600,"bn":"অস্ট্রেলিয়া","en":"Australia","key":"australia","typeBn":"অ্যাডভেঞ্চারপ্রিয়","typeEn":"The Adventurer"}],"q":{"bn":"বিদেশে পড়তে গেলে কোন দেশ?","en":"Which country would you pick to study abroad?"}},{"cat":"money","date":"2026-10-27","id":"241","num":241,"options":[{"base":41200,"bn":"মাকে দেব","en":"Give it to my mother","key":"mom","typeBn":"পরিবারের মানুষ","typeEn":"The Family First"},{"base":18450,"bn":"নিজের জন্য কিছু কিনব","en":"Buy something for myself","key":"self","typeBn":"নিজের যত্ন","typeEn":"The Self Treater"},{"base":33780,"bn":"সেভ করব","en":"Save it","key":"save","typeBn":"পরিকল্পনাকারী","typeEn":"The Strategist"},{"base":12940,"bn":"ঘুরতে যাব","en":"Go on a trip","key":"travel","typeBn":"ঘুরে বেড়ানো মানুষ","typeEn":"The Wanderer"}],"q":{"bn":"প্রথম বেতন পেলে কী করবে?","en":"What would you do with your first salary?"}}]};
 let ARCHIVE = null;
 let archCat = "all", archQuery = "", archOpen = {};
 const ARCH_CATS = ["money","food","sports","life","fun","career"];
@@ -1217,7 +1257,7 @@ async function loadArchive(){
 }
 function archiveCounts(exp){
   const opts = exp.options.map(o=>{
-    const c = exp.id === "247" ? o.base + (live[o.key]||0) : o.base;
+    const c = (CURRENT && exp.id === CURRENT.id) ? o.base + (live[o.key]||0) : o.base;
     return {...o, count:c};
   });
   const total = opts.reduce((s,o)=>s+o.count, 0);
@@ -1229,7 +1269,7 @@ function archiveCardHtml(exp){
   const c = archiveCounts(exp);
   const top = c.opts[0];
   const open = !!archOpen[exp.id];
-  const isToday = exp.id === "247";
+  const isToday = !!(CURRENT && exp.id === CURRENT.id);
   const q = lang === "bn" ? exp.q.bn : exp.q.en;
   const eyebrow = (lang === "bn" ? "এক্সপেরিমেন্ট #" : "EXPERIMENT #") + fmt(exp.num) + " · " + fmtArchDate(exp.date);
   let inner = `<div class="eyebrow">📚 ${eyebrow}</div><span class="arch-cat">${t("cat_" + exp.cat)}</span><h3>${q}</h3><div class="arch-top">${t("archive_leader")}: <b>${lang === "bn" ? top.bn : top.en}</b> · ${fmt(top.pct)}%</div><div class="bar"><i style="width:${top.pct}%;background:${ARCH_COLORS[0]}"></i></div>`;
@@ -1626,13 +1666,14 @@ if("IntersectionObserver" in window){
 }
 
 (async()=>{
+  await loadArchive();
+  setupCurrent();
   if(picked && !streak.last) markVoteToday();
   applyLang();
   tickCountdown();
   await fetchLiveCounts();
   await fetchDistrictVotes();
   await loadBattles();
-  await loadArchive();
   renderLatestBattle();
   fetchBattleCounts();
   if(location.hash === "#battles") showView("battles");
@@ -1642,7 +1683,7 @@ if("IntersectionObserver" in window){
   const myVote = await fetchMyVote();
   if(myVote && (!picked || picked.key !== myVote.key)){
     picked = myVote;
-    localStorage.setItem("nb247", JSON.stringify({key:picked.key}));
+    localStorage.setItem(voteKey(EXPERIMENT_ID), JSON.stringify({key:picked.key}));
   } else if(picked && !myVote && sb){
     // picked locally but never submitted (e.g. reloaded mid-guess): reopen the guess step
     awaitingGuess = true;
