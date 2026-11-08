@@ -1301,6 +1301,13 @@ function renderArchive(){
     if(!q) return true;
     return (exp.q.bn + " " + exp.q.en + " " + t("cat_" + exp.cat)).toLowerCase().includes(q);
   });
+  // today's question first, then newest by date
+  items.sort((a,b)=>{
+    const aT = (CURRENT && a.id === CURRENT.id) ? 0 : 1;
+    const bT = (CURRENT && b.id === CURRENT.id) ? 0 : 1;
+    if(aT !== bT) return aT - bT;
+    return b.date.localeCompare(a.date);
+  });
   list.innerHTML = items.map(archiveCardHtml).join("");
   if(cnt) cnt.textContent = fmt(items.length) + " " + t("archive_count");
   if(msg) msg.textContent = items.length ? "" : t("archive_empty");
