@@ -3,105 +3,307 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>New Bangladesh — Bangladesh is answering.</title>
-<meta name="description" content="One question. Thousands of answers. One picture of Bangladesh. Vote, see what Bangladesh thinks, and share your personal result card.">
-<meta property="og:title" content="New Bangladesh — Bangladesh is answering.">
-<meta property="og:description" content="৳10 lakh suddenly appears in your account. What would YOU do?">
+<title>নিউ বাংলাদেশ — বাংলাদেশ কী ভাবছে?</title>
+<meta name="description" content="একটি প্রশ্ন। হাজারো উত্তর। বাংলাদেশের একটাই ছবি। ভোট দাও, দেখো বাংলাদেশ কী ভাবছে, আর তোমার রেজাল্ট শেয়ার করো।">
+<meta property="og:title" content="নিউ বাংলাদেশ — বাংলাদেশ কী ভাবছে?">
+<meta property="og:description" content="হঠাৎ তোমার অ্যাকাউন্টে ৳১০ লাখ এলো। তুমি কী করবে?">
 <meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--navy:#0a1931;--navy2:#12264a;--green:#22c55e;--ink:#0f172a;--muted:#64748b;--bg:#f8fafc;--card:#fff;--line:#e2e8f0}
-*{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
-.wrap{max-width:560px;margin:0 auto;padding:20px 16px 48px}
-header{display:flex;align-items:center;gap:10px;padding:4px 0 20px}
-.logo{width:40px;height:40px;border-radius:12px;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:900;font-size:22px;position:relative}
-.logo i{position:absolute;top:3px;right:5px;width:14px;height:14px;border-radius:50%;background:var(--green);color:var(--navy);font-style:normal;font-size:11px;line-height:14px;text-align:center}
-header b{font-size:18px;letter-spacing:.2px} header span{display:block;font-size:12px;color:var(--muted);font-weight:500}
-h1{font-size:26px;line-height:1.25;margin:6px 0 8px}
-.sub{color:var(--muted);font-size:15px;line-height:1.6;margin:0 0 20px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 8px 30px rgba(15,23,42,.06)}
-.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
-.q{font-size:22px;line-height:1.35;margin:10px 0 18px}
-.opt{display:block;width:100%;text-align:left;padding:15px 16px;margin:0 0 10px;border:1.5px solid var(--line);border-radius:14px;background:#fff;font-size:16px;cursor:pointer}
-.opt:hover{border-color:var(--navy)}
-.opt:disabled{cursor:default;opacity:.95}
-.bar{height:8px;background:#e2e8f0;border-radius:99px;overflow:hidden;margin:8px 0 4px}
-.bar i{display:block;height:100%;background:var(--green);width:0;transition:width .7s ease}
-.bar.navy i{background:var(--navy)}
-.row{display:flex;justify-content:space-between;font-size:14px}
-.row b{font-size:15px}
-.pct{color:var(--muted)}
-.you{font-size:12px;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.08em}
-.result{margin-top:18px;padding:16px;border-radius:14px;background:#f0fdf4;border:1px solid #bbf7d0}
-.result h2{margin:0 0 6px;font-size:18px}
-.result p{margin:4px 0;color:#334155;line-height:1.55}
-.share{margin-top:18px;display:grid;gap:10px}
-.btn{padding:13px 16px;border-radius:12px;border:0;font-size:16px;font-weight:700;cursor:pointer}
-.btn.primary{background:var(--navy);color:#fff}
-.btn.ghost{background:#fff;border:1.5px solid var(--line);color:var(--ink)}
-.btn.green{background:var(--green);color:#052e16}
-.sharecard{margin-top:18px;background:var(--navy);color:#fff;border-radius:18px;padding:22px}
-.sharecard .eyebrow{color:#86efac}
-.sharecard h3{margin:10px 0 4px;font-size:24px}
-.sharecard p{margin:6px 0;color:#cbd5e1;line-height:1.55}
+:root{
+  --forest:#0f3d2e; --forest2:#14532d; --emerald:#16a34a; --mint:#e6f5ec; --mint2:#dff3e6;
+  --red:#e11d2e; --ink:#10231b; --muted:#5b6f66; --line:rgba(15,61,46,.12);
+  --glass:rgba(255,255,255,.72); --glass2:rgba(255,255,255,.55);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:"Noto Sans Bengali","Hind Siliguri",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#fbfefc;color:var(--ink);overflow-x:hidden}
+::selection{background:var(--emerald);color:#fff}
+
+/* ---------- ambient background: flag colours, soft & premium ---------- */
+.bg{position:fixed;inset:0;z-index:-2;background:
+  radial-gradient(900px 500px at 85% -10%, rgba(22,163,74,.14), transparent 60%),
+  radial-gradient(700px 500px at -10% 30%, rgba(225,29,46,.07), transparent 60%),
+  radial-gradient(800px 600px at 50% 110%, rgba(20,83,45,.10), transparent 60%),
+  linear-gradient(180deg,#f4faf6 0%,#ffffff 45%,#eef7f1 100%)}
+.blob{position:fixed;border-radius:50%;filter:blur(70px);z-index:-1;opacity:.55;pointer-events:none}
+.blob.g1{width:340px;height:340px;background:#86efac;top:-80px;right:-60px;animation:float 14s ease-in-out infinite alternate}
+.blob.g2{width:280px;height:280px;background:#fda4af;top:38%;left:-120px;animation:float 18s ease-in-out infinite alternate-reverse}
+.blob.g3{width:300px;height:300px;background:#bbf7d0;bottom:-100px;right:20%;animation:float 16s ease-in-out infinite alternate}
+@keyframes float{from{transform:translate(0,0) scale(1)}to{transform:translate(30px,-24px) scale(1.08)}}
+
+.page{max-width:1120px;margin:0 auto;padding:0 20px 40px}
+
+/* ---------- floating pill header (Unseen-style) ---------- */
+.headerwrap{position:sticky;top:14px;z-index:50;padding-top:14px}
+header{display:flex;align-items:center;gap:14px;max-width:880px;margin:0 auto;padding:10px 12px 10px 14px;border-radius:999px;
+  background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,.8);box-shadow:0 12px 32px rgba(15,61,46,.10)}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);flex-shrink:0}
+.mark{width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,var(--forest),var(--emerald));display:grid;place-items:center;color:#fff;font-weight:800;font-size:23px;position:relative;box-shadow:0 6px 16px rgba(15,61,46,.28);animation:logoPop .7s cubic-bezier(.2,.9,.3,1.4)}
+.mark i{position:absolute;top:2px;right:3px;width:12px;height:12px;border-radius:50%;background:var(--red);border:2px solid #fff}
+@keyframes logoPop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+.logo b{font-size:17px;line-height:1.05;display:block}
+.logo span{font-size:11px;color:var(--muted);font-weight:500}
+nav{display:flex;gap:4px;margin:0 auto}
+nav a{padding:8px 14px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:600;font-size:14.5px;transition:.25s}
+nav a:hover{color:var(--forest)}
+nav a.active{background:#fff;color:var(--forest);box-shadow:0 2px 10px rgba(15,61,46,.10)}
+.lang{display:flex;background:rgba(15,61,46,.07);border-radius:999px;padding:3px;flex-shrink:0}
+.lang button{border:0;background:transparent;padding:7px 12px;border-radius:999px;font:inherit;font-weight:700;font-size:13.5px;color:var(--muted);cursor:pointer;transition:.25s}
+.lang button.active{background:#fff;color:var(--forest);box-shadow:0 2px 8px rgba(15,61,46,.14)}
+@media(max-width:640px){nav{display:none}.logo span{display:none}}
+
+/* ---------- hero ---------- */
+.hero{text-align:center;padding:64px 0 8px;position:relative}
+.scene{position:absolute;left:50%;transform:translateX(-50%);top:-30px;width:min(920px,100%);z-index:-1;opacity:.9;pointer-events:none}
+.eyebrow{font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--forest2);font-weight:700}
+h1{font-size:clamp(40px,7vw,72px);line-height:1.12;margin:14px 0 16px;font-weight:800;color:var(--forest);letter-spacing:-.5px}
+h1 .red{color:var(--red);display:inline-block;animation:wordPop .8s .35s cubic-bezier(.2,.9,.3,1.4) both}
+@keyframes wordPop{from{transform:scale(.7) rotate(-6deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.sub{color:var(--muted);font-size:clamp(16px,2.4vw,19px);line-height:1.7;margin:0 auto 34px;max-width:560px}
+.reveal{animation:fadeUp .8s cubic-bezier(.2,.7,.3,1) both}
+.d1{animation-delay:.08s}.d2{animation-delay:.18s}.d3{animation-delay:.28s}.d4{animation-delay:.4s}
+@keyframes fadeUp{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ---------- vote card: glass ---------- */
+.vote{max-width:640px;margin:0 auto}
+.card{background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.85);border-radius:26px;padding:28px;
+  box-shadow:0 24px 60px rgba(15,61,46,.12)}
+@media(max-width:640px){.card{padding:22px 18px}}
+.card .eyebrow{font-size:11.5px}
+.q{font-size:clamp(21px,3.4vw,26px);line-height:1.4;margin:12px 0 20px;font-weight:700;color:var(--ink)}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:15px 18px;margin:0 0 10px;
+  border:1.5px solid var(--line);border-radius:999px;background:rgba(255,255,255,.85);
+  font:inherit;font-size:16px;font-weight:600;color:var(--ink);cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s,background .2s}
+.opt:hover{border-color:var(--emerald);transform:translateY(-2px);box-shadow:0 10px 22px rgba(22,163,74,.16);background:#fff}
+.opt:active{transform:translateY(0) scale(.98)}
+.opt .dot{width:12px;height:12px;border-radius:50%;background:var(--mint2);border:2px solid var(--emerald);flex-shrink:0;transition:.2s}
+.opt:hover .dot{background:var(--emerald)}
+.bar{height:10px;background:rgba(15,61,46,.08);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--emerald),#4ade80);width:0;border-radius:99px;transition:width .9s cubic-bezier(.2,.7,.3,1)}
+.bar.mine i{background:linear-gradient(90deg,#f43f5e,var(--red))}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:15px}
+.row b{font-size:15.5px}
+.pct{color:var(--muted);font-weight:600;white-space:nowrap}
+.you{font-size:11px;font-weight:800;color:#fff;background:var(--red);border-radius:99px;padding:3px 9px;letter-spacing:.04em;white-space:nowrap}
+.result{margin-top:20px;padding:18px;border-radius:20px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #bbf7d0;animation:fadeUp .6s both}
+.result h2{margin:0 0 6px;font-size:19px;color:var(--forest)}
+.result p{margin:5px 0;color:#334155;line-height:1.6;font-size:15px}
+.share{margin-top:20px;display:grid;gap:10px}
+.btn{padding:14px 18px;border-radius:999px;border:0;font:inherit;font-size:16px;font-weight:700;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:linear-gradient(135deg,var(--forest),var(--emerald));color:#fff;box-shadow:0 12px 26px rgba(15,61,46,.25)}
+.btn.ghost{background:rgba(255,255,255,.9);border:1.5px solid var(--line);color:var(--ink)}
+.btn.green{background:var(--emerald);color:#fff;box-shadow:0 10px 22px rgba(22,163,74,.28)}
+.sharecard{margin-top:6px;background:linear-gradient(150deg,#0f3d2e,#14532d 60%,#166534);color:#fff;border-radius:22px;padding:24px;position:relative;overflow:hidden;animation:cardIn .7s cubic-bezier(.2,.9,.3,1.2) both}
+.sharecard::after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;background:var(--red);opacity:.9;right:-90px;top:-90px;filter:blur(2px)}
+.sharecard .eyebrow{color:#86efac;position:relative;z-index:1}
+.sharecard h3{margin:12px 0 4px;font-size:24px;position:relative;z-index:1}
+.sharecard p{margin:6px 0;color:#d1fae5;line-height:1.55;position:relative;z-index:1}
 .sharecard .big{font-size:20px;color:#fff;font-weight:800}
-footer{margin-top:28px;text-align:center;color:var(--muted);font-size:13px;line-height:1.6}
+@keyframes cardIn{from{transform:translateY(14px) scale(.97);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+#copyMsg{text-align:center;color:var(--muted);font-size:14px;margin:2px 0 0;min-height:20px}
 .hidden{display:none}
+
+/* ---------- stats row ---------- */
+.stats{display:flex;justify-content:center;flex-wrap:wrap;gap:10px 28px;margin:26px auto 0;max-width:640px}
+.stat{text-align:center}
+.stat b{display:block;font-size:22px;color:var(--forest)}
+.stat span{font-size:13px;color:var(--muted);font-weight:600}
+
+/* ---------- sections ---------- */
+section{max-width:880px;margin:0 auto;padding:72px 0 8px;text-align:center}
+section h2{font-size:clamp(28px,4.6vw,42px);margin:10px 0 12px;color:var(--forest);font-weight:800;line-height:1.2}
+section .lede{color:var(--muted);font-size:16.5px;line-height:1.7;max-width:560px;margin:0 auto}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:34px;text-align:left}
+@media(max-width:700px){.steps{grid-template-columns:1fr}}
+.step{background:var(--glass);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.85);border-radius:22px;padding:24px;box-shadow:0 14px 34px rgba(15,61,46,.08);transition:transform .25s,box-shadow .25s}
+.step:hover{transform:translateY(-4px);box-shadow:0 22px 44px rgba(15,61,46,.14)}
+.step .num{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:18px;color:#fff;background:linear-gradient(135deg,var(--forest),var(--emerald));margin-bottom:14px}
+.step:nth-child(2) .num{background:linear-gradient(135deg,#f43f5e,var(--red))}
+.step h3{margin:0 0 8px;font-size:18px;color:var(--forest)}
+.step p{margin:0;color:var(--muted);line-height:1.65;font-size:15px}
+.pills{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:30px}
+.pill{background:#fff;border:1px solid var(--line);border-radius:999px;padding:10px 18px;font-weight:700;font-size:14.5px;color:var(--forest);box-shadow:0 6px 16px rgba(15,61,46,.06)}
+.pill i{font-style:normal;margin-right:6px}
+
+/* ---------- footer ---------- */
+footer{margin-top:72px;border-top:1px solid var(--line);padding:34px 0 10px;text-align:center;color:var(--muted);font-size:14px;line-height:1.8}
+footer b{color:var(--forest)}
+footer a{color:var(--forest);text-decoration:none;font-weight:600}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="logo">N<i>?</i></div>
-    <div><b>New Bangladesh</b><span>newbangladesh.bond</span></div>
-  </header>
+<div class="bg"></div>
+<div class="blob g1"></div><div class="blob g2"></div><div class="blob g3"></div>
 
-  <h1>Bangladesh is answering.</h1>
-  <p class="sub">One question. Vote in 10 seconds. See what Bangladesh thinks — and share your answer.</p>
-
-  <main class="card" id="app">
-    <div class="eyebrow">Experiment #247 · Today</div>
-    <div class="q">Hothat tomar account-e ৳10 lakh elo. Tumi ki korba?</div>
-    <div id="options"></div>
-    <div id="result" class="hidden"></div>
-    <div id="share" class="share hidden">
-      <div class="sharecard" id="sharecard">
-        <div class="eyebrow">New Bangladesh · Experiment #247</div>
-        <h3 id="cardChoice">—</h3>
-        <p id="cardMatch">—</p>
-        <p><span class="big" id="cardType">—</span></p>
-        <p>newbangladesh.bond</p>
+<div class="page">
+  <div class="headerwrap">
+    <header>
+      <a class="logo" href="#">
+        <span class="mark">N<i></i></span>
+        <span><b>নিউ বাংলাদেশ</b><span>newbangladesh.bond</span></span>
+      </a>
+      <nav>
+        <a href="#" class="active" data-i18n="nav_home">হোম</a>
+        <a href="#vote" data-i18n="nav_vote">আজকের প্রশ্ন</a>
+        <a href="#how" data-i18n="nav_how">কীভাবে কাজ করে</a>
+      </nav>
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" id="langBn" class="active">বাং</button>
+        <button type="button" id="langEn">EN</button>
       </div>
-      <button class="btn green" id="downloadBtn" type="button">Card download koro (PNG)</button>
-      <button class="btn ghost" id="challengeBtn" type="button">Bondhuke challenge koro — link copy</button>
-      <button class="btn ghost" id="againBtn" type="button">Abar vote dao</button>
-      <p id="copyMsg" style="text-align:center;color:var(--muted);font-size:14px;margin:0"></p>
+    </header>
+  </div>
+
+  <div class="hero">
+    <!-- flat illustration: red sun, green hills, river, palms -->
+    <svg class="scene" viewBox="0 0 920 260" fill="none" aria-hidden="true">
+      <circle cx="460" cy="86" r="52" fill="#e11d2e" opacity=".92"/>
+      <circle cx="460" cy="86" r="52" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="2"/>
+      <path d="M0 210 Q 160 130 330 190 T 660 185 T 920 200 V260 H0 Z" fill="#16a34a" opacity=".16"/>
+      <path d="M0 230 Q 200 165 420 210 T 920 220 V260 H0 Z" fill="#0f3d2e" opacity=".12"/>
+      <path d="M120 260 Q 300 200 460 235 T 800 240" stroke="#22c55e" stroke-width="10" stroke-linecap="round" opacity=".35"/>
+      <g stroke="#14532d" stroke-width="7" stroke-linecap="round" opacity=".55">
+        <path d="M60 250 L60 190 M60 200 Q 30 180 18 196 M60 195 Q 88 172 102 190 M60 210 Q 40 195 28 210"/>
+        <path d="M860 250 L860 190 M860 200 Q 830 180 818 196 M860 195 Q 888 172 902 190 M860 210 Q 840 195 828 210"/>
+      </g>
+      <g fill="#0f3d2e" opacity=".5"><circle cx="180" cy="70" r="4"/><circle cx="210" cy="52" r="3"/><circle cx="730" cy="60" r="4"/><circle cx="760" cy="44" r="3"/></g>
+    </svg>
+
+    <div class="eyebrow reveal d1" data-i18n="eyebrow">নিউ বাংলাদেশ · বাংলাদেশ উত্তর দিচ্ছে</div>
+    <h1 class="reveal d2"><span data-i18n="hero_l1">বাংলাদেশ</span> <span class="red" data-i18n="hero_l2">কী ভাবছে?</span></h1>
+    <p class="sub reveal d3" data-i18n="hero_sub">একটি প্রশ্ন। হাজারো উত্তর। বাংলাদেশের একটাই ছবি — ভোট দাও, দেখো দেশ কী ভাবছে, আর তোমার রেজাল্ট শেয়ার করো।</p>
+
+    <main class="vote reveal d4" id="vote">
+      <div class="card">
+        <div class="eyebrow"><span data-i18n="exp">এক্সপেরিমেন্ট #২৪৭</span> · <span data-i18n="today">আজ</span></div>
+        <div class="q" id="questionText">হঠাৎ তোমার অ্যাকাউন্টে ৳১০ লাখ এলো। তুমি কী করবে?</div>
+        <div id="options"></div>
+        <div id="result" class="hidden"></div>
+        <div id="share" class="share hidden">
+          <div class="sharecard" id="sharecard">
+            <div class="eyebrow">NEW BANGLADESH · <span data-i18n="exp_en">EXPERIMENT #247</span></div>
+            <h3 id="cardChoice">—</h3>
+            <p id="cardMatch">—</p>
+            <p><span class="big" id="cardType">—</span></p>
+            <p>newbangladesh.bond</p>
+          </div>
+          <button class="btn green" id="downloadBtn" type="button" data-i18n="download">কার্ড ডাউনলোড করো (PNG)</button>
+          <button class="btn primary" id="challengeBtn" type="button" data-i18n="challenge">বন্ধুকে চ্যালেঞ্জ করো — লিংক কপি</button>
+          <button class="btn ghost" id="againBtn" type="button" data-i18n="again">আবার ভোট দাও</button>
+          <p id="copyMsg"></p>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><b id="statVotes">—</b><span data-i18n="stat_votes">মোট ভোট</span></div>
+        <div class="stat"><b id="statOpts">৪</b><span data-i18n="stat_opts">টি উত্তর</span></div>
+        <div class="stat"><b>১</b><span data-i18n="stat_q">টি প্রশ্ন প্রতিদিন</span></div>
+        <div class="stat"><b>০</b><span data-i18n="stat_signup">সাইন-আপ</span></div>
+      </div>
+    </main>
+  </div>
+
+  <section id="how">
+    <div class="eyebrow" data-i18n="how_eyebrow">কীভাবে কাজ করে</div>
+    <h2 data-i18n="how_h">১০ সেকেন্ডে, তিন ধাপে।</h2>
+    <p class="lede" data-i18n="how_sub">কোনো সাইন-আপ নেই, কোনো বিজ্ঞাপন নেই। শুধু তুমি, একটি প্রশ্ন, আর পুরো বাংলাদেশ।</p>
+    <div class="steps">
+      <div class="step"><div class="num">১</div><h3 data-i18n="s1_h">ভোট দাও</h3><p data-i18n="s1_p">আজকের প্রশ্নে তোমার উত্তরটা বেছে নাও। এক ট্যাপেই হয়ে যাবে।</p></div>
+      <div class="step"><div class="num">২</div><h3 data-i18n="s2_h">রেজাল্ট দেখো</h3><p data-i18n="s2_p">তোমার সাথে কত শতাংশ বাংলাদেশ একমত, সেটা এখনই দেখে নাও।</p></div>
+      <div class="step"><div class="num">৩</div><h3 data-i18n="s3_h">শেয়ার করো</h3><p data-i18n="s3_p">তোমার নিজের রেজাল্ট কার্ড ডাউনলোড করে বন্ধুকে চ্যালেঞ্জ করো।</p></div>
     </div>
-  </main>
+    <div class="pills">
+      <span class="pill"><i>✓</i><span data-i18n="pill1">কোনো সাইন-আপ নেই</span></span>
+      <span class="pill"><i>✓</i><span data-i18n="pill2">কোনো বিজ্ঞাপন নেই</span></span>
+      <span class="pill"><i>✓</i><span data-i18n="pill3">সম্পূর্ণ ফ্রি</span></span>
+    </div>
+  </section>
 
   <footer>
-    No sign-up. No ads. Free.<br>
-    Live shared voting — tomar vote shobar sathe count hobe.
+    <b>নিউ বাংলাদেশ</b> · <span data-i18n="foot_tag">বাংলাদেশ উত্তর দিচ্ছে।</span><br>
+    <span data-i18n="foot_live">লাইভ ভোটিং — তোমার ভোট সবার সাথে গোনা হবে।</span><br>
+    newbangladesh.bond
   </footer>
 </div>
 
 <script>
-// Live shared voting via Supabase. No sign-up, no personal data:
-// each device gets one anonymous random voter id, stored only on-device.
-// If Supabase is unreachable, the page falls back to the starting counts.
+// ---------- i18n: default Bangla, header toggle switches to full English ----------
+const I18N = {
+  bn: {
+    nav_home:"হোম", nav_vote:"আজকের প্রশ্ন", nav_how:"কীভাবে কাজ করে",
+    eyebrow:"নিউ বাংলাদেশ · বাংলাদেশ উত্তর দিচ্ছে",
+    hero_l1:"বাংলাদেশ", hero_l2:"কী ভাবছে?",
+    hero_sub:"একটি প্রশ্ন। হাজারো উত্তর। বাংলাদেশের একটাই ছবি — ভোট দাও, দেখো দেশ কী ভাবছে, আর তোমার রেজাল্ট শেয়ার করো।",
+    exp:"এক্সপেরিমেন্ট #২৪৭", today:"আজ", exp_en:"এক্সপেরিমেন্ট #২৪৭",
+    question:"হঠাৎ তোমার অ্যাকাউন্টে ৳১০ লাখ এলো। তুমি কী করবে?",
+    download:"কার্ড ডাউনলোড করো (PNG)", challenge:"বন্ধুকে চ্যালেঞ্জ করো — লিংক কপি", again:"আবার ভোট দাও",
+    stat_votes:"মোট ভোট", stat_opts:"টি উত্তর", stat_q:"টি প্রশ্ন প্রতিদিন", stat_signup:"সাইন-আপ",
+    how_eyebrow:"কীভাবে কাজ করে", how_h:"১০ সেকেন্ডে, তিন ধাপে।",
+    how_sub:"কোনো সাইন-আপ নেই, কোনো বিজ্ঞাপন নেই। শুধু তুমি, একটি প্রশ্ন, আর পুরো বাংলাদেশ।",
+    s1_h:"ভোট দাও", s1_p:"আজকের প্রশ্নে তোমার উত্তরটা বেছে নাও। এক ট্যাপেই হয়ে যাবে।",
+    s2_h:"রেজাল্ট দেখো", s2_p:"তোমার সাথে কত শতাংশ বাংলাদেশ একমত, সেটা এখনই দেখে নাও।",
+    s3_h:"শেয়ার করো", s3_p:"তোমার নিজের রেজাল্ট কার্ড ডাউনলোড করে বন্ধুকে চ্যালেঞ্জ করো।",
+    pill1:"কোনো সাইন-আপ নেই", pill2:"কোনো বিজ্ঞাপন নেই", pill3:"সম্পূর্ণ ফ্রি",
+    foot_tag:"বাংলাদেশ উত্তর দিচ্ছে।", foot_live:"লাইভ ভোটিং — তোমার ভোট সবার সাথে গোনা হবে।",
+    your_choice:"তোমার পছন্দ", spoken:"বাংলাদেশ বলেছে", match:"তোমার উত্তর {p}% বাংলাদেশের সাথে মিলেছে।",
+    voted:"জন ভোট দিয়েছে।", live:" লাইভ গোনা।", copied:"চ্যালেঞ্জ লিংক কপি হয়ে গেছে — বন্ধুকে পাঠাও!",
+    already:"তুমি ইতিমধ্যে ভোট দিয়েছো — এক ডিভাইস থেকে একবারই ভোট দেওয়া যায়।",
+    picked_prefix:"আমি বেছেছি: ", match_card:"{p}% বাংলাদেশ আমার সাথে একমত।",
+    challenge_text:"আমি '{o}' বেছেছি। তুমি কী বাছবে? ",
+    title:"নিউ বাংলাদেশ — বাংলাদেশ কী ভাবছে?"
+  },
+  en: {
+    nav_home:"Home", nav_vote:"Today's question", nav_how:"How it works",
+    eyebrow:"NEW BANGLADESH · BANGLADESH IS ANSWERING",
+    hero_l1:"What does", hero_l2:"Bangladesh think?",
+    hero_sub:"One question. Thousands of answers. One picture of Bangladesh — vote, see what the country thinks, and share your result.",
+    exp:"EXPERIMENT #247", today:"TODAY", exp_en:"EXPERIMENT #247",
+    question:"৳10 lakh suddenly appears in your account. What would YOU do?",
+    download:"Download card (PNG)", challenge:"Challenge a friend — copy link", again:"Vote again",
+    stat_votes:"Total votes", stat_opts:"answers", stat_q:"question a day", stat_signup:"sign-up",
+    how_eyebrow:"HOW IT WORKS", how_h:"In 10 seconds, three steps.",
+    how_sub:"No sign-up, no ads. Just you, one question, and the whole of Bangladesh.",
+    s1_h:"Vote", s1_p:"Pick your answer to today's question. One tap and you're done.",
+    s2_h:"See the result", s2_p:"See instantly what percentage of Bangladesh agrees with you.",
+    s3_h:"Share it", s3_p:"Download your personal result card and challenge a friend.",
+    pill1:"No sign-up", pill2:"No ads", pill3:"Totally free",
+    foot_tag:"Bangladesh is answering.", foot_live:"Live voting — your vote counts with everyone.",
+    your_choice:"Your choice", spoken:"Bangladesh has spoken", match:"Your answer matches {p}% of Bangladesh.",
+    voted:"people have voted.", live:" Live count.", copied:"Challenge link copied — send it to your friend!",
+    already:"You already voted — one vote per device.",
+    picked_prefix:"I chose: ", match_card:"{p}% of Bangladesh agrees with me.",
+    challenge_text:"I chose '{o}'. What will you choose? ",
+    title:"New Bangladesh — What does Bangladesh think?"
+  }
+};
+let lang = localStorage.getItem("nb_lang") || "bn";
+const t = k => (I18N[lang] && I18N[lang][k]) || I18N.bn[k] || k;
+function fmt(n){ return lang === "bn" ? n.toLocaleString("bn-BD") : n.toLocaleString("en-IN"); }
+
+// ---------- live shared voting via Supabase (no sign-up, no personal data) ----------
 const SUPABASE_URL = "https://bocazyqiomwtnnvhzpio.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_f3Glh5QbXqaiBBNrPhfhHA_LB99iMcp";
 const EXPERIMENT_ID = "247";
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
 const OPTIONS = [
-  {label:"Start a business", base:31347, type:"The Risk Taker"},
-  {label:"Go abroad", base:22273, type:"The Dreamer"},
-  {label:"Save / invest it", base:17323, type:"The Strategist"},
-  {label:"Buy something expensive", base:11548, type:"The Realist"},
+  {key:"business", bn:"ব্যবসা শুরু করব", en:"Start a business", typeBn:"ঝুঁকি নেওয়ার মানুষ", typeEn:"The Risk Taker", base:31347},
+  {key:"abroad", bn:"বিদেশ যাব", en:"Go abroad", typeBn:"স্বপ্নবাজ", typeEn:"The Dreamer", base:22273},
+  {key:"save", bn:"জমিয়ে / বিনিয়োগ করব", en:"Save / invest it", typeBn:"পরিকল্পনাকারী", typeEn:"The Strategist", base:17323},
+  {key:"buy", bn:"দামি কিছু কিনব", en:"Buy something expensive", typeBn:"বাস্তববাদী", typeEn:"The Realist", base:11548},
 ];
+const DB_LABEL = {business:"Start a business", abroad:"Go abroad", save:"Save / invest it", buy:"Buy something expensive"};
 const BASE_TOTAL = OPTIONS.reduce((s,o)=>s+o.base, 0);
-let live = {}; // option label -> live vote count from Supabase
+let live = {};
 let liveLoaded = false;
 
 function getVoterId(){
@@ -115,7 +317,7 @@ async function fetchLiveCounts(){
     const {data, error} = await sb.from("votes").select("option_label").eq("experiment_id", EXPERIMENT_ID).limit(10000);
     if(error) return;
     live = {};
-    (data||[]).forEach(r=>{ live[r.option_label] = (live[r.option_label]||0)+1; });
+    (data||[]).forEach(r=>{ const o = OPTIONS.find(x=>DB_LABEL[x.key]===r.option_label); if(o) live[o.key] = (live[o.key]||0)+1; });
     liveLoaded = true;
   }catch(e){ /* fall back to starting counts */ }
 }
@@ -124,19 +326,24 @@ async function fetchMyVote(){
   try{
     const {data, error} = await sb.from("votes").select("option_label").eq("experiment_id", EXPERIMENT_ID).eq("voter_hash", getVoterId()).maybeSingle();
     if(error || !data) return null;
-    return OPTIONS.find(o=>o.label===data.option_label) || null;
+    return OPTIONS.find(o=>DB_LABEL[o.key]===data.option_label) || null;
   }catch(e){ return null; }
 }
 function counts(){
   const total = BASE_TOTAL + Object.values(live).reduce((s,n)=>s+n, 0);
   return OPTIONS.map(o=>{
-    const c = o.base + (live[o.label]||0);
+    const c = o.base + (live[o.key]||0);
     return {...o, count:c, pct: Math.round(c/total*100)};
   });
 }
 function totalVotes(){ return BASE_TOTAL + Object.values(live).reduce((s,n)=>s+n, 0); }
+function label(o){ return lang === "bn" ? o.bn : o.en; }
+function typeName(o){ return lang === "bn" ? o.typeBn : o.typeEn; }
 
-let picked = localStorage.getItem("nb247") ? JSON.parse(localStorage.getItem("nb247")) : null;
+let picked = null;
+try{ picked = localStorage.getItem("nb247") ? JSON.parse(localStorage.getItem("nb247")) : null; }catch(e){ picked = null; }
+if(picked && picked.key){ picked = OPTIONS.find(o=>o.key===picked.key) || null; }
+else if(picked && picked.label){ picked = OPTIONS.find(o=>DB_LABEL[o.key]===picked.label) || null; }
 
 const optionsEl = document.getElementById("options");
 const resultEl = document.getElementById("result");
@@ -146,86 +353,98 @@ function renderOptions(){
   optionsEl.innerHTML = "";
   OPTIONS.forEach((o,i)=>{
     const b=document.createElement("button");
-    b.className="opt"; b.type="button"; b.textContent=o.label;
+    b.className="opt"; b.type="button";
+    b.innerHTML = `<span class="dot"></span><span>${label(o)}</span>`;
     b.onclick=()=>vote(i);
     optionsEl.appendChild(b);
   });
 }
 async function vote(i){
   picked = OPTIONS[i];
-  localStorage.setItem("nb247", JSON.stringify(picked));
+  localStorage.setItem("nb247", JSON.stringify({key:picked.key}));
   render();
   if(sb){
     try{
-      const {error} = await sb.from("votes").insert({experiment_id: EXPERIMENT_ID, option_label: picked.label, voter_hash: getVoterId()});
-      if(error && error.code !== "23505"){
-        // insert failed for another reason; results still show from starting counts
-      }
+      await sb.from("votes").insert({experiment_id: EXPERIMENT_ID, option_label: DB_LABEL[picked.key], voter_hash: getVoterId()});
       await fetchLiveCounts();
       render();
     }catch(e){ /* offline: local result already shown */ }
   }
 }
 function render(){
+  document.getElementById("questionText").textContent = t("question");
+  document.getElementById("statVotes").textContent = fmt(totalVotes());
+  document.getElementById("statOpts").textContent = fmt(4);
   if(!picked){ renderOptions(); resultEl.classList.add("hidden"); shareEl.classList.add("hidden"); return; }
   const rows = counts();
-  const my = rows.find(o=>o.label===picked.label) || rows[0];
+  const my = rows.find(o=>o.key===picked.key) || rows[0];
   optionsEl.innerHTML="";
   rows.forEach(o=>{
     const wrap=document.createElement("div");
-    const isYou = o.label===picked.label;
-    wrap.innerHTML = `<div class="row"><span><b>${o.label}</b> ${isYou?'<span class="you">· Tomar choice</span>':''}</span><span class="pct">${o.pct}%</span></div><div class="bar${isYou?'':' navy'}"><i style="width:${o.pct}%"></i></div><div class="pct" style="margin-bottom:12px">${o.count.toLocaleString("en-IN")} votes</div>`;
+    const isYou = o.key===picked.key;
+    wrap.innerHTML = `<div class="row"><span><b>${label(o)}</b> ${isYou?`<span class="you">${t("your_choice")}</span>`:''}</span><span class="pct">${fmt(o.pct)}%</span></div><div class="bar${isYou?' mine':''}"><i style="width:${o.pct}%"></i></div><div class="pct" style="margin-bottom:12px">${fmt(o.count)} ${lang==="bn"?"ভোট":"votes"}</div>`;
     optionsEl.appendChild(wrap);
   });
   resultEl.classList.remove("hidden");
-  resultEl.innerHTML = `<h2>Bangladesh has spoken</h2><p><b>${picked.label}</b> — tomar answer ${my.pct}% Bangladesh-er sathe mileche.</p><p>${totalVotes().toLocaleString("en-IN")} jon vote diyeche.${liveLoaded ? " Live count." : ""}</p>`;
-  document.getElementById("cardChoice").textContent = "Ami bechechi: " + picked.label;
-  document.getElementById("cardMatch").textContent = my.pct + "% Bangladesh amar sathe ek mot.";
-  document.getElementById("cardType").textContent = picked.type;
+  resultEl.innerHTML = `<h2>${t("spoken")}</h2><p><b>${label(picked)}</b> — ${t("match").replace("{p}", fmt(my.pct))}</p><p>${fmt(totalVotes())} ${t("voted")}${liveLoaded ? t("live") : ""}</p>`;
+  document.getElementById("cardChoice").textContent = t("picked_prefix") + label(picked);
+  document.getElementById("cardMatch").textContent = t("match_card").replace("{p}", fmt(my.pct));
+  document.getElementById("cardType").textContent = typeName(picked);
   shareEl.classList.remove("hidden");
 }
+function applyLang(){
+  document.documentElement.lang = lang;
+  document.title = t("title");
+  document.querySelectorAll("[data-i18n]").forEach(el=>{ el.textContent = t(el.dataset.i18n); });
+  document.getElementById("langBn").classList.toggle("active", lang==="bn");
+  document.getElementById("langEn").classList.toggle("active", lang==="en");
+  localStorage.setItem("nb_lang", lang);
+  render();
+}
+document.getElementById("langBn").onclick=()=>{ lang="bn"; applyLang(); };
+document.getElementById("langEn").onclick=()=>{ lang="en"; applyLang(); };
 document.getElementById("againBtn").onclick=async()=>{
   const myVote = await fetchMyVote();
   if(myVote){
-    document.getElementById("copyMsg").textContent = "Tumi already vote diyecho — ek device theke ekbar-i vote deya jay.";
+    document.getElementById("copyMsg").textContent = t("already");
     picked = myVote;
-    localStorage.setItem("nb247", JSON.stringify(picked));
+    localStorage.setItem("nb247", JSON.stringify({key:picked.key}));
     render();
     return;
   }
   localStorage.removeItem("nb247"); picked=null; render();
 };
 document.getElementById("challengeBtn").onclick=async()=>{
-  const url = location.origin + location.pathname + "?exp=247&pick=" + encodeURIComponent(picked.label);
-  const text = "Ami '" + picked.label + "' bechechi. Tumi ki bechba? " + url;
+  const url = location.origin + location.pathname + "?exp=247&pick=" + encodeURIComponent(DB_LABEL[picked.key]);
+  const text = t("challenge_text").replace("{o}", label(picked)) + url;
   try{ await navigator.clipboard.writeText(text); }catch(e){}
-  document.getElementById("copyMsg").textContent = "Challenge link copy hoye geche — bondhuke pathao!";
+  document.getElementById("copyMsg").textContent = t("copied");
 };
 document.getElementById("downloadBtn").onclick=()=>{
-  const my = counts().find(o=>o.label===picked.label);
+  const my = counts().find(o=>o.key===picked.key);
   const c=document.createElement("canvas"); c.width=1080; c.height=1350;
   const x=c.getContext("2d");
-  x.fillStyle="#0a1931"; x.fillRect(0,0,1080,1350);
-  x.fillStyle="#22c55e"; x.beginPath(); x.arc(540,300,110,0,Math.PI*2); x.fill();
-  x.fillStyle="#0a1931"; x.font="bold 140px Arial"; x.textAlign="center"; x.fillText("?",540,350);
-  x.fillStyle="#ffffff"; x.font="bold 64px Arial"; x.fillText("NEW BANGLADESH",540,560);
-  x.fillStyle="#86efac"; x.font="32px Arial"; x.fillText("Experiment #247",540,620);
-  x.fillStyle="#ffffff"; x.font="bold 52px Arial";
-  const words=("Ami bechechi: "+picked.label).split(" "); let line="", y=760;
+  x.fillStyle="#0f3d2e"; x.fillRect(0,0,1080,1350);
+  x.fillStyle="#e11d2e"; x.beginPath(); x.arc(540,300,110,0,Math.PI*2); x.fill();
+  x.fillStyle="#0f3d2e"; x.font="bold 140px Arial"; x.textAlign="center"; x.fillText("?",540,350);
+  x.fillStyle="#ffffff"; x.font="bold 56px Arial"; x.fillText(lang==="bn"?"নিউ বাংলাদেশ":"NEW BANGLADESH",540,560);
+  x.fillStyle="#86efac"; x.font="32px Arial"; x.fillText(t("exp"),540,620);
+  x.fillStyle="#ffffff"; x.font="bold 48px Arial";
+  const words=(t("picked_prefix")+label(picked)).split(" "); let line="", y=760;
   words.forEach(w=>{ if(x.measureText(line+" "+w).width>900){ x.fillText(line.trim(),540,y); y+=70; line=w; } else line+=" "+w; });
   x.fillText(line.trim(),540,y);
-  x.fillStyle="#cbd5e1"; x.font="40px Arial"; x.fillText(my.pct+"% Bangladesh amar sathe ek mot.",540,y+110);
-  x.fillStyle="#ffffff"; x.font="bold 44px Arial"; x.fillText(picked.type,540,y+190);
+  x.fillStyle="#d1fae5"; x.font="38px Arial"; x.fillText(t("match_card").replace("{p}", my.pct),540,y+110);
+  x.fillStyle="#ffffff"; x.font="bold 44px Arial"; x.fillText(typeName(picked),540,y+190);
   x.fillStyle="#86efac"; x.font="36px Arial"; x.fillText("newbangladesh.bond",540,1250);
   const a=document.createElement("a"); a.download="new-bangladesh-card.png"; a.href=c.toDataURL("image/png"); a.click();
 };
 (async()=>{
-  render();
+  applyLang();
   await fetchLiveCounts();
   const myVote = await fetchMyVote();
-  if(myVote && (!picked || picked.label !== myVote.label)){
+  if(myVote && (!picked || picked.key !== myVote.key)){
     picked = myVote;
-    localStorage.setItem("nb247", JSON.stringify(picked));
+    localStorage.setItem("nb247", JSON.stringify({key:picked.key}));
   }
   render();
 })();
