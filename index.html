@@ -155,6 +155,23 @@ h1 .red{color:var(--red);display:inline-block;animation:wordPop .8s .35s cubic-b
 #copyMsg.ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#14532d;font-weight:600;padding:10px 14px}
 .hidden{display:none}
 
+/* ---------- dynamic motion (no art) ---------- */
+.opt{animation:optIn .45s cubic-bezier(.2,.7,.3,1) backwards}
+@keyframes optIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.opt:hover .dot{animation:dotPulse .5s ease}
+@keyframes dotPulse{0%{transform:scale(1)}50%{transform:scale(1.5)}100%{transform:scale(1)}}
+#revealBtn{position:relative}
+#revealBtn::after{content:"";position:absolute;inset:-2px;border-radius:inherit;border:2px solid rgba(22,163,74,.55);pointer-events:none;animation:ringPulse 2.4s ease-out infinite}
+@keyframes ringPulse{0%{transform:scale(1);opacity:.8}70%{transform:scale(1.07);opacity:0}100%{transform:scale(1.07);opacity:0}}
+.sharecard::before{animation:sunPulse 6s ease-in-out infinite}
+@keyframes sunPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+.sc-match b{animation:matchPop .6s .15s cubic-bezier(.2,.9,.3,1.4) both}
+@keyframes matchPop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.reveal-on-scroll{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.3,1)}
+.reveal-on-scroll.in{opacity:1;transform:none}
+.confetti{position:fixed;width:9px;height:9px;border-radius:50%;pointer-events:none;z-index:9999;animation:burst .95s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes burst{to{transform:translate(var(--dx),var(--dy)) rotate(240deg) scale(.6);opacity:0}}
+
 .streakbar{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:22px auto 0;max-width:640px}
 .streakpill{display:flex;align-items:center;gap:10px;background:var(--glass);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.85);border-radius:999px;padding:11px 18px;box-shadow:0 10px 24px rgba(15,61,46,.08);font-weight:700;font-size:15px;color:var(--forest)}
 .streakpill .flame{font-size:19px;animation:flick 1.6s ease-in-out infinite alternate}
@@ -761,6 +778,7 @@ function renderOptions(){
   OPTIONS.forEach((o,i)=>{
     const b=document.createElement("button");
     b.className="opt"; b.type="button";
+    b.style.animationDelay = (i * 0.07) + "s";
     b.innerHTML = `<span class="dot"></span><span>${label(o)}</span>`;
     b.onclick=()=>vote(i);
     optionsEl.appendChild(b);
@@ -780,6 +798,7 @@ async function submitVote(){
   localStorage.setItem("nb247_guess", String(guess));
   awaitingGuess = false;
   render();
+  burstConfetti();
   if(sb){
     try{
       await sb.from("votes").insert({experiment_id: EXPERIMENT_ID, option_label: DB_LABEL[picked.key], voter_hash: getVoterId(), district: myDistrict || null});
@@ -799,7 +818,7 @@ function guessTier(diff){
 }
 function render(){
   document.getElementById("questionText").textContent = t("question");
-  document.getElementById("statVotes").textContent = fmt(totalVotes());
+  animateStat(document.getElementById("statVotes"), totalVotes());
   document.getElementById("statOpts").textContent = fmt(4);
   document.getElementById("statQNum").textContent = fmt(1);
   document.getElementById("statSignupNum").textContent = fmt(0);
@@ -819,9 +838,12 @@ function render(){
   rows.forEach(o=>{
     const wrap=document.createElement("div");
     const isYou = o.key===picked.key;
-    wrap.innerHTML = `<div class="row"><span><b>${label(o)}</b> ${isYou?`<span class="you">${t("your_choice")}</span>`:''}</span><span class="pct">${fmt(o.pct)}%</span></div><div class="bar${isYou?' mine':''}"><i style="width:${o.pct}%"></i></div><div class="pct" style="margin-bottom:12px">${fmt(o.count)} ${lang==="bn"?"ভোট":"votes"}</div>`;
+    wrap.innerHTML = `<div class="row"><span><b>${label(o)}</b> ${isYou?`<span class="you">${t("your_choice")}</span>`:''}</span><span class="pct">${fmt(o.pct)}%</span></div><div class="bar${isYou?' mine':''}"><i style="width:0" data-w="${o.pct}"></i></div><div class="pct" style="margin-bottom:12px">${fmt(o.count)} ${lang==="bn"?"ভোট":"votes"}</div>`;
     optionsEl.appendChild(wrap);
   });
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    optionsEl.querySelectorAll(".bar i").forEach((el, i)=>{ el.style.transitionDelay = (i * 0.09) + "s"; el.style.width = el.dataset.w + "%"; });
+  }));
   resultEl.classList.remove("hidden");
   let guessHtml = "";
   let guessCard = "";
@@ -1405,6 +1427,45 @@ window.addEventListener("hashchange", ()=>{
   else if(location.hash === "#roots") showView("roots");
   else if(location.hash === "#home" || location.hash === "" || location.hash.startsWith("#vote") || location.hash.startsWith("#map") || location.hash.startsWith("#how")) showView("home");
 });
+
+const reducedMotion = typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let lastTotal = null;
+function animateStat(el, to){
+  if(reducedMotion || lastTotal === null || lastTotal === to){ el.textContent = fmt(to); lastTotal = to; return; }
+  const from = lastTotal; lastTotal = to;
+  const t0 = performance.now(), dur = 800;
+  (function tick(now){
+    const p = Math.min(1, (now - t0) / dur);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = fmt(Math.round(from + (to - from) * eased));
+    if(p < 1) requestAnimationFrame(tick);
+  })(t0);
+}
+function burstConfetti(){
+  if(reducedMotion) return;
+  const card = document.querySelector(".vote .card") || document.body;
+  const r = card.getBoundingClientRect();
+  const cx = r.left + r.width / 2, cy = r.top + Math.min(r.height * 0.4, 220);
+  const colors = ["#16a34a", "#e11d2e", "#f59e0b", "#0ea5e9", "#ffffff"];
+  for(let i = 0; i < 30; i++){
+    const s = document.createElement("span");
+    s.className = "confetti";
+    const ang = Math.random() * Math.PI * 2, dist = 70 + Math.random() * 130;
+    s.style.left = cx + "px"; s.style.top = cy + "px";
+    s.style.background = colors[i % colors.length];
+    s.style.setProperty("--dx", Math.cos(ang) * dist + "px");
+    s.style.setProperty("--dy", (Math.sin(ang) * dist - 60) + "px");
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(), 1000);
+  }
+}
+// scroll reveals (only when supported, so sections never get stuck hidden)
+if("IntersectionObserver" in window){
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+  }, {threshold: 0.12});
+  document.querySelectorAll("section").forEach(s=>{ s.classList.add("reveal-on-scroll"); io.observe(s); });
+}
 
 (async()=>{
   if(picked && !streak.last) markVoteToday();
