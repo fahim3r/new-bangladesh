@@ -16,6 +16,9 @@
 <meta name="twitter:title" content="নিউ বাংলাদেশ — বাংলাদেশ কী ভাবছে?">
 <meta name="twitter:description" content="একটি প্রশ্ন। হাজারো উত্তর। ভোট দাও, বাংলাদেশকে গেস করো, আর তোমার রেজাল্ট শেয়ার করো।">
 <meta name="twitter:image" content="https://newbangladesh.bond/og-image.png">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" href="/icon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -51,7 +54,8 @@ header{display:flex;align-items:center;gap:14px;max-width:880px;margin:0 auto;pa
   background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
   border:1px solid rgba(255,255,255,.8);box-shadow:0 12px 32px rgba(15,61,46,.10)}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);flex-shrink:0}
-.mark{width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,var(--forest),var(--emerald));display:grid;place-items:center;color:#fff;font-weight:800;font-size:23px;position:relative;box-shadow:0 6px 16px rgba(15,61,46,.28);animation:logoPop .7s cubic-bezier(.2,.9,.3,1.4)}
+.mark{width:42px;height:42px;border-radius:13px;background:transparent;display:grid;place-items:center;position:relative;animation:logoPop .7s cubic-bezier(.2,.9,.3,1.4)}
+.mark img{width:100%;height:100%;object-fit:contain;display:block}
 .mark i{position:absolute;top:2px;right:3px;width:12px;height:12px;border-radius:50%;background:var(--red);border:2px solid #fff}
 @keyframes logoPop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
 .logo b{font-size:17px;line-height:1.05;display:block}
@@ -131,7 +135,7 @@ h1 .red{color:var(--red);display:inline-block;animation:wordPop .8s .35s cubic-b
 .sharecard::before{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:var(--red);opacity:.92;right:-110px;top:-110px}
 .sharecard::after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;border:1.5px solid rgba(255,255,255,.14);right:-70px;top:-70px}
 .sc-brand{display:flex;align-items:center;gap:11px;position:relative;z-index:1}
-.sc-brand .mark{width:44px;height:44px;font-size:24px;border-radius:13px}
+.sc-brand .mark{width:48px;height:48px;border-radius:50%}
 .sc-brand b{font-size:19px;letter-spacing:.06em;display:block;line-height:1.1}
 .sc-brand span{font-size:12.5px;color:#86efac;font-weight:600}
 .sharecard .eyebrow{color:#86efac;position:relative;z-index:1;margin-top:20px}
@@ -243,7 +247,7 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
   <div class="headerwrap">
     <header>
       <a class="logo" href="#">
-        <span class="mark">N<i></i></span>
+        <span class="mark"><img src="icon.png" alt="New Bangladesh"></span>
         <span><b data-i18n="brand">নিউ বাংলাদেশ</b><span>newbangladesh.bond</span></span>
       </a>
       <nav>
@@ -299,7 +303,7 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
         <div id="share" class="share hidden">
           <div class="sharecard" id="sharecard">
             <div class="sc-brand">
-              <span class="mark">N<i></i></span>
+              <span class="mark"><img src="icon.png" alt="New Bangladesh"></span>
               <div><b>NEW BANGLADESH</b><span>newbangladesh.bond</span></div>
             </div>
             <div class="eyebrow"><span data-i18n="exp_en">EXPERIMENT #247</span></div>
@@ -863,6 +867,7 @@ document.getElementById("challengeBtn").onclick=async()=>{
   const m = document.getElementById("copyMsg");
   m.textContent = t("copied"); m.className = "ok";
 };
+const iconImg = new Image(); iconImg.src = "icon.png";
 document.getElementById("downloadBtn").onclick=()=>{
   const my = counts().find(o=>o.key===picked.key);
   const c=document.createElement("canvas"); c.width=1080; c.height=1350;
@@ -875,13 +880,9 @@ document.getElementById("downloadBtn").onclick=()=>{
   // red sun, top right
   x.fillStyle="rgba(225,29,46,.25)"; x.beginPath(); x.arc(920,150,210,0,Math.PI*2); x.fill();
   x.fillStyle="#e11d2e"; x.beginPath(); x.arc(920,150,140,0,Math.PI*2); x.fill();
-  // brand: logo mark + wordmark
-  x.fillStyle="#16a34a";
-  x.beginPath(); x.roundRect(80,70,120,120,26); x.fill();
-  x.fillStyle="#ffffff"; x.font="800 76px "+FONT; x.textAlign="left"; x.textBaseline="middle";
-  x.fillText("N",108,132);
-  x.fillStyle="#e11d2e"; x.beginPath(); x.arc(186,84,13,0,Math.PI*2); x.fill();
-  x.strokeStyle="#fff"; x.lineWidth=3; x.beginPath(); x.arc(186,84,13,0,Math.PI*2); x.stroke();
+  // brand: user's icon + wordmark
+  if(iconImg.complete && iconImg.naturalWidth){ x.drawImage(iconImg, 72, 62, 136, 136); }
+  else { x.fillStyle="#16a34a"; x.beginPath(); x.roundRect(80,70,120,120,26); x.fill(); x.fillStyle="#ffffff"; x.font="800 76px "+FONT; x.textAlign="left"; x.textBaseline="middle"; x.fillText("N",108,132); }
   x.fillStyle="#ffffff"; x.font="800 50px "+FONT; x.fillText("NEW BANGLADESH",225,108);
   x.fillStyle="#86efac"; x.font="600 30px "+FONT; x.fillText("newbangladesh.bond",227,158);
   // divider
