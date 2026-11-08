@@ -26,5 +26,7 @@ The first experiment is #247: "Hothat tomar account-e ৳10 lakh elo. Tumi ki ko
 ## Files
 
 - `index.html` — the whole site
-- `logo.svg` — the N speech-bubble mark
+- `icon.png` — the green speech-bubble logo mark (header, share card)
+- `logo.png` — horizontal wordmark lockup
+- `og-image.png` — social share image
 - `README.md` — this file
