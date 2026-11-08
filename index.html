@@ -8,6 +8,14 @@
 <meta property="og:title" content="নিউ বাংলাদেশ — বাংলাদেশ কী ভাবছে?">
 <meta property="og:description" content="হঠাৎ তোমার অ্যাকাউন্টে ৳১০ লাখ এলো। তুমি কী করবে?">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://newbangladesh.bond/">
+<meta property="og:image" content="https://newbangladesh.bond/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="নিউ বাংলাদেশ — বাংলাদেশ কী ভাবছে?">
+<meta name="twitter:description" content="একটি প্রশ্ন। হাজারো উত্তর। ভোট দাও, বাংলাদেশকে গেস করো, আর তোমার রেজাল্ট শেয়ার করো।">
+<meta name="twitter:image" content="https://newbangladesh.bond/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -119,12 +127,24 @@ h1 .red{color:var(--red);display:inline-block;animation:wordPop .8s .35s cubic-b
 .btn.primary{background:linear-gradient(135deg,var(--forest),var(--emerald));color:#fff;box-shadow:0 12px 26px rgba(15,61,46,.25)}
 .btn.ghost{background:rgba(255,255,255,.9);border:1.5px solid var(--line);color:var(--ink)}
 .btn.green{background:var(--emerald);color:#fff;box-shadow:0 10px 22px rgba(22,163,74,.28)}
-.sharecard{margin-top:6px;background:linear-gradient(150deg,#0f3d2e,#14532d 60%,#166534);color:#fff;border-radius:22px;padding:24px;position:relative;overflow:hidden;animation:cardIn .7s cubic-bezier(.2,.9,.3,1.2) both}
-.sharecard::after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;background:var(--red);opacity:.9;right:-90px;top:-90px;filter:blur(2px)}
-.sharecard .eyebrow{color:#86efac;position:relative;z-index:1}
-.sharecard h3{margin:12px 0 4px;font-size:24px;position:relative;z-index:1}
+.sharecard{margin-top:6px;background:linear-gradient(160deg,#0b2e22,#14532d 55%,#15803d);color:#fff;border-radius:24px;padding:26px;position:relative;overflow:hidden;box-shadow:0 24px 50px rgba(15,61,46,.35);animation:cardIn .7s cubic-bezier(.2,.9,.3,1.2) both}
+.sharecard::before{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:var(--red);opacity:.92;right:-110px;top:-110px}
+.sharecard::after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;border:1.5px solid rgba(255,255,255,.14);right:-70px;top:-70px}
+.sc-brand{display:flex;align-items:center;gap:11px;position:relative;z-index:1}
+.sc-brand .mark{width:44px;height:44px;font-size:24px;border-radius:13px}
+.sc-brand b{font-size:19px;letter-spacing:.06em;display:block;line-height:1.1}
+.sc-brand span{font-size:12.5px;color:#86efac;font-weight:600}
+.sharecard .eyebrow{color:#86efac;position:relative;z-index:1;margin-top:20px}
+.sharecard h3{margin:10px 0 2px;font-size:25px;position:relative;z-index:1;line-height:1.3}
+.sc-match{display:flex;align-items:baseline;gap:12px;margin:14px 0 2px;position:relative;z-index:1}
+.sc-match b{font-size:58px;line-height:1;color:#86efac}
+.sc-match span{font-size:15px;color:#d1fae5;line-height:1.45}
 .sharecard p{margin:6px 0;color:#d1fae5;line-height:1.55;position:relative;z-index:1}
 .sharecard .big{font-size:20px;color:#fff;font-weight:800}
+.sc-guess{display:inline-block;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:99px;padding:7px 16px;font-weight:700;font-size:14.5px;color:#fff;position:relative;z-index:1}
+.sc-type{display:inline-block;background:var(--red);border-radius:99px;padding:8px 18px;font-weight:800;font-size:16px;color:#fff;position:relative;z-index:1;box-shadow:0 8px 20px rgba(225,29,46,.4)}
+.sc-foot{margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.18);display:flex;justify-content:space-between;gap:10px;font-size:13.5px;color:#a7f3d0;position:relative;z-index:1}
+.sc-foot b{color:#fff}
 @keyframes cardIn{from{transform:translateY(14px) scale(.97);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
 #copyMsg{text-align:center;color:var(--muted);font-size:14px;margin:2px 0 0;min-height:20px;padding:0;border-radius:12px;transition:.3s}
 #copyMsg.show{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;font-weight:600;padding:10px 14px}
@@ -218,12 +238,16 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
         <div id="result" class="hidden"></div>
         <div id="share" class="share hidden">
           <div class="sharecard" id="sharecard">
-            <div class="eyebrow">NEW BANGLADESH · <span data-i18n="exp_en">EXPERIMENT #247</span></div>
+            <div class="sc-brand">
+              <span class="mark">N<i></i></span>
+              <div><b>NEW BANGLADESH</b><span>newbangladesh.bond</span></div>
+            </div>
+            <div class="eyebrow"><span data-i18n="exp_en">EXPERIMENT #247</span></div>
             <h3 id="cardChoice">—</h3>
-            <p id="cardMatch">—</p>
-            <p id="cardGuess">—</p>
-            <p><span class="big" id="cardType">—</span></p>
-            <p>newbangladesh.bond</p>
+            <div class="sc-match"><b id="cardMatchBig">—</b><span id="cardMatch">—</span></div>
+            <p><span class="sc-guess" id="cardGuess">—</span></p>
+            <p><span class="sc-type" id="cardType">—</span></p>
+            <div class="sc-foot"><span data-i18n="foot_tag">বাংলাদেশ উত্তর দিচ্ছে।</span><b>newbangladesh.bond</b></div>
           </div>
           <button class="btn green" id="downloadBtn" type="button" data-i18n="download">কার্ড ডাউনলোড করো (PNG)</button>
           <button class="btn primary" id="challengeBtn" type="button" data-i18n="challenge">বন্ধুকে চ্যালেঞ্জ করো — লিংক কপি</button>
@@ -287,7 +311,7 @@ const I18N = {
     your_choice:"তোমার পছন্দ", spoken:"বাংলাদেশ বলেছে", match:"তোমার উত্তর {p}% বাংলাদেশের সাথে মিলেছে।",
     voted:"জন ভোট দিয়েছে।", live:" লাইভ গোনা।", copied:"চ্যালেঞ্জ লিংক কপি হয়ে গেছে — বন্ধুকে পাঠাও!",
     already:"তুমি ইতিমধ্যে ভোট দিয়েছো — এক ডিভাইস থেকে একবারই ভোট দেওয়া যায়।",
-    picked_prefix:"আমি বেছেছি: ", match_card:"{p}% বাংলাদেশ আমার সাথে একমত।",
+    picked_prefix:"আমি বেছেছি: ", match_card:"{p}% বাংলাদেশ আমার সাথে একমত।", match_label:"বাংলাদেশ আমার সাথে একমত।",
     guess_tag:"গেস বাংলাদেশ", guess_h:"তুমি কতটা চেনো বাংলাদেশকে?",
     guess_sub:"তুমি '{o}' বেছেছো। তোমার কী মনে হয় — কত % বাংলাদেশ তোমার মতোই বাছবে?",
     guess_reveal:"রেজাল্ট দেখো", guess_back:"উত্তর বদলাও",
@@ -317,7 +341,7 @@ const I18N = {
     your_choice:"Your choice", spoken:"Bangladesh has spoken", match:"Your answer matches {p}% of Bangladesh.",
     voted:"people have voted.", live:" Live count.", copied:"Challenge link copied — send it to your friend!",
     already:"You already voted — one vote per device.",
-    picked_prefix:"I chose: ", match_card:"{p}% of Bangladesh agrees with me.",
+    picked_prefix:"I chose: ", match_card:"{p}% of Bangladesh agrees with me.", match_label:"of Bangladesh agrees with me.",
     guess_tag:"Guess Bangladesh", guess_h:"How well do you know Bangladesh?",
     guess_sub:"You chose '{o}'. What do you think — what % of Bangladesh will pick the same?",
     guess_reveal:"See the result", guess_back:"Change answer",
@@ -482,9 +506,10 @@ function render(){
   }
   resultEl.innerHTML = `<h2>${t("spoken")}</h2><p><b>${label(picked)}</b> — ${t("match").replace("{p}", fmt(my.pct))}</p><p>${fmt(totalVotes())} ${t("voted")}${liveLoaded ? t("live") : ""}</p>${guessHtml}`;
   document.getElementById("cardChoice").textContent = t("picked_prefix") + label(picked);
-  document.getElementById("cardMatch").textContent = t("match_card").replace("{p}", fmt(my.pct));
+  document.getElementById("cardMatchBig").textContent = fmt(my.pct) + "%";
+  document.getElementById("cardMatch").textContent = t("match_label");
   document.getElementById("cardGuess").textContent = guessCard;
-  document.getElementById("cardGuess").style.display = guessCard ? "" : "none";
+  document.getElementById("cardGuess").parentElement.style.display = guessCard ? "" : "none";
   document.getElementById("cardType").textContent = typeName(picked);
   shareEl.classList.remove("hidden");
 }
@@ -532,24 +557,71 @@ document.getElementById("downloadBtn").onclick=()=>{
   const my = counts().find(o=>o.key===picked.key);
   const c=document.createElement("canvas"); c.width=1080; c.height=1350;
   const x=c.getContext("2d");
-  x.fillStyle="#0f3d2e"; x.fillRect(0,0,1080,1350);
-  x.fillStyle="#e11d2e"; x.beginPath(); x.arc(540,300,110,0,Math.PI*2); x.fill();
-  x.fillStyle="#0f3d2e"; x.font="bold 140px Arial"; x.textAlign="center"; x.fillText("?",540,350);
-  x.fillStyle="#ffffff"; x.font="bold 56px Arial"; x.fillText(lang==="bn"?"নিউ বাংলাদেশ":"NEW BANGLADESH",540,560);
-  x.fillStyle="#86efac"; x.font="32px Arial"; x.fillText(t("exp"),540,620);
-  x.fillStyle="#ffffff"; x.font="bold 48px Arial";
-  const words=(t("picked_prefix")+label(picked)).split(" "); let line="", y=760;
-  words.forEach(w=>{ if(x.measureText(line+" "+w).width>900){ x.fillText(line.trim(),540,y); y+=70; line=w; } else line+=" "+w; });
-  x.fillText(line.trim(),540,y);
-  x.fillStyle="#d1fae5"; x.font="38px Arial"; x.fillText(t("match_card").replace("{p}", my.pct),540,y+105);
+  const FONT = "'Noto Sans Bengali','Hind Siliguri',Arial,sans-serif";
+  // premium gradient background
+  const g=x.createLinearGradient(0,0,0,1350);
+  g.addColorStop(0,"#0b2e22"); g.addColorStop(.55,"#14532d"); g.addColorStop(1,"#15803d");
+  x.fillStyle=g; x.fillRect(0,0,1080,1350);
+  // red sun, top right
+  x.fillStyle="rgba(225,29,46,.25)"; x.beginPath(); x.arc(920,150,210,0,Math.PI*2); x.fill();
+  x.fillStyle="#e11d2e"; x.beginPath(); x.arc(920,150,140,0,Math.PI*2); x.fill();
+  // brand: logo mark + wordmark
+  x.fillStyle="#16a34a";
+  x.beginPath(); x.roundRect(80,70,120,120,26); x.fill();
+  x.fillStyle="#ffffff"; x.font="800 76px "+FONT; x.textAlign="left"; x.textBaseline="middle";
+  x.fillText("N",108,132);
+  x.fillStyle="#e11d2e"; x.beginPath(); x.arc(186,84,13,0,Math.PI*2); x.fill();
+  x.strokeStyle="#fff"; x.lineWidth=3; x.beginPath(); x.arc(186,84,13,0,Math.PI*2); x.stroke();
+  x.fillStyle="#ffffff"; x.font="800 50px "+FONT; x.fillText("NEW BANGLADESH",225,108);
+  x.fillStyle="#86efac"; x.font="600 30px "+FONT; x.fillText("newbangladesh.bond",227,158);
+  // divider
+  x.strokeStyle="rgba(255,255,255,.22)"; x.lineWidth=2;
+  x.beginPath(); x.moveTo(80,235); x.lineTo(1000,235); x.stroke();
+  // experiment eyebrow
+  x.fillStyle="#86efac"; x.font="700 30px "+FONT; x.fillText(t("exp"),80,295);
+  // choice
+  x.fillStyle="#d1fae5"; x.font="600 36px "+FONT;
+  x.fillText(t("picked_prefix").trim(),80,375);
+  x.fillStyle="#ffffff"; x.font="800 62px "+FONT;
+  const words=label(picked).split(" "); let line="", y=460;
+  const wrap=(text,yy)=>{
+    const ws=text.split(" "); let ln="", y2=yy;
+    ws.forEach(w=>{ if(x.measureText(ln+" "+w).width>920){ x.fillText(ln.trim(),80,y2); y2+=78; ln=w; } else ln+=" "+w; });
+    x.fillText(ln.trim(),80,y2); return y2;
+  };
+  y = wrap(label(picked), 460);
+  // big match %
+  x.fillStyle="#86efac"; x.font="800 150px "+FONT;
+  x.fillText(fmt(my.pct)+"%",80,y+210);
+  x.fillStyle="#d1fae5"; x.font="600 34px "+FONT;
+  x.fillText(t("match_label"),80,y+280);
+  let by = y+330;
+  // guess pill
   if(guess !== null){
     const score = 100 - Math.abs(guess - my.pct);
-    x.fillStyle="#86efac"; x.font="36px Arial"; x.fillText(t("guess_card").replace("{g}", guess).replace("{a}", my.pct).replace("{s}", score),540,y+165);
-    x.fillStyle="#ffffff"; x.font="bold 44px Arial"; x.fillText(typeName(picked),540,y+245);
-  } else {
-    x.fillStyle="#ffffff"; x.font="bold 44px Arial"; x.fillText(typeName(picked),540,y+190);
+    const gt = t("guess_card").replace("{g}", guess).replace("{a}", my.pct).replace("{s}", score);
+    x.font="700 32px "+FONT;
+    const w = x.measureText(gt).width + 64;
+    x.fillStyle="rgba(255,255,255,.14)";
+    x.beginPath(); x.roundRect(80,by,w,76,38); x.fill();
+    x.strokeStyle="rgba(255,255,255,.35)"; x.lineWidth=2;
+    x.beginPath(); x.roundRect(80,by,w,76,38); x.stroke();
+    x.fillStyle="#ffffff"; x.fillText(gt,112,by+40);
+    by += 116;
   }
-  x.fillStyle="#86efac"; x.font="36px Arial"; x.fillText("newbangladesh.bond",540,1250);
+  // personality badge (red pill)
+  x.font="800 40px "+FONT;
+  const tw = x.measureText(typeName(picked)).width + 72;
+  x.fillStyle="#e11d2e";
+  x.beginPath(); x.roundRect(80,by,tw,84,42); x.fill();
+  x.fillStyle="#ffffff"; x.fillText(typeName(picked),116,by+44);
+  // footer brand bar
+  x.fillStyle="rgba(0,0,0,.28)"; x.fillRect(0,1230,1080,120);
+  x.fillStyle="#ffffff"; x.font="800 34px "+FONT; x.textAlign="center";
+  x.fillText("NEW BANGLADESH  •  newbangladesh.bond",540,1272);
+  x.fillStyle="#86efac"; x.font="600 28px "+FONT;
+  x.fillText(t("foot_tag"),540,1318);
+  x.textAlign="left";
   const a=document.createElement("a"); a.download="new-bangladesh-card.png"; a.href=c.toDataURL("image/png"); a.click();
 };
 (async()=>{
