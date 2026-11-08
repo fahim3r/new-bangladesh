@@ -230,6 +230,32 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
 .battles-list{display:grid;gap:6px}
 .seeall{display:inline-block;margin-top:8px}
 
+/* ---------- roots (shikorer golpo) ---------- */
+.roots-card{background:var(--glass);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.85);border-radius:22px;padding:26px;box-shadow:0 14px 34px rgba(15,61,46,.08);max-width:640px;margin:28px auto 0;text-align:left}
+.roots-dots{display:flex;gap:8px;justify-content:center;margin-bottom:20px}
+.roots-dots i{width:9px;height:9px;border-radius:50%;background:rgba(15,61,46,.15)}
+.roots-dots i.on{background:var(--emerald)}
+.roots-dots i.done{background:var(--forest)}
+.roots-q{font-size:21px;font-weight:800;color:var(--forest);margin:0 0 6px;text-align:center}
+.roots-sub{color:var(--muted);text-align:center;font-size:15px;margin:0 0 18px;line-height:1.6}
+.roots-input{width:100%;padding:14px 18px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font:inherit;font-size:16px;font-weight:600;color:var(--ink);margin:6px 0 10px}
+.roots-row{display:flex;gap:10px;margin-top:14px}
+.roots-row .btn{flex:1}
+.swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:10px 0}
+.swatch{border:2.5px solid transparent;border-radius:18px;padding:14px 6px;font:inherit;font-weight:700;font-size:14.5px;cursor:pointer;background:#fff;color:var(--ink)}
+.swatch i{display:block;width:34px;height:34px;border-radius:50%;margin:0 auto 8px}
+.swatch.on{border-color:var(--forest);box-shadow:0 8px 18px rgba(15,61,46,.15)}
+.poster{background:var(--glass);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.85);border-radius:26px;padding:26px;box-shadow:0 24px 60px rgba(15,61,46,.14);max-width:640px;margin:28px auto 0;text-align:center}
+.poster h3{margin:6px 0 2px;font-size:27px;color:var(--forest)}
+.poster .poster-sub{color:var(--muted);font-size:14.5px;margin:0 0 10px}
+.poster-map{max-width:340px;margin:10px auto}
+.poster-map svg{width:100%;height:auto;display:block}
+.poster-lines{text-align:left;max-width:480px;margin:14px auto 0;font-size:16.5px;line-height:1.85;color:var(--ink)}
+.poster-lines b{color:var(--forest)}
+.poster-foot{margin-top:18px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+.poster-foot b{color:var(--forest)}
+.poster-actions{display:grid;gap:10px;max-width:640px;margin:16px auto 0}
+
 /* ---------- bottom nav: same glass pill as the top header ---------- */
 .bottomnav{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;z-index:60;display:flex;gap:4px;width:min(880px,calc(100% - 32px));padding:10px 12px;border-radius:999px;background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.8);box-shadow:0 12px 32px rgba(15,61,46,.10)}
 .bottomnav a{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:700;font-size:15px;transition:.25s}
@@ -392,6 +418,40 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
     </section>
   </div><!-- /view-battles -->
 
+  <div id="view-roots" class="hidden">
+    <section>
+      <div class="eyebrow" data-i18n="roots_eyebrow">শিকড়ের গল্প</div>
+      <h2 data-i18n="roots_h">বাংলাদেশের কোথায় কোথায় তুমি মিশে আছো?</h2>
+      <p class="lede" data-i18n="roots_sub">১ মিনিটে বানাও তোমার শিকড়ের গল্প — কয়েকটি সহজ প্রশ্নের উত্তর দাও, আর তোমার নিজের পোস্টার তৈরি হয়ে যাবে।</p>
+      <p class="map-note" data-i18n="roots_privacy">🔒 তোমার উত্তর শুধু তোমার ডিভাইসেই থাকবে — সার্ভারে কিছু যায় না, কোনো সাইন-আপ নেই।</p>
+      <div id="rootsWizard" class="roots-card">
+        <div class="roots-dots" id="rootsDots"></div>
+        <div id="rootsStep"></div>
+        <div class="roots-row">
+          <button class="btn ghost" id="rootsBack" type="button" data-i18n="roots_back">পেছনে</button>
+          <button class="btn ghost" id="rootsSkip" type="button" data-i18n="roots_skip">স্কিপ করো</button>
+          <button class="btn primary" id="rootsNext" type="button" data-i18n="roots_next">পরের প্রশ্ন</button>
+        </div>
+      </div>
+      <div id="rootsPoster" class="hidden">
+        <div class="poster" id="posterCard">
+          <div class="eyebrow">🌱 <span data-i18n="roots_eyebrow">শিকড়ের গল্প</span></div>
+          <h3 id="posterTitle">—</h3>
+          <p class="poster-sub" data-i18n="roots_bond">জায়গার সঙ্গে মানুষের বন্ধন</p>
+          <div class="poster-map" id="posterMap"></div>
+          <div class="poster-lines" id="posterLines"></div>
+          <div class="poster-foot"><b>NEW BANGLADESH</b> · newbangladesh.bond<br><span data-i18n="roots_bond">জায়গার সঙ্গে মানুষের বন্ধন</span></div>
+        </div>
+        <div class="poster-actions">
+          <button class="btn green" id="rootsDownload" type="button" data-i18n="roots_download">পোস্টার ডাউনলোড করো (PNG)</button>
+          <button class="btn primary" id="rootsCopy" type="button" data-i18n="roots_copy">গল্প কপি করো</button>
+          <button class="btn ghost" id="rootsAgain" type="button" data-i18n="roots_again">আবার বানাও</button>
+          <p id="rootsMsg"></p>
+        </div>
+      </div>
+    </section>
+  </div><!-- /view-roots -->
+
   <footer>
     <b>নিউ বাংলাদেশ</b> · <span data-i18n="foot_tag">বাংলাদেশ উত্তর দিচ্ছে।</span><br>
     <span data-i18n="foot_live">লাইভ ভোটিং — তোমার ভোট সবার সাথে গোনা হবে।</span><br>
@@ -432,6 +492,24 @@ const I18N = {
     guess_line:"তোমার গেস {g}% · আসল {a}%",
     guess_perfect:"একদম নিখুঁত!", guess_close:"খুব কাছাকাছি!", guess_ok:"মোটামুটি কাছাকাছি", guess_miss:"এবার মিললো না — আবার চেষ্টা করো!",
     guess_score:"গেস স্কোর", guess_card:"গেস {g}% · আসল {a}% · স্কোর {s}/১০০",
+    nav_roots:"শিকড়",
+    roots_eyebrow:"শিকড়ের গল্প", roots_h:"বাংলাদেশের কোথায় কোথায় তুমি মিশে আছো?",
+    roots_sub:"১ মিনিটে বানাও তোমার শিকড়ের গল্প — কয়েকটি সহজ প্রশ্নের উত্তর দাও, আর তোমার নিজের পোস্টার তৈরি হয়ে যাবে।",
+    roots_privacy:"🔒 তোমার উত্তর শুধু তোমার ডিভাইসেই থাকবে — সার্ভারে কিছু যায় না, কোনো সাইন-আপ নেই।",
+    roots_bond:"জায়গার সঙ্গে মানুষের বন্ধন",
+    roots_q_name:"তোমার নাম কী?", roots_q_name_sub:"না লিখলেও চলবে — তখন হবে “আমার বাংলাদেশ”।",
+    roots_q_birth:"জন্ম কোথায়?", roots_q_grew:"বড় হয়েছ কোথায়?",
+    roots_q_parents:"মায়ের বাড়ি ও বাবার বাড়ি কোথায়?", roots_q_parents_sub:"চাইলে স্কিপ করতে পারো।",
+    roots_q_study:"পড়াশোনার শহর কোনটি?", roots_q_now:"এখন কোথায় থাকো?",
+    roots_q_miss:"কোন জায়গাটাকে সবচেয়ে বেশি মিস করো?", roots_q_theme:"পোস্টারের রং কোনটি পছন্দ?",
+    roots_mom:"মায়ের বাড়ি", roots_dad:"বাবার বাড়ি", roots_name_ph:"তোমার নাম (ঐচ্ছিক)",
+    roots_pick:"জেলা বাছো",
+    roots_skip:"স্কিপ করো", roots_back:"পেছনে", roots_next:"পরের প্রশ্ন", roots_make:"পোস্টার বানাও",
+    roots_download:"পোস্টার ডাউনলোড করো (PNG)", roots_copy:"গল্প কপি করো", roots_again:"আবার বানাও",
+    roots_copied:"গল্প কপি হয়ে গেছে — পোস্ট করে দাও!",
+    roots_png_fail:"এই ব্রাউজারে PNG বানানো যাচ্ছে না।",
+    roots_my:"আমার বাংলাদেশ",
+    roots_theme_green:"সবুজ", roots_theme_red:"লাল", roots_theme_sky:"নীল", roots_theme_amber:"সোনালি",
     nav_battle:"ব্যাটল",
     latest_battle_eyebrow:"সর্বশেষ ব্যাটল", latest_battle_h:"আজকের লড়াই",
     all_battles_eyebrow:"ব্যাটল", all_battles_h:"সব ব্যাটল, এক জায়গায়।",
@@ -482,6 +560,24 @@ const I18N = {
     guess_line:"Your guess {g}% · Actual {a}%",
     guess_perfect:"Spot on!", guess_close:"So close!", guess_ok:"Pretty close", guess_miss:"Not this time — try again tomorrow!",
     guess_score:"Guess score", guess_card:"Guess {g}% · Actual {a}% · Score {s}/100",
+    nav_roots:"Roots",
+    roots_eyebrow:"ROOTS STORY", roots_h:"Where in Bangladesh are you rooted?",
+    roots_sub:"Make your roots story in 1 minute — answer a few simple questions and your personal poster is ready.",
+    roots_privacy:"🔒 Your answers stay only on your device — nothing goes to a server, no sign-up.",
+    roots_bond:"The bond between people and places",
+    roots_q_name:"What is your name?", roots_q_name_sub:"Optional — without it, the poster says “My Bangladesh”.",
+    roots_q_birth:"Where were you born?", roots_q_grew:"Where did you grow up?",
+    roots_q_parents:"Where are your mother's and father's homes?", roots_q_parents_sub:"You can skip this one.",
+    roots_q_study:"Which city did you study in?", roots_q_now:"Where do you live now?",
+    roots_q_miss:"Which place do you miss the most?", roots_q_theme:"Which colour for your poster?",
+    roots_mom:"Mother's home", roots_dad:"Father's home", roots_name_ph:"Your name (optional)",
+    roots_pick:"Pick a district",
+    roots_skip:"Skip", roots_back:"Back", roots_next:"Next question", roots_make:"Make my poster",
+    roots_download:"Download poster (PNG)", roots_copy:"Copy my story", roots_again:"Make again",
+    roots_copied:"Story copied — post it!",
+    roots_png_fail:"This browser can't make the PNG.",
+    roots_my:"My Bangladesh",
+    roots_theme_green:"Green", roots_theme_red:"Red", roots_theme_sky:"Blue", roots_theme_amber:"Golden",
     nav_battle:"Battles",
     latest_battle_eyebrow:"LATEST BATTLE", latest_battle_h:"Today's face-off",
     all_battles_eyebrow:"BATTLES", all_battles_h:"All battles, in one place.",
@@ -834,6 +930,9 @@ function applyLang(){
   colorMap(); renderDistrictDetail();
   tickCountdown();
   renderBattles(); renderLatestBattle();
+  if(!document.getElementById("view-roots").classList.contains("hidden")){
+    if(rootsDone()) showRootsPoster(); else renderRootsStep();
+  }
   render();
 }
 document.getElementById("langBn").onclick=()=>{ lang="bn"; applyLang(); };
@@ -1012,21 +1111,288 @@ document.getElementById("latestBattle").addEventListener("click", e=>{
   const btn = e.target.closest(".vs-side");
   if(btn) voteBattle(btn.dataset.battle, btn.dataset.side);
 });
+
+const CENTROIDS = {"Barguna": [90.1121, 22.0953], "Barishal": [90.3696, 22.7022], "Bhola": [90.7101, 22.1785], "Jhalokati": [90.187, 22.5721], "Patuakhali": [90.4548, 22.2249], "Pirojpur": [89.9759, 22.5791], "Bandarban": [92.3686, 21.8311], "Brahmanbaria": [91.1115, 23.9608], "Chandpur": [90.8518, 23.2513], "Chattogram": [91.7539, 22.515], "Cox's Bazar": [92.0282, 21.5641], "Cumilla": [91.1809, 23.4576], "Feni": [91.4067, 22.9409], "Khagrachari": [91.949, 23.1322], "Lakshmipur": [90.8282, 22.9447], "Noakhali": [91.0973, 22.8724], "Rangamati": [92.2985, 22.7324], "Dhaka": [90.3372, 23.8105], "Faridpur": [89.6309, 23.5424], "Gazipur": [90.4125, 24.0958], "Gopalganj": [89.8879, 23.0488], "Kishoreganj": [90.9821, 24.426], "Madaripur": [90.187, 23.2393], "Manikganj": [90.0003, 23.8617], "Munshiganj": [90.4127, 23.4981], "Narayanganj": [90.5636, 23.7147], "Narsingdi": [90.786, 24.1344], "Rajbari": [89.5875, 23.7151], "Shariatpur": [90.4348, 23.2423], "Tangail": [89.9948, 24.3917], "Bagerhat": [89.7895, 22.6602], "Chuadanga": [88.8263, 23.6161], "Jashore": [89.2182, 23.1634], "Jhenaidah": [89.1726, 23.545], "Khulna": [89.3967, 22.6738], "Kushtia": [89.1099, 23.8907], "Magura": [89.4364, 23.429], "Meherpur": [88.6724, 23.8052], "Narail": [89.584, 23.1163], "Satkhira": [89.1115, 22.3155], "Jamalpur": [89.7853, 25.0831], "Mymensingh": [90.4073, 24.7539], "Netrokona": [90.8656, 24.8103], "Sherpur": [90.1495, 25.0746], "Bogura": [89.3697, 24.851], "Joypurhat": [89.0945, 25.0947], "Naogaon": [88.7531, 24.9132], "Natore": [89.0076, 24.4102], "Chapai Nawabganj": [88.2912, 24.7413], "Pabna": [89.4481, 24.1585], "Rajshahi": [88.6049, 24.3733], "Sirajganj": [89.57, 24.3141], "Dinajpur": [88.6332, 25.6279], "Gaibandha": [89.543, 25.3297], "Kurigram": [89.6295, 25.8072], "Lalmonirhat": [89.2847, 25.9923], "Nilphamari": [88.9414, 25.8483], "Panchagarh": [88.5952, 26.2709], "Rangpur": [89.2508, 25.7468], "Thakurgaon": [88.4283, 26.0418], "Habiganj": [91.4507, 24.4771], "Moulvibazar": [91.7315, 24.3095], "Sunamganj": [91.3992, 25.0715], "Sylhet": [91.87, 24.8993]};
+// ---------- roots story (shikorer golpo): on-device only, no server ----------
+const ROOT_THEMES = {green:"#16a34a", red:"#e11d2e", sky:"#0ea5e9", amber:"#f59e0b"};
+const ROOT_STEPS = ["name","birth","grew","parents","study","now","miss","theme"];
+let roots = {name:"", birth:"", grew:"", mom:"", dad:"", study:"", now:"", miss:"", theme:"green"};
+try{ const s = JSON.parse(localStorage.getItem("nb_roots") || "null"); if(s) roots = {...roots, ...s}; }catch(e){}
+let rootStep = 0;
+function saveRoots(){ try{ localStorage.setItem("nb_roots", JSON.stringify(roots)); }catch(e){} }
+function rootsDone(){ return roots.birth && roots.grew && roots.study && roots.now && roots.miss; }
+function rootXY(en){
+  const c = CENTROIDS[en]; if(!c) return null;
+  return {x:(c[0]-87.9)/4.9*460, y:(26.75-c[1])/6.25*560};
+}
+function locative(bn){
+  if(!bn) return "";
+  if(bn.endsWith("া")) return bn + "য়";
+  if(bn.endsWith("ী") || bn.endsWith("ি")) return bn + "তে";
+  return bn + "ে";
+}
+function possessive(name){
+  if(!name) return "";
+  if(/[a-zA-Z]$/.test(name)) return name + "র";
+  return /[ািীুূেোৌ]$/.test(name) ? name + "র" : name + "এর";
+}
+function rootsTitle(){
+  if(lang === "bn") return roots.name ? possessive(roots.name) + " বাংলাদেশ" : t("roots_my");
+  return roots.name ? roots.name + "'s Bangladesh" : t("roots_my");
+}
+function rootsStoryLines(){
+  const bn = en => { const d = DISTRICTS.find(x=>x.en===en); return d ? (lang==="bn" ? d.bn : d.en) : en; };
+  const distinct = [...new Set([roots.birth, roots.grew, roots.study, roots.now, roots.mom, roots.dad, roots.miss].filter(Boolean))];
+  const n = distinct.length;
+  if(lang === "bn"){
+    const L = [];
+    L.push(`জন্ম <b>${locative(bn(roots.birth))}</b>।`);
+    L.push(`বেড়ে ওঠা <b>${locative(bn(roots.grew))}</b>।`);
+    if(roots.mom && roots.dad) L.push(`মায়ের বাড়ি <b>${locative(bn(roots.mom))}</b>, বাবার বাড়ি <b>${locative(bn(roots.dad))}</b>।`);
+    else if(roots.mom) L.push(`মায়ের বাড়ি <b>${locative(bn(roots.mom))}</b>।`);
+    else if(roots.dad) L.push(`বাবার বাড়ি <b>${locative(bn(roots.dad))}</b>।`);
+    L.push(`পড়াশোনা <b>${locative(bn(roots.study))}</b>।`);
+    L.push(`এখন থাকি <b>${locative(bn(roots.now))}</b>।`);
+    L.push(`আমার গল্প <b>${fmt(n)} জায়গায়</b>, শিকড় এক বাংলাদেশে।`);
+    L.push(`সবচেয়ে মিস করি <b>${bn(roots.miss)}</b> ❤️`);
+    return L;
+  }
+  const L = [];
+  L.push(`Born in <b>${bn(roots.birth)}</b>.`);
+  L.push(`Grew up in <b>${bn(roots.grew)}</b>.`);
+  if(roots.mom && roots.dad) L.push(`Mother's home in <b>${bn(roots.mom)}</b>, father's home in <b>${bn(roots.dad)}</b>.`);
+  else if(roots.mom) L.push(`Mother's home in <b>${bn(roots.mom)}</b>.`);
+  else if(roots.dad) L.push(`Father's home in <b>${bn(roots.dad)}</b>.`);
+  L.push(`Studied in <b>${bn(roots.study)}</b>.`);
+  L.push(`Now living in <b>${bn(roots.now)}</b>.`);
+  L.push(`My story spans <b>${fmt(n)} places</b> — but my roots are one Bangladesh.`);
+  L.push(`I miss <b>${bn(roots.miss)}</b> the most. ❤️`);
+  return L;
+}
+function rootsStoryText(){
+  return rootsStoryLines().map(l=>l.replace(/<[^>]+>/g, "")).join(" ");
+}
+function districtOptions(sel, val){
+  sel.innerHTML = "";
+  const o0 = document.createElement("option"); o0.value = ""; o0.textContent = t("roots_pick"); sel.appendChild(o0);
+  DISTRICTS.forEach(d=>{ const o = document.createElement("option"); o.value = d.en; o.textContent = districtName(d); sel.appendChild(o); });
+  sel.value = val || "";
+}
+function renderRootsStep(){
+  const step = ROOT_STEPS[rootStep];
+  const body = document.getElementById("rootsStep");
+  const dots = document.getElementById("rootsDots");
+  dots.innerHTML = ROOT_STEPS.map((_, i)=>`<i class="${i===rootStep ? "on" : i<rootStep ? "done" : ""}"></i>`).join("");
+  document.getElementById("rootsBack").style.visibility = rootStep === 0 ? "hidden" : "visible";
+  const skipBtn = document.getElementById("rootsSkip");
+  skipBtn.style.visibility = (step === "name" || step === "parents") ? "visible" : "hidden";
+  const nextBtn = document.getElementById("rootsNext");
+  nextBtn.textContent = step === "theme" ? t("roots_make") : t("roots_next");
+  let html = "";
+  if(step === "name"){
+    html = `<p class="roots-q">${t("roots_q_name")}</p><p class="roots-sub">${t("roots_q_name_sub")}</p><input class="roots-input" id="rootName" type="text" maxlength="30" placeholder="${t("roots_name_ph")}" value="${roots.name || ""}">`;
+  } else if(step === "parents"){
+    html = `<p class="roots-q">${t("roots_q_parents")}</p><p class="roots-sub">${t("roots_q_parents_sub")}</p><label class="district-label" style="text-align:left;margin-top:0">${t("roots_mom")}</label><select id="rootMom" class="district-select"></select><label class="district-label" style="text-align:left;margin-top:0">${t("roots_dad")}</label><select id="rootDad" class="district-select"></select>`;
+  } else if(step === "theme"){
+    html = `<p class="roots-q">${t("roots_q_theme")}</p><div class="swatches">${Object.entries(ROOT_THEMES).map(([k, c])=>`<button type="button" class="swatch${roots.theme===k ? " on" : ""}" data-theme="${k}"><i style="background:${c}"></i>${t("roots_theme_"+k)}</button>`).join("")}</div>`;
+  } else {
+    html = `<p class="roots-q">${t("roots_q_"+step)}</p><select id="rootSel" class="district-select"></select>`;
+  }
+  body.innerHTML = html;
+  if(step === "name"){
+    document.getElementById("rootName").addEventListener("input", e=>{ roots.name = e.target.value.trim(); });
+  } else if(step === "parents"){
+    districtOptions(document.getElementById("rootMom"), roots.mom);
+    districtOptions(document.getElementById("rootDad"), roots.dad);
+    document.getElementById("rootMom").addEventListener("change", e=>{ roots.mom = e.target.value; });
+    document.getElementById("rootDad").addEventListener("change", e=>{ roots.dad = e.target.value; });
+  } else if(step === "theme"){
+    body.querySelectorAll(".swatch").forEach(b=>b.addEventListener("click", ()=>{ roots.theme = b.dataset.theme; renderRootsStep(); }));
+  } else {
+    const sel = document.getElementById("rootSel");
+    districtOptions(sel, roots[step]);
+    sel.addEventListener("change", e=>{ roots[step] = e.target.value; });
+  }
+  validateRootsStep();
+}
+function validateRootsStep(){
+  const step = ROOT_STEPS[rootStep];
+  const nextBtn = document.getElementById("rootsNext");
+  if(step === "name" || step === "parents" || step === "theme"){ nextBtn.disabled = false; return; }
+  nextBtn.disabled = !roots[step];
+}
+document.getElementById("rootsStep").addEventListener("change", validateRootsStep);
+document.getElementById("rootsBack").onclick = ()=>{ if(rootStep > 0){ rootStep--; renderRootsStep(); } };
+document.getElementById("rootsSkip").onclick = ()=>{
+  const step = ROOT_STEPS[rootStep];
+  if(step === "parents"){ roots.mom = ""; roots.dad = ""; }
+  if(step === "name"){ roots.name = ""; }
+  rootStep++; renderRootsStep();
+};
+document.getElementById("rootsNext").onclick = ()=>{
+  const step = ROOT_STEPS[rootStep];
+  if(step === "theme"){ saveRoots(); showRootsPoster(); return; }
+  if(step !== "name" && step !== "parents" && !roots[step]) return;
+  saveRoots();
+  rootStep++; renderRootsStep();
+};
+function journeyPoints(){
+  const order = [roots.birth, roots.grew, roots.study, roots.now];
+  return order.map((en, i)=>({en, i: i+1, xy: rootXY(en)})).filter(p=>p.xy);
+}
+function renderPosterMap(){
+  const el = document.getElementById("posterMap");
+  const theme = ROOT_THEMES[roots.theme] || ROOT_THEMES.green;
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", "0 0 460 560");
+  DISTRICTS.forEach(d=>{
+    const p = document.createElementNS(NS, "path");
+    p.setAttribute("d", d.d); p.setAttribute("fill", "#dcefe2"); p.setAttribute("stroke", "#fff"); p.setAttribute("stroke-width", "0.8");
+    svg.appendChild(p);
+  });
+  const pts = journeyPoints();
+  if(pts.length > 1){
+    const pl = document.createElementNS(NS, "polyline");
+    pl.setAttribute("points", pts.map(p=>`${p.xy.x},${p.xy.y}`).join(" "));
+    pl.setAttribute("fill", "none"); pl.setAttribute("stroke", theme); pl.setAttribute("stroke-width", "3.5");
+    pl.setAttribute("stroke-linecap", "round"); pl.setAttribute("stroke-linejoin", "round"); pl.setAttribute("stroke-dasharray", "1 7");
+    svg.appendChild(pl);
+  }
+  [roots.mom, roots.dad].filter(Boolean).forEach(en=>{
+    const xy = rootXY(en); if(!xy) return;
+    const c = document.createElementNS(NS, "circle");
+    c.setAttribute("cx", xy.x); c.setAttribute("cy", xy.y); c.setAttribute("r", "7");
+    c.setAttribute("fill", "#fff"); c.setAttribute("stroke", theme); c.setAttribute("stroke-width", "2.5");
+    svg.appendChild(c);
+  });
+  pts.forEach(p=>{
+    const c = document.createElementNS(NS, "circle");
+    c.setAttribute("cx", p.xy.x); c.setAttribute("cy", p.xy.y); c.setAttribute("r", "13");
+    c.setAttribute("fill", theme); c.setAttribute("stroke", "#fff"); c.setAttribute("stroke-width", "2.5");
+    svg.appendChild(c);
+    const n = document.createElementNS(NS, "text");
+    n.setAttribute("x", p.xy.x); n.setAttribute("y", p.xy.y + 4.5); n.setAttribute("text-anchor", "middle");
+    n.setAttribute("fill", "#fff"); n.setAttribute("font-size", "13"); n.setAttribute("font-weight", "800");
+    n.textContent = p.i; svg.appendChild(n);
+  });
+  if(roots.miss){
+    const xy = rootXY(roots.miss);
+    if(xy){
+      const h = document.createElementNS(NS, "text");
+      h.setAttribute("x", xy.x); h.setAttribute("y", xy.y - 20); h.setAttribute("text-anchor", "middle"); h.setAttribute("font-size", "26");
+      h.textContent = "❤️"; svg.appendChild(h);
+    }
+  }
+  el.innerHTML = ""; el.appendChild(svg);
+}
+function showRootsPoster(){
+  document.getElementById("rootsWizard").classList.add("hidden");
+  document.getElementById("rootsPoster").classList.remove("hidden");
+  document.getElementById("posterTitle").textContent = rootsTitle();
+  document.getElementById("posterLines").innerHTML = rootsStoryLines().map(l=>`<div>${l}</div>`).join("");
+  renderPosterMap();
+}
+document.getElementById("rootsAgain").onclick = ()=>{
+  roots = {name:"", birth:"", grew:"", mom:"", dad:"", study:"", now:"", miss:"", theme:"green"};
+  try{ localStorage.removeItem("nb_roots"); }catch(e){}
+  rootStep = 0;
+  document.getElementById("rootsPoster").classList.add("hidden");
+  document.getElementById("rootsWizard").classList.remove("hidden");
+  renderRootsStep();
+};
+document.getElementById("rootsCopy").onclick = async ()=>{
+  const text = rootsTitle() + "\n" + rootsStoryText() + "\nnewbangladesh.bond";
+  try{ await navigator.clipboard.writeText(text); }catch(e){}
+  const m = document.getElementById("rootsMsg");
+  m.textContent = t("roots_copied"); m.style.color = "#14532d"; m.style.fontWeight = "700";
+};
+document.getElementById("rootsDownload").onclick = ()=>{
+  const msg = document.getElementById("rootsMsg");
+  const c = document.createElement("canvas"); c.width = 1080; c.height = 1350;
+  const x = c.getContext("2d");
+  if(!x || typeof Path2D === "undefined"){ msg.textContent = t("roots_png_fail"); return; }
+  const FONT = "'Noto Sans Bengali','Hind Siliguri',Arial,sans-serif";
+  const theme = ROOT_THEMES[roots.theme] || ROOT_THEMES.green;
+  const g = x.createLinearGradient(0, 0, 0, 1350);
+  g.addColorStop(0, "#ffffff"); g.addColorStop(1, "#e6f5ec");
+  x.fillStyle = g; x.fillRect(0, 0, 1080, 1350);
+  x.fillStyle = "#e11d2e"; x.beginPath(); x.arc(960, 60, 110, 0, Math.PI*2); x.fill();
+  x.fillStyle = "#0f3d2e"; x.font = "800 58px " + FONT; x.textAlign = "center";
+  x.fillText(rootsTitle(), 540, 130);
+  x.fillStyle = "#5b6f66"; x.font = "600 30px " + FONT;
+  x.fillText(t("roots_bond"), 540, 178);
+  // map: districts via Path2D
+  const S = 1.32, OX = (1080 - 460*S)/2, OY = 215;
+  x.save(); x.translate(OX, OY); x.scale(S, S);
+  DISTRICTS.forEach(d=>{
+    try{
+      const p = new Path2D(d.d);
+      x.fillStyle = "#dcefe2"; x.fill(p);
+      x.strokeStyle = "#ffffff"; x.lineWidth = 1; x.stroke(p);
+    }catch(e){}
+  });
+  const pts = journeyPoints();
+  if(pts.length > 1){
+    x.beginPath();
+    pts.forEach((p, i)=>{ if(i === 0) x.moveTo(p.xy.x, p.xy.y); else x.lineTo(p.xy.x, p.xy.y); });
+    x.strokeStyle = theme; x.lineWidth = 5; x.setLineDash([1, 9]); x.lineCap = "round"; x.stroke(); x.setLineDash([]);
+  }
+  [roots.mom, roots.dad].filter(Boolean).forEach(en=>{
+    const xy = rootXY(en); if(!xy) return;
+    x.beginPath(); x.arc(xy.x, xy.y, 8, 0, Math.PI*2);
+    x.fillStyle = "#fff"; x.fill(); x.strokeStyle = theme; x.lineWidth = 3; x.stroke();
+  });
+  pts.forEach(p=>{
+    x.beginPath(); x.arc(p.xy.x, p.xy.y, 15, 0, Math.PI*2);
+    x.fillStyle = theme; x.fill(); x.strokeStyle = "#fff"; x.lineWidth = 3; x.stroke();
+    x.fillStyle = "#fff"; x.font = "800 17px " + FONT; x.textAlign = "center"; x.textBaseline = "middle";
+    x.fillText(String(p.i), p.xy.x, p.xy.y + 1);
+  });
+  if(roots.miss){
+    const xy = rootXY(roots.miss);
+    if(xy){ x.font = "44px " + FONT; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText("❤️", xy.x, xy.y - 26); }
+  }
+  x.restore();
+  // story lines
+  x.fillStyle = "#10231b"; x.font = "600 34px " + FONT; x.textAlign = "left"; x.textBaseline = "alphabetic";
+  const lines = [];
+  rootsStoryText().split(/(?<=[।.])\s*/).forEach(s=>{ if(!s.trim()) return;
+    const words = s.trim().split(" "); let ln = "";
+    words.forEach(w=>{ if(x.measureText(ln + " " + w).width > 920){ lines.push(ln.trim()); ln = w; } else ln += " " + w; });
+    if(ln.trim()) lines.push(ln.trim());
+  });
+  let y = 1010;
+  lines.slice(0, 5).forEach(l=>{ x.fillText(l, 80, y); y += 52; });
+  x.fillStyle = "rgba(0,0,0,.28)"; x.fillRect(0, 1230, 1080, 120);
+  x.fillStyle = "#ffffff"; x.font = "800 32px " + FONT; x.textAlign = "center";
+  x.fillText("NEW BANGLADESH  •  newbangladesh.bond", 540, 1272);
+  x.fillStyle = "#86efac"; x.font = "600 26px " + FONT;
+  x.fillText(t("roots_bond"), 540, 1316);
+  const a = document.createElement("a"); a.download = "shikorer-golpo.png"; a.href = c.toDataURL("image/png"); a.click();
+};
 function showView(v){
   const home = document.getElementById("view-home");
   const battles = document.getElementById("view-battles");
-  const isBattles = v === "battles";
-  home.classList.toggle("hidden", isBattles);
-  battles.classList.toggle("hidden", !isBattles);
-  document.getElementById("navHomeLink").classList.toggle("active", !isBattles);
-  document.getElementById("navBattlesLink").classList.toggle("active", isBattles);
-  if(isBattles){
+  const rootsV = document.getElementById("view-roots");
+  home.classList.toggle("hidden", v !== "home");
+  battles.classList.toggle("hidden", v !== "battles");
+  rootsV.classList.toggle("hidden", v !== "roots");
+  document.getElementById("navHomeLink").classList.toggle("active", v === "home");
+  document.getElementById("navBattlesLink").classList.toggle("active", v === "battles");
+  document.getElementById("navRootsLink").classList.toggle("active", v === "roots");
+  if(v === "battles"){
     loadBattles().then(()=>{ renderBattles(); fetchBattleCounts(); });
+    window.scrollTo({top:0});
+  }
+  if(v === "roots"){
+    if(rootsDone()) showRootsPoster(); else { document.getElementById("rootsPoster").classList.add("hidden"); document.getElementById("rootsWizard").classList.remove("hidden"); renderRootsStep(); }
     window.scrollTo({top:0});
   }
 }
 window.addEventListener("hashchange", ()=>{
   if(location.hash === "#battles") showView("battles");
+  else if(location.hash === "#roots") showView("roots");
   else if(location.hash === "#home" || location.hash === "" || location.hash.startsWith("#vote") || location.hash.startsWith("#map") || location.hash.startsWith("#how")) showView("home");
 });
 
@@ -1039,7 +1405,9 @@ window.addEventListener("hashchange", ()=>{
   await loadBattles();
   renderLatestBattle();
   fetchBattleCounts();
-  if(location.hash === "#battles") showView("battles"); else showView("home");
+  if(location.hash === "#battles") showView("battles");
+  else if(location.hash === "#roots") showView("roots");
+  else showView("home");
   const myVote = await fetchMyVote();
   if(myVote && (!picked || picked.key !== myVote.key)){
     picked = myVote;
@@ -1056,6 +1424,7 @@ window.addEventListener("hashchange", ()=>{
 <nav class="bottomnav" aria-label="Main navigation">
   <a href="#home" id="navHomeLink"><span class="bn-ic">🏠</span><span data-i18n="nav_home">হোম</span></a>
   <a href="#battles" id="navBattlesLink"><span class="bn-ic">⚔️</span><span data-i18n="nav_battle">ব্যাটল</span></a>
+  <a href="#roots" id="navRootsLink"><span class="bn-ic">🌱</span><span data-i18n="nav_roots">শিকড়</span></a>
 </nav>
 </body>
 </html>
