@@ -28,7 +28,7 @@
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;font-family:"Noto Sans Bengali","Hind Siliguri",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#fbfefc;color:var(--ink);overflow-x:hidden}
+body{margin:0;font-family:"Noto Sans Bengali","Hind Siliguri",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#fbfefc;color:var(--ink);overflow-x:hidden;padding-bottom:96px}
 ::selection{background:var(--emerald);color:#fff}
 
 /* ---------- ambient background: flag colours, soft & premium ---------- */
@@ -206,6 +206,32 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
 .map-hr{border:0;border-top:1px solid var(--line);margin:20px 0}
 #mapMsg{font-size:14px;color:var(--muted);min-height:20px;margin:6px 0 0;text-align:center}
 #mapMsg.ok{color:#14532d;font-weight:700}
+/* ---------- battles ---------- */
+.battle-card{background:var(--glass);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.85);border-radius:22px;padding:24px;box-shadow:0 14px 34px rgba(15,61,46,.08);max-width:640px;margin:0 auto 18px;text-align:center}
+.battle-card h3{margin:10px 0 18px;font-size:22px;color:var(--forest)}
+.vs-row{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch}
+.vs-side{border:1.5px solid var(--line);border-radius:18px;background:rgba(255,255,255,.9);padding:16px 10px;font:inherit;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--ink)}
+.vs-side:hover{transform:translateY(-2px);border-color:var(--emerald);box-shadow:0 10px 22px rgba(22,163,74,.16)}
+.vs-side .vs-emoji{font-size:34px}
+.vs-side .vs-name{font-weight:800;font-size:17px}
+.vs-side .vs-pct{font-weight:800;font-size:15px;color:var(--forest)}
+.vs-side.picked{border-color:var(--red);background:#fff1f2;box-shadow:0 10px 22px rgba(225,29,46,.18)}
+.vs-side:disabled{cursor:default}
+.vs-side:disabled:hover{transform:none;box-shadow:none}
+.vs-mid{align-self:center;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px;color:#fff;background:linear-gradient(135deg,#f43f5e,var(--red));box-shadow:0 8px 18px rgba(225,29,46,.35);flex-shrink:0}
+.vs-bar{height:12px;border-radius:99px;overflow:hidden;background:linear-gradient(90deg,#f59e0b 0 50%,#0ea5e9 50% 100%);margin:16px 0 8px;position:relative}
+.vs-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--emerald),#4ade80);width:50%}
+.vs-meta{color:var(--muted);font-size:14px;font-weight:600}
+.vs-meta .you{margin-left:6px}
+.battles-list{display:grid;gap:6px}
+.seeall{display:inline-block;margin-top:8px}
+
+/* ---------- bottom nav: same glass pill as the top header ---------- */
+.bottomnav{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;z-index:60;display:flex;gap:4px;width:min(880px,calc(100% - 32px));padding:10px 12px;border-radius:999px;background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.8);box-shadow:0 12px 32px rgba(15,61,46,.10)}
+.bottomnav a{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:700;font-size:15px;transition:.25s}
+.bottomnav a .bn-ic{font-size:18px}
+.bottomnav a:hover{color:var(--forest)}
+.bottomnav a.active{background:#fff;color:var(--forest);box-shadow:0 2px 10px rgba(15,61,46,.10)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -225,6 +251,7 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
         <a href="#vote" data-i18n="nav_vote">আজকের প্রশ্ন</a>
         <a href="#how" data-i18n="nav_how">কীভাবে কাজ করে</a>
         <a href="#map" data-i18n="nav_map">জেলা ম্যাপ</a>
+        <a href="#battles" data-i18n="nav_battle">ব্যাটল</a>
       </nav>
       <div class="lang" role="group" aria-label="Language">
         <button type="button" id="langBn" class="active">বাং</button>
@@ -233,6 +260,7 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
     </header>
   </div>
 
+  <div id="view-home">
   <div class="hero">
     <!-- flat illustration: red sun, green hills, river, palms -->
     <svg class="scene" viewBox="0 0 920 260" fill="none" aria-hidden="true">
@@ -302,6 +330,13 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
     </main>
   </div>
 
+  <section id="latestBattleSec">
+    <div class="eyebrow" data-i18n="latest_battle_eyebrow">সর্বশেষ ব্যাটল</div>
+    <h2 data-i18n="latest_battle_h">আজকের লড়াই</h2>
+    <div id="latestBattle" style="margin-top:30px"></div>
+    <a class="btn primary seeall" href="#battles" data-i18n="see_all_battles">সব ব্যাটল দেখো →</a>
+  </section>
+
   <section id="map">
     <div class="eyebrow" data-i18n="map_eyebrow">জেলা ম্যাপ</div>
     <h2 data-i18n="map_h">কোন জেলা কী ভাবছে?</h2>
@@ -340,6 +375,18 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
       <span class="pill"><i>✓</i><span data-i18n="pill3">সম্পূর্ণ ফ্রি</span></span>
     </div>
   </section>
+
+  </div><!-- /view-home -->
+
+  <div id="view-battles" class="hidden">
+    <section>
+      <div class="eyebrow" data-i18n="all_battles_eyebrow">ব্যাটল</div>
+      <h2 data-i18n="all_battles_h">সব ব্যাটল, এক জায়গায়।</h2>
+      <p class="lede" data-i18n="all_battles_sub">দুই পক্ষ, একটাই প্রশ্ন — তুমি কোন দলে? ভোট দাও, দেখো বাংলাদেশ কোন দিকে।</p>
+      <div class="battles-list" id="battlesList" style="margin-top:32px"></div>
+      <p id="battlesMsg" style="color:var(--muted)"></p>
+    </section>
+  </div><!-- /view-battles -->
 
   <footer>
     <b>নিউ বাংলাদেশ</b> · <span data-i18n="foot_tag">বাংলাদেশ উত্তর দিচ্ছে।</span><br>
@@ -381,6 +428,13 @@ const I18N = {
     guess_line:"তোমার গেস {g}% · আসল {a}%",
     guess_perfect:"একদম নিখুঁত!", guess_close:"খুব কাছাকাছি!", guess_ok:"মোটামুটি কাছাকাছি", guess_miss:"এবার মিললো না — আবার চেষ্টা করো!",
     guess_score:"গেস স্কোর", guess_card:"গেস {g}% · আসল {a}% · স্কোর {s}/১০০",
+    nav_battle:"ব্যাটল",
+    latest_battle_eyebrow:"সর্বশেষ ব্যাটল", latest_battle_h:"আজকের লড়াই",
+    all_battles_eyebrow:"ব্যাটল", all_battles_h:"সব ব্যাটল, এক জায়গায়।",
+    all_battles_sub:"দুই পক্ষ, একটাই প্রশ্ন — তুমি কোন দলে? ভোট দাও, দেখো বাংলাদেশ কোন দিকে।",
+    see_all_battles:"সব ব্যাটল দেখো →", battle_votes:"টি ভোট", battle_live:"লাইভ",
+    battle_you:"তোমার পছন্দ", battle_no_load:"ব্যাটল লোড করা যায়নি — নেট চেক করে আবার চেষ্টা করো।",
+    battle_retry:"আবার চেষ্টা করো",
     streak_none:"এখনো স্ট্রিক শুরু হয়নি — আজই ভোট দাও!", streak_1:"১ দিনের স্ট্রিক — কাল আবার এসো!",
     streak_n:"{n} দিনের স্ট্রিক", streak_keep:"কাল আবার ভোট দিলেই স্ট্রিক বাড়বে!",
     streak_3:"৩ দিন! তুমি এখন নিয়মিত!", streak_7:"৭ দিন! এক সপ্তাহ ধরে রোজ আসছো!",
@@ -424,6 +478,13 @@ const I18N = {
     guess_line:"Your guess {g}% · Actual {a}%",
     guess_perfect:"Spot on!", guess_close:"So close!", guess_ok:"Pretty close", guess_miss:"Not this time — try again tomorrow!",
     guess_score:"Guess score", guess_card:"Guess {g}% · Actual {a}% · Score {s}/100",
+    nav_battle:"Battles",
+    latest_battle_eyebrow:"LATEST BATTLE", latest_battle_h:"Today's face-off",
+    all_battles_eyebrow:"BATTLES", all_battles_h:"All battles, in one place.",
+    all_battles_sub:"Two sides, one question — which side are you on? Vote and see where Bangladesh stands.",
+    see_all_battles:"See all battles →", battle_votes:"votes", battle_live:"Live",
+    battle_you:"Your pick", battle_no_load:"Battles couldn't load — check your connection and try again.",
+    battle_retry:"Try again",
     streak_none:"No streak yet — vote today to start!", streak_1:"1-day streak — come back tomorrow!",
     streak_n:"{n}-day streak", streak_keep:"Vote again tomorrow to keep it going!",
     streak_3:"3 days! You're a regular now!", streak_7:"7 days! A whole week of showing up!",
@@ -768,6 +829,7 @@ function applyLang(){
   fillDistrictSelect(mapDistrictSel, true);
   colorMap(); renderDistrictDetail();
   tickCountdown();
+  renderBattles(); renderLatestBattle();
   render();
 }
 document.getElementById("langBn").onclick=()=>{ lang="bn"; applyLang(); };
@@ -872,12 +934,111 @@ document.getElementById("downloadBtn").onclick=()=>{
   x.textAlign="left";
   const a=document.createElement("a"); a.download="new-bangladesh-card.png"; a.href=c.toDataURL("image/png"); a.click();
 };
+const BATTLES_FALLBACK = {"battles": [{"a": {"base": 45210, "bn": "ঢাকা", "emoji": "🏙️", "en": "Dhaka", "key": "Dhaka"}, "b": {"base": 37180, "bn": "চট্টগ্রাম", "emoji": "🌊", "en": "Chattogram", "key": "Chattogram"}, "id": "dhaka-chattogram", "num": 1, "title": {"bn": "কোন শহর সেরা?", "en": "Which city is the best?"}}, {"a": {"base": 58320, "bn": "ফুচকা", "emoji": "🍢", "en": "Fuchka", "key": "Fuchka"}, "b": {"base": 29410, "bn": "বার্গার", "emoji": "🍔", "en": "Burger", "key": "Burger"}, "id": "fuchka-burger", "num": 2, "title": {"bn": "ফুচকা নাকি বার্গার?", "en": "Fuchka or Burger?"}}, {"a": {"base": 51200, "bn": "বিরিয়ানি", "emoji": "🍛", "en": "Biryani", "key": "Biryani"}, "b": {"base": 33800, "bn": "খিচুড়ি", "emoji": "🍲", "en": "Khichuri", "key": "Khichuri"}, "id": "biryani-khichuri", "num": 3, "title": {"bn": "বিরিয়ানি নাকি খিচুড়ি?", "en": "Biryani or Khichuri?"}}, {"a": {"base": 68900, "bn": "ক্রিকেট", "emoji": "🏏", "en": "Cricket", "key": "Cricket"}, "b": {"base": 41300, "bn": "ফুটবল", "emoji": "⚽", "en": "Football", "key": "Football"}, "id": "cricket-football", "num": 4, "title": {"bn": "ক্রিকেট নাকি ফুটবল?", "en": "Cricket or Football?"}}]};
+// ---------- battles: separate page, loaded via AJAX (battles.json) ----------
+let BATTLES = null;
+let battleLive = {}; // id -> {a:n, b:n}
+function battlePickKey(id){ return "nb_battle_" + id; }
+function myBattlePick(id){ try{ return localStorage.getItem(battlePickKey(id)); }catch(e){ return null; } }
+function sideLabel(s){ return lang === "bn" ? s.bn : s.en; }
+async function loadBattles(){
+  if(BATTLES) return BATTLES;
+  try{
+    const res = await fetch("battles.json", {cache:"no-store"});
+    if(!res.ok) throw new Error("http " + res.status);
+    const j = await res.json();
+    BATTLES = j.battles || [];
+  }catch(e){ BATTLES = BATTLES_FALLBACK.battles.slice(); }
+  return BATTLES;
+}
+async function fetchBattleCounts(){
+  if(!sb || !BATTLES) return;
+  await Promise.all(BATTLES.map(async b=>{
+    try{
+      const {data, error} = await sb.from("votes").select("option_label").eq("experiment_id", "battle-" + b.id).limit(10000);
+      if(error || !data) return;
+      const c = {a:0, b:0};
+      data.forEach(r=>{ if(r.option_label === b.a.key) c.a++; else if(r.option_label === b.b.key) c.b++; });
+      battleLive[b.id] = c;
+    }catch(e){}
+  }));
+  renderBattles(); renderLatestBattle();
+}
+function battleCounts(b){
+  const live = battleLive[b.id] || {a:0, b:0};
+  const ca = b.a.base + live.a, cb = b.b.base + live.b;
+  const total = ca + cb;
+  return {ca, cb, total, pctA: total ? Math.round(ca/total*100) : 50};
+}
+function battleCardHtml(b){
+  const c = battleCounts(b);
+  const pick = myBattlePick(b.id);
+  const voted = !!pick;
+  const side = (s, key, pct, count)=>{
+    const isPick = pick === key;
+    return `<button type="button" class="vs-side${isPick ? " picked" : ""}" data-battle="${b.id}" data-side="${key}" ${voted ? "disabled" : ""}><span class="vs-emoji">${s.emoji}</span><span class="vs-name">${sideLabel(s)}</span>${voted ? `<span class="vs-pct">${fmt(pct)}%</span>` : ""}${isPick ? ` <span class="you">${t("battle_you")}</span>` : ""}</button>`;
+  };
+  return `<article class="battle-card"><div class="eyebrow">⚔️ BATTLE #${fmt(b.num)}</div><h3>${lang === "bn" ? b.title.bn : b.title.en}</h3><div class="vs-row">${side(b.a, "a", c.pctA, c.ca)}<div class="vs-mid">VS</div>${side(b.b, "b", 100 - c.pctA, c.cb)}</div><div class="vs-bar"><i style="width:${voted ? c.pctA : 50}%"></i></div><div class="vs-meta">${voted ? fmt(c.total) + " " + t("battle_votes") + " · " + t("battle_live") : t("battle_live")}</div></article>`;
+}
+function renderBattles(){
+  const el = document.getElementById("battlesList");
+  if(!el || !BATTLES) return;
+  el.innerHTML = BATTLES.map(battleCardHtml).join("");
+}
+function renderLatestBattle(){
+  const el = document.getElementById("latestBattle");
+  if(!el || !BATTLES || !BATTLES.length) return;
+  el.innerHTML = battleCardHtml(BATTLES[0]);
+}
+async function voteBattle(id, sideKey){
+  const b = (BATTLES || []).find(x=>x.id === id);
+  if(!b || myBattlePick(id)) return;
+  const side = sideKey === "a" ? b.a : b.b;
+  try{ localStorage.setItem(battlePickKey(id), sideKey); }catch(e){}
+  renderBattles(); renderLatestBattle();
+  if(sb){
+    try{
+      await sb.from("votes").insert({experiment_id: "battle-" + id, option_label: side.key, voter_hash: getVoterId(), district: myDistrict || null});
+      await fetchBattleCounts();
+    }catch(e){ /* offline: local result already shown */ }
+  }
+}
+document.getElementById("battlesList").addEventListener("click", e=>{
+  const btn = e.target.closest(".vs-side");
+  if(btn) voteBattle(btn.dataset.battle, btn.dataset.side);
+});
+document.getElementById("latestBattle").addEventListener("click", e=>{
+  const btn = e.target.closest(".vs-side");
+  if(btn) voteBattle(btn.dataset.battle, btn.dataset.side);
+});
+function showView(v){
+  const home = document.getElementById("view-home");
+  const battles = document.getElementById("view-battles");
+  const isBattles = v === "battles";
+  home.classList.toggle("hidden", isBattles);
+  battles.classList.toggle("hidden", !isBattles);
+  document.getElementById("navHomeLink").classList.toggle("active", !isBattles);
+  document.getElementById("navBattlesLink").classList.toggle("active", isBattles);
+  if(isBattles){
+    loadBattles().then(()=>{ renderBattles(); fetchBattleCounts(); });
+    window.scrollTo({top:0});
+  }
+}
+window.addEventListener("hashchange", ()=>{
+  if(location.hash === "#battles") showView("battles");
+  else if(location.hash === "#home" || location.hash === "" || location.hash.startsWith("#vote") || location.hash.startsWith("#map") || location.hash.startsWith("#how")) showView("home");
+});
+
 (async()=>{
   if(picked && !streak.last) markVoteToday();
   applyLang();
   tickCountdown();
   await fetchLiveCounts();
   await fetchDistrictVotes();
+  await loadBattles();
+  renderLatestBattle();
+  fetchBattleCounts();
+  if(location.hash === "#battles") showView("battles"); else showView("home");
   const myVote = await fetchMyVote();
   if(myVote && (!picked || picked.key !== myVote.key)){
     picked = myVote;
@@ -891,5 +1052,9 @@ document.getElementById("downloadBtn").onclick=()=>{
   render();
 })();
 </script>
+<nav class="bottomnav" aria-label="Main navigation">
+  <a href="#home" id="navHomeLink"><span class="bn-ic">🏠</span><span data-i18n="nav_home">হোম</span></a>
+  <a href="#battles" id="navBattlesLink"><span class="bn-ic">⚔️</span><span data-i18n="nav_battle">ব্যাটল</span></a>
+</nav>
 </body>
 </html>
