@@ -59,7 +59,8 @@ nav a.active{background:#fff;color:var(--forest);box-shadow:0 2px 10px rgba(15,6
 
 /* ---------- hero ---------- */
 .hero{text-align:center;padding:64px 0 8px;position:relative}
-.scene{position:absolute;left:50%;transform:translateX(-50%);top:-30px;width:min(920px,100%);z-index:-1;opacity:.9;pointer-events:none}
+.scene{position:absolute;left:50%;transform:translateX(-50%);top:8px;width:min(920px,100%);z-index:-1;opacity:.55;pointer-events:none}
+@media(max-width:640px){.scene{opacity:.35;top:20px}}
 .eyebrow{font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--forest2);font-weight:700}
 h1{font-size:clamp(40px,7vw,72px);line-height:1.12;margin:14px 0 16px;font-weight:800;color:var(--forest);letter-spacing:-.5px}
 h1 .red{color:var(--red);display:inline-block;animation:wordPop .8s .35s cubic-bezier(.2,.9,.3,1.4) both}
@@ -125,7 +126,9 @@ h1 .red{color:var(--red);display:inline-block;animation:wordPop .8s .35s cubic-b
 .sharecard p{margin:6px 0;color:#d1fae5;line-height:1.55;position:relative;z-index:1}
 .sharecard .big{font-size:20px;color:#fff;font-weight:800}
 @keyframes cardIn{from{transform:translateY(14px) scale(.97);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
-#copyMsg{text-align:center;color:var(--muted);font-size:14px;margin:2px 0 0;min-height:20px}
+#copyMsg{text-align:center;color:var(--muted);font-size:14px;margin:2px 0 0;min-height:20px;padding:0;border-radius:12px;transition:.3s}
+#copyMsg.show{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;font-weight:600;padding:10px 14px}
+#copyMsg.ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#14532d;font-weight:600;padding:10px 14px}
 .hidden{display:none}
 
 /* ---------- stats row ---------- */
@@ -183,8 +186,8 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
   <div class="hero">
     <!-- flat illustration: red sun, green hills, river, palms -->
     <svg class="scene" viewBox="0 0 920 260" fill="none" aria-hidden="true">
-      <circle cx="460" cy="86" r="52" fill="#e11d2e" opacity=".92"/>
-      <circle cx="460" cy="86" r="52" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="2"/>
+      <circle cx="760" cy="70" r="46" fill="#e11d2e" opacity=".85"/>
+      <circle cx="760" cy="70" r="46" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="2"/>
       <path d="M0 210 Q 160 130 330 190 T 660 185 T 920 200 V260 H0 Z" fill="#16a34a" opacity=".16"/>
       <path d="M0 230 Q 200 165 420 210 T 920 220 V260 H0 Z" fill="#0f3d2e" opacity=".12"/>
       <path d="M120 260 Q 300 200 460 235 T 800 240" stroke="#22c55e" stroke-width="10" stroke-linecap="round" opacity=".35"/>
@@ -347,6 +350,7 @@ const DB_LABEL = {business:"Start a business", abroad:"Go abroad", save:"Save / 
 const BASE_TOTAL = OPTIONS.reduce((s,o)=>s+o.base, 0);
 let live = {};
 let liveLoaded = false;
+try{ const c = localStorage.getItem("nb_live_cache"); if(c){ live = JSON.parse(c) || {}; liveLoaded = Object.keys(live).length > 0; } }catch(e){ live = {}; }
 
 function getVoterId(){
   let id = localStorage.getItem("nb_voter");
@@ -361,6 +365,7 @@ async function fetchLiveCounts(){
     live = {};
     (data||[]).forEach(r=>{ const o = OPTIONS.find(x=>DB_LABEL[x.key]===r.option_label); if(o) live[o.key] = (live[o.key]||0)+1; });
     liveLoaded = true;
+    try{ localStorage.setItem("nb_live_cache", JSON.stringify(live)); }catch(e){}
   }catch(e){ /* fall back to starting counts */ }
 }
 async function fetchMyVote(){
@@ -497,21 +502,33 @@ function applyLang(){
 document.getElementById("langBn").onclick=()=>{ lang="bn"; applyLang(); };
 document.getElementById("langEn").onclick=()=>{ lang="en"; applyLang(); };
 document.getElementById("againBtn").onclick=async()=>{
+  const msg = document.getElementById("copyMsg");
+  // respond instantly: a visible result is already on screen, so this device has voted
+  msg.textContent = t("already");
+  msg.className = "show";
+  msg.scrollIntoView({behavior:"smooth", block:"nearest"});
   const myVote = await fetchMyVote();
   if(myVote){
-    document.getElementById("copyMsg").textContent = t("already");
     picked = myVote;
     localStorage.setItem("nb247", JSON.stringify({key:picked.key}));
     render();
     return;
   }
-  localStorage.removeItem("nb247"); localStorage.removeItem("nb247_guess"); picked=null; guess=null; awaitingGuess=false; render();
+  if(!sb){
+    // offline: keep the message, nothing else to check
+    return;
+  }
+  // no vote on the server for this device (e.g. an old local pick): let them vote fresh
+  localStorage.removeItem("nb247"); localStorage.removeItem("nb247_guess"); picked=null; guess=null; awaitingGuess=false;
+  msg.textContent = ""; msg.className = "";
+  render();
 };
 document.getElementById("challengeBtn").onclick=async()=>{
   const url = location.origin + location.pathname + "?exp=247&pick=" + encodeURIComponent(DB_LABEL[picked.key]);
   const text = t("challenge_text").replace("{o}", label(picked)) + url;
   try{ await navigator.clipboard.writeText(text); }catch(e){}
-  document.getElementById("copyMsg").textContent = t("copied");
+  const m = document.getElementById("copyMsg");
+  m.textContent = t("copied"); m.className = "ok";
 };
 document.getElementById("downloadBtn").onclick=()=>{
   const my = counts().find(o=>o.key===picked.key);
