@@ -151,6 +151,13 @@ h1 .red{color:var(--red);display:inline-block;animation:wordPop .8s .35s cubic-b
 #copyMsg.ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#14532d;font-weight:600;padding:10px 14px}
 .hidden{display:none}
 
+.streakbar{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:22px auto 0;max-width:640px}
+.streakpill{display:flex;align-items:center;gap:10px;background:var(--glass);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.85);border-radius:999px;padding:11px 18px;box-shadow:0 10px 24px rgba(15,61,46,.08);font-weight:700;font-size:15px;color:var(--forest)}
+.streakpill .flame{font-size:19px;animation:flick 1.6s ease-in-out infinite alternate}
+@keyframes flick{from{transform:scale(1) rotate(-4deg)}to{transform:scale(1.15) rotate(4deg)}}
+.streakpill .cd{font-variant-numeric:tabular-nums;color:var(--red);font-weight:800}
+.streakpill small{color:var(--muted);font-weight:600}
+
 /* ---------- stats row ---------- */
 .stats{display:flex;justify-content:center;flex-wrap:wrap;gap:10px 28px;margin:26px auto 0;max-width:640px}
 .stat{text-align:center}
@@ -287,6 +294,11 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
         <div class="stat"><b id="statQNum">১</b><span data-i18n="stat_q">টি প্রশ্ন প্রতিদিন</span></div>
         <div class="stat"><b id="statSignupNum">০</b><span data-i18n="stat_signup">সাইন-আপ</span></div>
       </div>
+
+      <div class="streakbar">
+        <div class="streakpill"><span class="flame">🔥</span><span id="streakText">—</span></div>
+        <div class="streakpill"><span>⏰</span><span id="countdownText">—</span><span class="cd" id="countdownVal">—</span></div>
+      </div>
     </main>
   </div>
 
@@ -369,6 +381,10 @@ const I18N = {
     guess_line:"তোমার গেস {g}% · আসল {a}%",
     guess_perfect:"একদম নিখুঁত!", guess_close:"খুব কাছাকাছি!", guess_ok:"মোটামুটি কাছাকাছি", guess_miss:"এবার মিললো না — আবার চেষ্টা করো!",
     guess_score:"গেস স্কোর", guess_card:"গেস {g}% · আসল {a}% · স্কোর {s}/১০০",
+    streak_none:"এখনো স্ট্রিক শুরু হয়নি — আজই ভোট দাও!", streak_1:"১ দিনের স্ট্রিক — কাল আবার এসো!",
+    streak_n:"{n} দিনের স্ট্রিক", streak_keep:"কাল আবার ভোট দিলেই স্ট্রিক বাড়বে!",
+    streak_3:"৩ দিন! তুমি এখন নিয়মিত!", streak_7:"৭ দিন! এক সপ্তাহ ধরে রোজ আসছো!",
+    countdown_label:"পরের প্রশ্ন আসতে", countdown_tomorrow:"নতুন প্রশ্ন আসছে", 
     nav_map:"জেলা ম্যাপ",
     map_eyebrow:"জেলা ম্যাপ", map_h:"কোন জেলা কী ভাবছে?",
     map_sub:"টেকনাফ থেকে তেঁতুলিয়া — প্রতিটি জেলার ভোট এখন ম্যাপে। জেলায় ট্যাপ করলেই দেখতে পাবে সেখানে কে এগিয়ে।",
@@ -408,6 +424,10 @@ const I18N = {
     guess_line:"Your guess {g}% · Actual {a}%",
     guess_perfect:"Spot on!", guess_close:"So close!", guess_ok:"Pretty close", guess_miss:"Not this time — try again tomorrow!",
     guess_score:"Guess score", guess_card:"Guess {g}% · Actual {a}% · Score {s}/100",
+    streak_none:"No streak yet — vote today to start!", streak_1:"1-day streak — come back tomorrow!",
+    streak_n:"{n}-day streak", streak_keep:"Vote again tomorrow to keep it going!",
+    streak_3:"3 days! You're a regular now!", streak_7:"7 days! A whole week of showing up!",
+    countdown_label:"Next question in", countdown_tomorrow:"New question coming", 
     nav_map:"District map",
     map_eyebrow:"DISTRICT MAP", map_h:"What does each district think?",
     map_sub:"From Teknaf to Tetulia — every district's vote is now on the map. Tap a district to see who is leading there.",
@@ -508,6 +528,50 @@ function totalVotes(){ return BASE_TOTAL + Object.values(live).reduce((s,n)=>s+n
 function label(o){ return lang === "bn" ? o.bn : o.en; }
 function typeName(o){ return lang === "bn" ? o.typeBn : o.typeEn; }
 
+// ---------- streak + countdown (Dhaka time, on-device only) ----------
+function dhakaParts(d){
+  const p = new Intl.DateTimeFormat("en-CA", {timeZone:"Asia/Dhaka", year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit", hourCycle:"h23"}).formatToParts(d || new Date());
+  const o = {}; p.forEach(x=>o[x.type]=x.value);
+  return {date: o.year + "-" + o.month + "-" + o.day, h:+o.hour, m:+o.minute, s:+o.second};
+}
+function dayDiff(a, b){ // a - b in whole days, YYYY-MM-DD strings
+  const pa = a.split("-").map(Number), pb = b.split("-").map(Number);
+  return Math.round((Date.UTC(pa[0],pa[1]-1,pa[2]) - Date.UTC(pb[0],pb[1]-1,pb[2])) / 86400000);
+}
+let streak = {count:0, last:null};
+try{ const s = JSON.parse(localStorage.getItem("nb_streak") || "null"); if(s && typeof s.count === "number") streak = s; }catch(e){}
+function saveStreak(){ try{ localStorage.setItem("nb_streak", JSON.stringify(streak)); }catch(e){} }
+function markVoteToday(){
+  const today = dhakaParts().date;
+  if(streak.last === today) return; // already counted today
+  if(streak.last && dayDiff(today, streak.last) === 1) streak.count += 1;
+  else streak.count = 1;
+  streak.last = today;
+  saveStreak();
+}
+function streakText(){
+  if(!streak.count) return t("streak_none");
+  if(streak.count === 1) return "🔥 " + t("streak_1");
+  if(streak.count >= 7) return "🔥 " + t("streak_n").replace("{n}", fmt(streak.count)) + " — " + t("streak_7");
+  if(streak.count >= 3) return "🔥 " + t("streak_n").replace("{n}", fmt(streak.count)) + " — " + t("streak_3");
+  return "🔥 " + t("streak_n").replace("{n}", fmt(streak.count)) + " — " + t("streak_keep");
+}
+function tickCountdown(){
+  const p = dhakaParts();
+  const secs = (23 - p.h) * 3600 + (59 - p.m) * 60 + (60 - p.s);
+  const hh = String(Math.floor(secs / 3600)).padStart(2, "0");
+  const mm = String(Math.floor(secs % 3600 / 60)).padStart(2, "0");
+  const ss = String(secs % 60).padStart(2, "0");
+  const val = lang === "bn" ? (hh + ":" + mm + ":" + ss).replace(/[0-9]/g, d=>"০১২৩৪৫৬৭৮৯"[+d]) : hh + ":" + mm + ":" + ss;
+  const cv = document.getElementById("countdownVal");
+  if(cv) cv.textContent = val;
+  const ct = document.getElementById("countdownText");
+  if(ct) ct.textContent = t("countdown_label");
+  const st = document.getElementById("streakText");
+  if(st) st.textContent = streakText();
+}
+setInterval(tickCountdown, 1000);
+
 let picked = null;
 try{ picked = localStorage.getItem("nb247") ? JSON.parse(localStorage.getItem("nb247")) : null; }catch(e){ picked = null; }
 if(picked && picked.key){ picked = OPTIONS.find(o=>o.key===picked.key) || null; }
@@ -549,6 +613,7 @@ async function vote(i){
   render();
 }
 async function submitVote(){
+  markVoteToday();
   guess = parseInt(guessSlider.value, 10);
   localStorage.setItem("nb247_guess", String(guess));
   awaitingGuess = false;
@@ -702,6 +767,7 @@ function applyLang(){
   fillDistrictSelect(guessDistrictSel, true);
   fillDistrictSelect(mapDistrictSel, true);
   colorMap(); renderDistrictDetail();
+  tickCountdown();
   render();
 }
 document.getElementById("langBn").onclick=()=>{ lang="bn"; applyLang(); };
@@ -808,6 +874,8 @@ document.getElementById("downloadBtn").onclick=()=>{
 };
 (async()=>{
   applyLang();
+  tickCountdown();
+  if(picked && !streak.last) markVoteToday();
   await fetchLiveCounts();
   await fetchDistrictVotes();
   const myVote = await fetchMyVote();
