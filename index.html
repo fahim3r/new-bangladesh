@@ -275,10 +275,32 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
 
 /* ---------- bottom nav: same glass pill as the top header ---------- */
 .bottomnav{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;z-index:60;display:flex;gap:4px;width:min(880px,calc(100% - 32px));padding:10px 12px;border-radius:999px;background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.8);box-shadow:0 12px 32px rgba(15,61,46,.10)}
-.bottomnav a{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:700;font-size:15px;transition:.25s}
+.bottomnav a{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 6px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:700;font-size:14px;transition:.25s;white-space:nowrap}
 .bottomnav a .bn-ic{font-size:18px}
 .bottomnav a:hover{color:var(--forest)}
 .bottomnav a.active{background:#fff;color:var(--forest);box-shadow:0 2px 10px rgba(15,61,46,.10)}
+
+/* ---------- community ---------- */
+.cq-token{max-width:640px;margin:22px auto 0;background:var(--glass);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.85);border-radius:22px;padding:20px 24px;box-shadow:0 14px 34px rgba(15,61,46,.08);text-align:center}
+.cq-token-big{font-size:26px;color:var(--forest)}
+.cq-token p{color:var(--muted);font-weight:600;margin:8px 0 0}
+.cq-form{max-width:640px;margin:18px auto 0;background:var(--glass);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.85);border-radius:22px;padding:24px;box-shadow:0 14px 34px rgba(15,61,46,.08)}
+.cq-form h3{margin:0 0 14px;color:var(--forest);font-size:20px}
+.cq-form textarea,.cq-form input{width:100%;box-sizing:border-box;padding:12px 16px;border-radius:14px;border:1.5px solid var(--line);background:rgba(255,255,255,.9);font:inherit;font-size:16px;color:var(--ink);outline:none;margin-bottom:10px}
+.cq-form textarea:focus,.cq-form input:focus{border-color:var(--emerald);box-shadow:0 0 0 3px rgba(22,163,74,.15)}
+.cq-form textarea{resize:vertical;min-height:56px}
+.cq-form .btn{width:100%}
+.cq-form.cq-locked textarea,.cq-form.cq-locked input{opacity:.55}
+#cqMsg{min-height:20px;margin:10px 0 0;text-align:center;font-weight:700}
+#cqMsg.show{color:#991b1b}
+#cqMsg.ok{color:var(--forest)}
+.cq-voteopts{display:grid;gap:10px;margin-top:14px}
+.cq-quality{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.cq-qbtn{border:1.5px solid var(--line);background:rgba(255,255,255,.9);font:inherit;font-weight:800;font-size:15px;padding:8px 16px;border-radius:999px;cursor:pointer;color:var(--ink)}
+.cq-qbtn.active{border-color:var(--emerald);background:#e6f5ec;color:var(--forest)}
+.cq-qbtn:disabled{cursor:default;opacity:.75}
+.cq-report{margin-left:auto;border:none;background:none;font:inherit;font-weight:700;font-size:14px;color:var(--muted);cursor:pointer}
+.cq-report:disabled{cursor:default;opacity:.7}
 
 /* ---------- archive ---------- */
 .arch-tools{max-width:640px;margin:22px auto 0}
@@ -394,6 +416,7 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
       <div class="streakbar">
         <div class="streakpill"><span class="flame">🔥</span><span id="streakText">—</span></div>
         <div class="streakpill"><span>⏰</span><span id="countdownText">—</span><span class="cd" id="countdownVal">—</span></div>
+        <div class="streakpill"><span id="tokenPill">🪙 ০ টোকেন</span></div>
       </div>
     </main>
   </div>
@@ -404,6 +427,13 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
     <div id="latestBattle" style="margin-top:30px"></div>
     <a class="btn primary seeall" href="#battles" data-i18n="see_all_battles">সব ব্যাটল দেখো →</a>
     <a class="btn ghost seeall" href="#archive" data-i18n="see_archive" style="margin-top:12px">আগের ভোটগুলো দেখো →</a>
+  </section>
+
+  <section id="topCommunitySec" class="hidden">
+    <div class="eyebrow">🏆 <span data-i18n="topcq_eyebrow">কমিউনিটি বিজয়ী</span></div>
+    <h2 id="topCqTitle">—</h2>
+    <div id="topCqCard" style="margin-top:30px"></div>
+    <a class="btn primary seeall" href="#community" data-i18n="see_community">কমিউনিটি দেখো →</a>
   </section>
 
   <section id="map">
@@ -507,6 +537,34 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
     </section>
   </div><!-- /view-archive -->
 
+  <div id="view-community" class="hidden">
+    <section>
+      <div class="eyebrow" data-i18n="community_eyebrow">কমিউনিটি</div>
+      <h2 data-i18n="community_h">তোমার প্রশ্ন, বাংলাদেশের উত্তর।</h2>
+      <p class="lede" data-i18n="community_sub">টানা ৩ দিন আসলেই ১টা Vote Token পাবে — সেই টোকেন দিয়ে তোমার নিজের প্রশ্ন কমিউনিটিতে দাও, আর বাংলাদেশ ভোট দেবে।</p>
+      <div class="cq-token">
+        <div><span class="cq-token-big">🪙 <b id="cqTokens">০</b></span><span id="cqTokenLabel"> টোকেন</span></div>
+        <p id="cqTokenHint">—</p>
+      </div>
+      <div class="cq-form" id="cqFormBox">
+        <h3 data-i18n="cq_publish_h">তোমার প্রশ্ন দাও</h3>
+        <textarea id="cqQuestion" rows="2" maxlength="200" placeholder="তোমার প্রশ্ন লেখো…"></textarea>
+        <input id="cqOpt0" maxlength="60" placeholder="উত্তর ১">
+        <input id="cqOpt1" maxlength="60" placeholder="উত্তর ২">
+        <input id="cqOpt2" maxlength="60" placeholder="উত্তর ৩ (ঐচ্ছিক)">
+        <input id="cqOpt3" maxlength="60" placeholder="উত্তর ৪ (ঐচ্ছিক)">
+        <button class="btn primary" id="cqPublish" type="button" data-i18n="cq_publish">প্রশ্ন প্রকাশ করো (১ টোকেন)</button>
+        <p id="cqMsg"></p>
+      </div>
+      <div class="arch-cats" id="cqSort" style="margin-top:28px">
+        <button type="button" class="arch-chip active" data-sort="new" data-i18n="cq_new">নতুন</button>
+        <button type="button" class="arch-chip" data-sort="top" data-i18n="cq_top">জনপ্রিয়</button>
+      </div>
+      <div id="cqList" style="margin-top:20px"></div>
+      <p id="cqEmpty" style="color:var(--muted);text-align:center"></p>
+    </section>
+  </div><!-- /view-community -->
+
   <footer>
     <b>নিউ বাংলাদেশ</b> · <span data-i18n="foot_tag">বাংলাদেশ উত্তর দিচ্ছে।</span><br>
     <span data-i18n="foot_live">লাইভ ভোটিং — তোমার ভোট সবার সাথে গোনা হবে।</span><br>
@@ -567,6 +625,27 @@ const I18N = {
     roots_theme_green:"সবুজ", roots_theme_red:"লাল", roots_theme_sky:"নীল", roots_theme_amber:"সোনালি",
     nav_battle:"ব্যাটল",
     nav_archive:"আর্কাইভ",
+    nav_community:"কমিউনিটি",
+    community_eyebrow:"কমিউনিটি", community_h:"তোমার প্রশ্ন, বাংলাদেশের উত্তর।",
+    community_sub:"টানা ৩ দিন আসলেই ১টা Vote Token পাবে — সেই টোকেন দিয়ে তোমার নিজের প্রশ্ন কমিউনিটিতে দাও, আর বাংলাদেশ ভোট দেবে।",
+    cq_tokens:"টোকেন",
+    cq_hint_have:"তোমার কাছে {n}টা টোকেন আছে — প্রশ্ন প্রকাশ করতে পারো!",
+    cq_hint_need:"আরো {n} দিন আসলেই ১টা টোকেন পাবে।",
+    cq_publish_h:"তোমার প্রশ্ন দাও",
+    cq_q_ph:"তোমার প্রশ্ন লেখো…", cq_opt_ph:"উত্তর {n}", cq_opt_ph_opt:"উত্তর {n} (ঐচ্ছিক)",
+    cq_publish:"প্রশ্ন প্রকাশ করো (১ টোকেন)",
+    cq_need_token:"প্রশ্ন প্রকাশ করতে ১টা টোকেন লাগবে — টানা ৩ দিন এসো!",
+    cq_need_q:"প্রশ্নটা লেখো।", cq_need_opts:"অন্তত ২টা উত্তর দাও।",
+    cq_bad:"এই প্রশ্নটি প্রকাশ করা যাবে না।",
+    cq_published:"তোমার প্রশ্ন প্রকাশ হয়ে গেছে! 🎉",
+    cq_fail:"প্রকাশ করা যায়নি — নেট চেক করে আবার চেষ্টা করো।",
+    cq_new:"নতুন", cq_top:"জনপ্রিয়",
+    cq_empty:"এখনো কোনো প্রশ্ন নেই — প্রথম প্রশ্নটা তুমিই দাও!",
+    cq_voted:"তুমি ভোট দিয়েছো",
+    cq_report:"রিপোর্ট করো", cq_reported:"রিপোর্ট করা হয়েছে।",
+    cq_token_award:"🎉 অভিনন্দন! তুমি {n}টা Vote Token পেয়েছো!",
+    topcq_eyebrow:"কমিউনিটি বিজয়ী", topcq_title:"Top community Vote in {m}",
+    see_community:"কমিউনিটি দেখো →",
     see_archive:"আগের ভোটগুলো দেখো →",
     archive_eyebrow:"ভোট আর্কাইভ", archive_h:"বাংলাদেশ আগে কী বলেছে?",
     archive_sub:"আগের সব প্রশ্ন আর তার ফলাফল এখানেই থাকবে। খুঁজে দেখো — কোনো বিষয়ে বাংলাদেশ কী ভাবে।",
@@ -582,8 +661,8 @@ const I18N = {
     see_all_battles:"সব ব্যাটল দেখো →", battle_votes:"টি ভোট", battle_live:"লাইভ",
     battle_you:"তোমার পছন্দ", battle_no_load:"ব্যাটল লোড করা যায়নি — নেট চেক করে আবার চেষ্টা করো।",
     battle_retry:"আবার চেষ্টা করো",
-    streak_none:"এখনো স্ট্রিক শুরু হয়নি — আজই ভোট দাও!", streak_1:"১ দিনের স্ট্রিক — কাল আবার এসো!",
-    streak_n:"{n} দিনের স্ট্রিক", streak_keep:"কাল আবার ভোট দিলেই স্ট্রিক বাড়বে!",
+    streak_none:"এখনো স্ট্রিক শুরু হয়নি — আজই এসো!", streak_1:"১ দিনের স্ট্রিক — কাল আবার এসো!",
+    streak_n:"{n} দিনের স্ট্রিক", streak_keep:"কাল আবার আসলেই স্ট্রিক বাড়বে!",
     streak_3:"৩ দিন! তুমি এখন নিয়মিত!", streak_7:"৭ দিন! এক সপ্তাহ ধরে রোজ আসছো!",
     countdown_label:"পরের প্রশ্ন আসতে", countdown_tomorrow:"নতুন প্রশ্ন আসছে", 
     nav_map:"জেলা ম্যাপ",
@@ -645,6 +724,27 @@ const I18N = {
     roots_theme_green:"Green", roots_theme_red:"Red", roots_theme_sky:"Blue", roots_theme_amber:"Golden",
     nav_battle:"Battles",
     nav_archive:"Archive",
+    nav_community:"Community",
+    community_eyebrow:"COMMUNITY", community_h:"Your question, Bangladesh's answer.",
+    community_sub:"Visit 3 days in a row to earn 1 Vote Token — spend it to publish your own question here, and Bangladesh will vote on it.",
+    cq_tokens:"tokens",
+    cq_hint_have:"You have {n} token(s) — you can publish a question!",
+    cq_hint_need:"Visit {n} more day(s) to earn 1 token.",
+    cq_publish_h:"Ask your question",
+    cq_q_ph:"Write your question…", cq_opt_ph:"Option {n}", cq_opt_ph_opt:"Option {n} (optional)",
+    cq_publish:"Publish question (1 token)",
+    cq_need_token:"You need 1 token to publish — visit 3 days in a row!",
+    cq_need_q:"Write your question first.", cq_need_opts:"Give at least 2 options.",
+    cq_bad:"This question can't be published.",
+    cq_published:"Your question is live! 🎉",
+    cq_fail:"Couldn't publish — check your connection and try again.",
+    cq_new:"Newest", cq_top:"Top",
+    cq_empty:"No questions yet — ask the first one!",
+    cq_voted:"You voted",
+    cq_report:"Report", cq_reported:"Reported.",
+    cq_token_award:"🎉 You earned {n} Vote Token(s)!",
+    topcq_eyebrow:"COMMUNITY WINNER", topcq_title:"Top community Vote in {m}",
+    see_community:"See the community →",
     see_archive:"See past votes →",
     archive_eyebrow:"VOTE ARCHIVE", archive_h:"What did Bangladesh say before?",
     archive_sub:"Every past question and its result lives here. Search any topic and see what Bangladesh thinks.",
@@ -660,8 +760,8 @@ const I18N = {
     see_all_battles:"See all battles →", battle_votes:"votes", battle_live:"Live",
     battle_you:"Your pick", battle_no_load:"Battles couldn't load — check your connection and try again.",
     battle_retry:"Try again",
-    streak_none:"No streak yet — vote today to start!", streak_1:"1-day streak — come back tomorrow!",
-    streak_n:"{n}-day streak", streak_keep:"Vote again tomorrow to keep it going!",
+    streak_none:"No streak yet — visit today to start!", streak_1:"1-day streak — come back tomorrow!",
+    streak_n:"{n}-day streak", streak_keep:"Come back tomorrow to keep it going!",
     streak_3:"3 days! You're a regular now!", streak_7:"7 days! A whole week of showing up!",
     countdown_label:"Next question in", countdown_tomorrow:"New question coming", 
     nav_map:"District map",
@@ -817,7 +917,7 @@ function dayDiff(a, b){ // a - b in whole days, YYYY-MM-DD strings
 let streak = {count:0, last:null};
 try{ const s = JSON.parse(localStorage.getItem("nb_streak") || "null"); if(s && typeof s.count === "number") streak = s; }catch(e){}
 function saveStreak(){ try{ localStorage.setItem("nb_streak", JSON.stringify(streak)); }catch(e){} }
-function markVoteToday(){
+function markVisitToday(){ // streak counts visits now, not votes
   const today = dhakaParts().date;
   if(streak.last === today) return; // already counted today
   if(streak.last && dayDiff(today, streak.last) === 1) streak.count += 1;
@@ -886,7 +986,6 @@ async function vote(i){
   render();
 }
 async function submitVote(){
-  markVoteToday();
   guess = parseInt(guessSlider.value, 10);
   localStorage.setItem(guessKey(EXPERIMENT_ID), String(guess));
   awaitingGuess = false;
@@ -1049,7 +1148,7 @@ function applyLang(){
   fillDistrictSelect(mapDistrictSel, true);
   colorMap(); renderDistrictDetail();
   tickCountdown();
-  renderBattles(); renderLatestBattle(); renderArchive();
+  renderBattles(); renderLatestBattle(); renderArchive(); renderCommunity(); renderWinner();
   if(!document.getElementById("view-roots").classList.contains("hidden")){
     if(rootsDone()) showRootsPoster(); else renderRootsStep();
   }
@@ -1351,6 +1450,233 @@ document.getElementById("archiveList").addEventListener("click", e=>{
   renderArchive();
 });
 
+// ---------- vote token + community ----------
+let tokens = 0, tokensAwarded = 0, tokenCelebrate = false;
+try{ tokens = parseInt(localStorage.getItem("nb_tokens") || "0", 10) || 0; }catch(e){}
+try{ tokensAwarded = parseInt(localStorage.getItem("nb_token_awarded") || "0", 10) || 0; }catch(e){}
+function saveTokens(){ try{ localStorage.setItem("nb_tokens", String(tokens)); localStorage.setItem("nb_token_awarded", String(tokensAwarded)); }catch(e){} }
+function awardTokens(){
+  const earned = Math.floor(streak.count / 3);
+  if(earned <= tokensAwarded) return 0;
+  const n = earned - tokensAwarded;
+  tokens += n; tokensAwarded = earned;
+  saveTokens();
+  return n;
+}
+function renderTokens(){
+  const el = document.getElementById("cqTokens");
+  if(el) el.textContent = fmt(tokens);
+  const lbl = document.getElementById("cqTokenLabel");
+  if(lbl) lbl.textContent = " " + t("cq_tokens");
+  const hint = document.getElementById("cqTokenHint");
+  if(hint){
+    if(tokens > 0) hint.textContent = t("cq_hint_have").replace("{n}", fmt(tokens));
+    else {
+      const rem = streak.count % 3;
+      const need = rem === 0 ? 3 : 3 - rem;
+      hint.textContent = t("cq_hint_need").replace("{n}", fmt(need));
+    }
+  }
+  const pill = document.getElementById("tokenPill");
+  if(pill) pill.textContent = tokenCelebrate ? t("cq_token_award").replace("{n}", fmt(tokens)) : "🪙 " + fmt(tokens) + " " + t("cq_tokens");
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+const cqExp = id => "cq-" + id;
+const CQ_BAD = ["http","www.",".com","fuck","shit","bitch","bastard","damn","চোদ","মাগি","খানকি","শালা","হারামি","বোকাচোদা","কুত্তা"];
+let COMMUNITY = null;
+let cqVotes = {}; // qid -> {opt:{text:n}, up, down, reports, myOpt, myQuality, myReported}
+let cqSort = "new";
+async function loadCommunity(){
+  if(!sb){ COMMUNITY = []; return COMMUNITY; }
+  try{
+    const {data, error} = await sb.from("community_questions").select("id, question, options, author_hash, created_at").order("created_at", {ascending:false}).limit(100);
+    if(error) throw error;
+    COMMUNITY = data || [];
+  }catch(e){ COMMUNITY = []; }
+  return COMMUNITY;
+}
+async function fetchCommunityVotes(){
+  if(!sb || !COMMUNITY || !COMMUNITY.length) return;
+  try{
+    const ids = [];
+    COMMUNITY.forEach(q=>{ ids.push(cqExp(q.id), cqExp(q.id)+"-quality", cqExp(q.id)+"-report"); });
+    const {data, error} = await sb.from("votes").select("experiment_id, option_label, voter_hash").in("experiment_id", ids).limit(10000);
+    if(error || !data) return;
+    const m = {};
+    const me = getVoterId();
+    data.forEach(r=>{
+      const isQ = r.experiment_id.endsWith("-quality");
+      const isR = r.experiment_id.endsWith("-report");
+      const base = isQ ? r.experiment_id.slice(0, -8) : isR ? r.experiment_id.slice(0, -7) : r.experiment_id;
+      const qid = base.slice(3);
+      const e = m[qid] || (m[qid] = {opt:{}, up:0, down:0, reports:0, myOpt:null, myQuality:null, myReported:false});
+      if(isQ){
+        if(r.option_label === "up") e.up++; else if(r.option_label === "down") e.down++;
+        if(r.voter_hash === me) e.myQuality = r.option_label;
+      } else if(isR){
+        e.reports++;
+        if(r.voter_hash === me) e.myReported = true;
+      } else {
+        e.opt[r.option_label] = (e.opt[r.option_label]||0)+1;
+        if(r.voter_hash === me) e.myOpt = r.option_label;
+      }
+    });
+    cqVotes = m;
+    renderCommunity(); renderWinner();
+  }catch(e){}
+}
+function cqVisible(q){
+  const v = cqVotes[q.id];
+  return !(v && v.reports >= 3);
+}
+function cqTotals(q){
+  const v = cqVotes[q.id] || {opt:{}, up:0, down:0};
+  const opts = (q.options || []).map(o=>({key:o.key, text:o.text, count: v.opt[o.text]||0}));
+  const total = opts.reduce((s,o)=>s+o.count, 0);
+  opts.forEach(o=>{ o.pct = total ? Math.round(o.count/total*100) : 0; });
+  opts.sort((a,b)=>b.count-a.count);
+  return {opts, total, up:v.up||0, down:v.down||0};
+}
+function cqCardHtml(q){
+  const v = cqVotes[q.id] || {};
+  const c = cqTotals(q);
+  const voted = !!v.myOpt;
+  const date = fmtArchDate((q.created_at || "").slice(0,10));
+  let inner = `<div class="eyebrow">💬 ${t("community_eyebrow")} · ${date}</div><h3>${escapeHtml(q.question)}</h3>`;
+  if(!voted){
+    inner += `<div class="cq-voteopts">` + (q.options || []).map(o=>`<button type="button" class="opt cq-opt" data-q="${q.id}" data-opt="${escapeHtml(o.text)}"><span class="dot"></span><span>${escapeHtml(o.text)}</span></button>`).join("") + `</div>`;
+  } else {
+    inner += `<div class="arch-rows">` + c.opts.map((o,i)=>`<div class="arch-row"><span>${escapeHtml(o.text)}</span><b>${fmt(o.pct)}%</b></div><div class="bar"><i style="width:${o.pct}%;background:${ARCH_COLORS[i%4]}"></i></div><div class="arch-count-line">${fmt(o.count)} ${t("archive_votes")}</div>`).join("") + `</div><div class="vs-meta">${fmt(c.total)} ${t("archive_votes")} · ${t("cq_voted")}</div>`;
+  }
+  inner += `<div class="cq-quality">
+    <button type="button" class="cq-qbtn${v.myQuality==="up"?" active":""}" data-q="${q.id}" data-quality="up" ${v.myQuality?"disabled":""}>👍 ${fmt(c.up)}</button>
+    <button type="button" class="cq-qbtn${v.myQuality==="down"?" active":""}" data-q="${q.id}" data-quality="down" ${v.myQuality?"disabled":""}>👎 ${fmt(c.down)}</button>
+    <button type="button" class="cq-report" data-q="${q.id}" ${v.myReported?"disabled":""}>${v.myReported ? t("cq_reported") : "🚩 " + t("cq_report")}</button>
+  </div>`;
+  return `<article class="battle-card arch-card" data-cq="${q.id}">${inner}</article>`;
+}
+function renderCommunity(){
+  const list = document.getElementById("cqList");
+  const empty = document.getElementById("cqEmpty");
+  if(!list || !COMMUNITY) return;
+  renderTokens();
+  const qEl = document.getElementById("cqQuestion");
+  if(qEl) qEl.placeholder = t("cq_q_ph");
+  ["cqOpt0","cqOpt1","cqOpt2","cqOpt3"].forEach((id,i)=>{
+    const el = document.getElementById(id);
+    if(el) el.placeholder = (i<2 ? t("cq_opt_ph") : t("cq_opt_ph_opt")).replace("{n}", fmt(i+1));
+  });
+  const items = COMMUNITY.filter(cqVisible);
+  if(cqSort === "top") items.sort((a,b)=>cqTotals(b).up - cqTotals(a).up);
+  list.innerHTML = items.map(cqCardHtml).join("");
+  if(empty) empty.textContent = items.length ? "" : t("cq_empty");
+  const form = document.getElementById("cqFormBox");
+  if(form) form.classList.toggle("cq-locked", tokens < 1);
+  const pub = document.getElementById("cqPublish");
+  if(pub) pub.disabled = tokens < 1;
+}
+async function publishCommunity(){
+  const msg = document.getElementById("cqMsg");
+  const setMsg = (s, ok)=>{ if(msg){ msg.textContent = s; msg.className = ok ? "ok" : "show"; } };
+  if(tokens < 1){ setMsg(t("cq_need_token")); return; }
+  const qEl = document.getElementById("cqQuestion");
+  const qtext = (qEl.value || "").trim();
+  const texts = [0,1,2,3].map(i=>(document.getElementById("cqOpt"+i).value || "").trim());
+  if(qtext.length < 3){ setMsg(t("cq_need_q")); return; }
+  const filled = texts.filter(Boolean);
+  if(filled.length < 2){ setMsg(t("cq_need_opts")); return; }
+  const hay = (qtext + " " + filled.join(" ")).toLowerCase();
+  if(CQ_BAD.some(w=>hay.includes(w))){ setMsg(t("cq_bad")); return; }
+  if(!sb){ setMsg(t("cq_fail")); return; }
+  const keys = ["a","b","c","d"];
+  const options = filled.map((text,i)=>({key:keys[i], text}));
+  const btn = document.getElementById("cqPublish");
+  if(btn) btn.disabled = true;
+  try{
+    const {error} = await sb.from("community_questions").insert({question: qtext, options, author_hash: getVoterId()});
+    if(error) throw error;
+    tokens -= 1; saveTokens();
+    qEl.value = ""; [0,1,2,3].forEach(i=>{ document.getElementById("cqOpt"+i).value = ""; });
+    setMsg(t("cq_published"), true);
+    await loadCommunity(); await fetchCommunityVotes();
+    renderTokens();
+  }catch(e){ setMsg(t("cq_fail")); if(btn) btn.disabled = tokens < 1; }
+}
+document.getElementById("cqPublish").addEventListener("click", publishCommunity);
+document.getElementById("cqSort").addEventListener("click", e=>{
+  const chip = e.target.closest(".arch-chip");
+  if(!chip) return;
+  cqSort = chip.dataset.sort;
+  document.querySelectorAll("#cqSort .arch-chip").forEach(c=>c.classList.toggle("active", c === chip));
+  renderCommunity();
+});
+document.getElementById("cqList").addEventListener("click", async e=>{
+  const optBtn = e.target.closest(".cq-opt");
+  if(optBtn){
+    const qid = optBtn.dataset.q, text = optBtn.dataset.opt;
+    const v = cqVotes[qid] || {};
+    if(v.myOpt || !sb) return;
+    try{
+      const {error} = await sb.from("votes").insert({experiment_id: cqExp(qid), option_label: text, voter_hash: getVoterId(), district: myDistrict || null});
+      if(error) throw error;
+    }catch(err){ /* duplicate: just refresh */ }
+    await fetchCommunityVotes();
+    return;
+  }
+  const qBtn = e.target.closest(".cq-qbtn");
+  if(qBtn){
+    const qid = qBtn.dataset.q, val = qBtn.dataset.quality;
+    const v = cqVotes[qid] || {};
+    if(v.myQuality || !sb) return;
+    try{
+      const {error} = await sb.from("votes").insert({experiment_id: cqExp(qid)+"-quality", option_label: val, voter_hash: getVoterId(), district: null});
+      if(error) throw error;
+    }catch(err){}
+    await fetchCommunityVotes();
+    return;
+  }
+  const repBtn = e.target.closest(".cq-report");
+  if(repBtn){
+    const qid = repBtn.dataset.q;
+    const v = cqVotes[qid] || {};
+    if(v.myReported || !sb) return;
+    try{
+      await sb.from("votes").insert({experiment_id: cqExp(qid)+"-report", option_label: "report", voter_hash: getVoterId(), district: null});
+    }catch(err){}
+    await fetchCommunityVotes();
+  }
+});
+function communityWinner(){
+  if(!COMMUNITY || !COMMUNITY.length) return null;
+  const ym = dhakaParts().date.slice(0,7);
+  const monthQs = COMMUNITY.filter(q=>(q.created_at||"").slice(0,7) === ym);
+  if(!monthQs.length) return null;
+  let best = null, bestScore = -1;
+  monthQs.forEach(q=>{
+    const c = cqTotals(q);
+    const score = c.up * 1000 + c.total;
+    if(score > bestScore){ bestScore = score; best = {q, c}; }
+  });
+  if(!best || best.c.up === 0) return null;
+  return best;
+}
+function renderWinner(){
+  const sec = document.getElementById("topCommunitySec");
+  if(!sec) return;
+  const w = communityWinner();
+  if(!w){ sec.classList.add("hidden"); return; }
+  sec.classList.remove("hidden");
+  const mi = parseInt(dhakaParts().date.split("-")[1], 10) - 1;
+  const mName = lang === "bn" ? BN_MONTHS[mi] : EN_MONTHS[mi];
+  const title = document.getElementById("topCqTitle");
+  if(title) title.textContent = t("topcq_title").replace("{m}", mName);
+  const card = document.getElementById("topCqCard");
+  if(card){
+    const top = w.c.opts[0];
+    card.innerHTML = `<article class="battle-card arch-card"><div class="eyebrow">💬 ${t("community_eyebrow")}</div><h3>${escapeHtml(w.q.question)}</h3><div class="arch-top">${t("archive_leader")}: <b>${escapeHtml(top.text)}</b> · ${fmt(top.pct)}%</div><div class="bar"><i style="width:${top.pct}%;background:${ARCH_COLORS[0]}"></i></div><div class="vs-meta">👍 ${fmt(w.c.up)} · ${fmt(w.c.total)} ${t("archive_votes")}</div></article>`;
+  }
+}
+
 
 const CENTROIDS = {"Barguna": [90.1121, 22.0953], "Barishal": [90.3696, 22.7022], "Bhola": [90.7101, 22.1785], "Jhalokati": [90.187, 22.5721], "Patuakhali": [90.4548, 22.2249], "Pirojpur": [89.9759, 22.5791], "Bandarban": [92.3686, 21.8311], "Brahmanbaria": [91.1115, 23.9608], "Chandpur": [90.8518, 23.2513], "Chattogram": [91.7539, 22.515], "Cox's Bazar": [92.0282, 21.5641], "Cumilla": [91.1809, 23.4576], "Feni": [91.4067, 22.9409], "Khagrachari": [91.949, 23.1322], "Lakshmipur": [90.8282, 22.9447], "Noakhali": [91.0973, 22.8724], "Rangamati": [92.2985, 22.7324], "Dhaka": [90.3372, 23.8105], "Faridpur": [89.6309, 23.5424], "Gazipur": [90.4125, 24.0958], "Gopalganj": [89.8879, 23.0488], "Kishoreganj": [90.9821, 24.426], "Madaripur": [90.187, 23.2393], "Manikganj": [90.0003, 23.8617], "Munshiganj": [90.4127, 23.4981], "Narayanganj": [90.5636, 23.7147], "Narsingdi": [90.786, 24.1344], "Rajbari": [89.5875, 23.7151], "Shariatpur": [90.4348, 23.2423], "Tangail": [89.9948, 24.3917], "Bagerhat": [89.7895, 22.6602], "Chuadanga": [88.8263, 23.6161], "Jashore": [89.2182, 23.1634], "Jhenaidah": [89.1726, 23.545], "Khulna": [89.3967, 22.6738], "Kushtia": [89.1099, 23.8907], "Magura": [89.4364, 23.429], "Meherpur": [88.6724, 23.8052], "Narail": [89.584, 23.1163], "Satkhira": [89.1115, 22.3155], "Jamalpur": [89.7853, 25.0831], "Mymensingh": [90.4073, 24.7539], "Netrokona": [90.8656, 24.8103], "Sherpur": [90.1495, 25.0746], "Bogura": [89.3697, 24.851], "Joypurhat": [89.0945, 25.0947], "Naogaon": [88.7531, 24.9132], "Natore": [89.0076, 24.4102], "Chapai Nawabganj": [88.2912, 24.7413], "Pabna": [89.4481, 24.1585], "Rajshahi": [88.6049, 24.3733], "Sirajganj": [89.57, 24.3141], "Dinajpur": [88.6332, 25.6279], "Gaibandha": [89.543, 25.3297], "Kurigram": [89.6295, 25.8072], "Lalmonirhat": [89.2847, 25.9923], "Nilphamari": [88.9414, 25.8483], "Panchagarh": [88.5952, 26.2709], "Rangpur": [89.2508, 25.7468], "Thakurgaon": [88.4283, 26.0418], "Habiganj": [91.4507, 24.4771], "Moulvibazar": [91.7315, 24.3095], "Sunamganj": [91.3992, 25.0715], "Sylhet": [91.87, 24.8993]};
 // ---------- roots story (shikorer golpo): on-device only, no server ----------
@@ -1625,14 +1951,21 @@ function showView(v){
   const battles = document.getElementById("view-battles");
   const rootsV = document.getElementById("view-roots");
   const archV = document.getElementById("view-archive");
+  const commV = document.getElementById("view-community");
   home.classList.toggle("hidden", v !== "home");
   battles.classList.toggle("hidden", v !== "battles");
   rootsV.classList.toggle("hidden", v !== "roots");
   archV.classList.toggle("hidden", v !== "archive");
+  commV.classList.toggle("hidden", v !== "community");
   document.getElementById("navHomeLink").classList.toggle("active", v === "home");
   document.getElementById("navBattlesLink").classList.toggle("active", v === "battles");
   document.getElementById("navRootsLink").classList.toggle("active", v === "roots");
   document.getElementById("navArchiveLink").classList.toggle("active", v === "archive");
+  document.getElementById("navCommunityLink").classList.toggle("active", v === "community");
+  if(v === "community"){
+    loadCommunity().then(()=>{ renderCommunity(); fetchCommunityVotes(); });
+    window.scrollTo({top:0});
+  }
   if(v === "archive"){
     loadArchive().then(()=>{ renderArchive(); fetchArchiveLiveCounts(); });
     window.scrollTo({top:0});
@@ -1650,6 +1983,7 @@ window.addEventListener("hashchange", ()=>{
   if(location.hash === "#battles") showView("battles");
   else if(location.hash === "#roots") showView("roots");
   else if(location.hash === "#archive") showView("archive");
+  else if(location.hash === "#community") showView("community");
   else if(location.hash === "#home" || location.hash === "" || location.hash.startsWith("#vote") || location.hash.startsWith("#map") || location.hash.startsWith("#how")) showView("home");
 });
 
@@ -1696,7 +2030,14 @@ if("IntersectionObserver" in window){
   await loadArchive();
   setupCurrent();
   fetchArchiveLiveCounts();
-  if(picked && !streak.last) markVoteToday();
+  await loadCommunity();
+  fetchCommunityVotes();
+  markVisitToday();
+  const newTokens = awardTokens();
+  if(newTokens > 0){
+    tokenCelebrate = true;
+    setTimeout(()=>{ tokenCelebrate = false; renderTokens(); }, 6000);
+  }
   applyLang();
   tickCountdown();
   await fetchLiveCounts();
@@ -1707,6 +2048,7 @@ if("IntersectionObserver" in window){
   if(location.hash === "#battles") showView("battles");
   else if(location.hash === "#roots") showView("roots");
   else if(location.hash === "#archive") showView("archive");
+  else if(location.hash === "#community") showView("community");
   else showView("home");
   const myVote = await fetchMyVote();
   if(myVote && (!picked || picked.key !== myVote.key)){
@@ -1726,6 +2068,7 @@ if("IntersectionObserver" in window){
   <a href="#battles" id="navBattlesLink"><span class="bn-ic">⚔️</span><span data-i18n="nav_battle">ব্যাটল</span></a>
   <a href="#roots" id="navRootsLink"><span class="bn-ic">🌱</span><span data-i18n="nav_roots">শিকড়</span></a>
   <a href="#archive" id="navArchiveLink"><span class="bn-ic">📚</span><span data-i18n="nav_archive">আর্কাইভ</span></a>
+  <a href="#community" id="navCommunityLink"><span class="bn-ic">💬</span><span data-i18n="nav_community">কমিউনিটি</span></a>
 </nav>
 </body>
 </html>
