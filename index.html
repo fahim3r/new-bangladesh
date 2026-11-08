@@ -149,7 +149,7 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
     <header>
       <a class="logo" href="#">
         <span class="mark">N<i></i></span>
-        <span><b>নিউ বাংলাদেশ</b><span>newbangladesh.bond</span></span>
+        <span><b data-i18n="brand">নিউ বাংলাদেশ</b><span>newbangladesh.bond</span></span>
       </a>
       <nav>
         <a href="#" class="active" data-i18n="nav_home">হোম</a>
@@ -206,8 +206,8 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
       <div class="stats">
         <div class="stat"><b id="statVotes">—</b><span data-i18n="stat_votes">মোট ভোট</span></div>
         <div class="stat"><b id="statOpts">৪</b><span data-i18n="stat_opts">টি উত্তর</span></div>
-        <div class="stat"><b>১</b><span data-i18n="stat_q">টি প্রশ্ন প্রতিদিন</span></div>
-        <div class="stat"><b>০</b><span data-i18n="stat_signup">সাইন-আপ</span></div>
+        <div class="stat"><b id="statQNum">১</b><span data-i18n="stat_q">টি প্রশ্ন প্রতিদিন</span></div>
+        <div class="stat"><b id="statSignupNum">০</b><span data-i18n="stat_signup">সাইন-আপ</span></div>
       </div>
     </main>
   </div>
@@ -239,6 +239,7 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
 // ---------- i18n: default Bangla, header toggle switches to full English ----------
 const I18N = {
   bn: {
+    brand:"নিউ বাংলাদেশ",
     nav_home:"হোম", nav_vote:"আজকের প্রশ্ন", nav_how:"কীভাবে কাজ করে",
     eyebrow:"নিউ বাংলাদেশ · বাংলাদেশ উত্তর দিচ্ছে",
     hero_l1:"বাংলাদেশ", hero_l2:"কী ভাবছে?",
@@ -262,6 +263,7 @@ const I18N = {
     title:"নিউ বাংলাদেশ — বাংলাদেশ কী ভাবছে?"
   },
   en: {
+    brand:"New Bangladesh",
     nav_home:"Home", nav_vote:"Today's question", nav_how:"How it works",
     eyebrow:"NEW BANGLADESH · BANGLADESH IS ANSWERING",
     hero_l1:"What does", hero_l2:"Bangladesh think?",
@@ -375,6 +377,8 @@ function render(){
   document.getElementById("questionText").textContent = t("question");
   document.getElementById("statVotes").textContent = fmt(totalVotes());
   document.getElementById("statOpts").textContent = fmt(4);
+  document.getElementById("statQNum").textContent = fmt(1);
+  document.getElementById("statSignupNum").textContent = fmt(0);
   if(!picked){ renderOptions(); resultEl.classList.add("hidden"); shareEl.classList.add("hidden"); return; }
   const rows = counts();
   const my = rows.find(o=>o.key===picked.key) || rows[0];
