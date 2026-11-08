@@ -279,6 +279,26 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
 .bottomnav a .bn-ic{font-size:18px}
 .bottomnav a:hover{color:var(--forest)}
 .bottomnav a.active{background:#fff;color:var(--forest);box-shadow:0 2px 10px rgba(15,61,46,.10)}
+
+/* ---------- archive ---------- */
+.arch-tools{max-width:640px;margin:22px auto 0}
+.arch-search{width:100%;padding:13px 18px;border-radius:999px;border:1.5px solid var(--line);background:rgba(255,255,255,.9);font:inherit;font-size:16px;color:var(--ink);outline:none}
+.arch-search:focus{border-color:var(--emerald);box-shadow:0 0 0 3px rgba(22,163,74,.15)}
+.arch-cats{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px}
+.arch-chip{border:1.5px solid var(--line);background:rgba(255,255,255,.85);color:var(--muted);font:inherit;font-weight:700;font-size:14px;padding:8px 16px;border-radius:999px;cursor:pointer;transition:.2s}
+.arch-chip:hover{color:var(--forest);border-color:var(--emerald)}
+.arch-chip.active{background:var(--forest);border-color:var(--forest);color:#fff}
+.arch-count{text-align:center;color:var(--muted);font-weight:700;margin-top:18px}
+.arch-card{cursor:pointer;text-align:left}
+.arch-card h3{margin:12px 0 10px}
+.arch-cat{display:inline-block;background:#e6f5ec;color:var(--forest);font-weight:800;font-size:13px;padding:4px 12px;border-radius:999px;margin-top:10px}
+.arch-top{font-size:15px;color:var(--muted)}
+.arch-top b{color:var(--forest)}
+.arch-rows{margin-top:16px}
+.arch-row{display:flex;justify-content:space-between;gap:10px;font-size:15.5px;font-weight:700;color:var(--ink)}
+.arch-count-line{font-size:13.5px;color:var(--muted);margin:-2px 0 10px}
+.arch-link{color:var(--emerald);font-weight:800;text-decoration:none}
+.arch-link:hover{text-decoration:underline}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -299,6 +319,7 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
         <a href="#how" data-i18n="nav_how">কীভাবে কাজ করে</a>
         <a href="#map" data-i18n="nav_map">জেলা ম্যাপ</a>
         <a href="#battles" data-i18n="nav_battle">ব্যাটল</a>
+        <a href="#archive" data-i18n="nav_archive">আর্কাইভ</a>
       </nav>
       <div class="lang" role="group" aria-label="Language">
         <button type="button" id="langBn" class="active">বাং</button>
@@ -382,6 +403,7 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
     <h2 data-i18n="latest_battle_h">আজকের লড়াই</h2>
     <div id="latestBattle" style="margin-top:30px"></div>
     <a class="btn primary seeall" href="#battles" data-i18n="see_all_battles">সব ব্যাটল দেখো →</a>
+    <a class="btn ghost seeall" href="#archive" data-i18n="see_archive" style="margin-top:12px">আগের ভোটগুলো দেখো →</a>
   </section>
 
   <section id="map">
@@ -470,6 +492,21 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
     </section>
   </div><!-- /view-roots -->
 
+  <div id="view-archive" class="hidden">
+    <section>
+      <div class="eyebrow" data-i18n="archive_eyebrow">ভোট আর্কাইভ</div>
+      <h2 data-i18n="archive_h">বাংলাদেশ আগে কী বলেছে?</h2>
+      <p class="lede" data-i18n="archive_sub">আগের সব প্রশ্ন আর তার ফলাফল এখানেই থাকবে। খুঁজে দেখো — কোনো বিষয়ে বাংলাদেশ কী ভাবে।</p>
+      <div class="arch-tools">
+        <input id="archiveSearch" class="arch-search" type="search" placeholder="প্রশ্ন খুঁজো…">
+        <div class="arch-cats" id="archiveCats"></div>
+      </div>
+      <p id="archiveCount" class="arch-count"></p>
+      <div id="archiveList" style="margin-top:20px"></div>
+      <p id="archiveMsg" style="color:var(--muted);text-align:center"></p>
+    </section>
+  </div><!-- /view-archive -->
+
   <footer>
     <b>নিউ বাংলাদেশ</b> · <span data-i18n="foot_tag">বাংলাদেশ উত্তর দিচ্ছে।</span><br>
     <span data-i18n="foot_live">লাইভ ভোটিং — তোমার ভোট সবার সাথে গোনা হবে।</span><br>
@@ -529,6 +566,16 @@ const I18N = {
     roots_my:"আমার বাংলাদেশ",
     roots_theme_green:"সবুজ", roots_theme_red:"লাল", roots_theme_sky:"নীল", roots_theme_amber:"সোনালি",
     nav_battle:"ব্যাটল",
+    nav_archive:"আর্কাইভ",
+    see_archive:"আগের ভোটগুলো দেখো →",
+    archive_eyebrow:"ভোট আর্কাইভ", archive_h:"বাংলাদেশ আগে কী বলেছে?",
+    archive_sub:"আগের সব প্রশ্ন আর তার ফলাফল এখানেই থাকবে। খুঁজে দেখো — কোনো বিষয়ে বাংলাদেশ কী ভাবে।",
+    archive_search_ph:"প্রশ্ন খুঁজো…", archive_all:"সব", archive_votes:"টি ভোট", archive_count:"টি প্রশ্ন",
+    archive_leader:"সবচেয়ে বেশি", archive_closed:"এই প্রশ্নের ভোট শেষ — শুধু ফলাফল দেখা যাবে।",
+    archive_today:"এটা আজকের প্রশ্ন", archive_vote_now:"এখনই ভোট দাও →",
+    archive_empty:"কিছু পাওয়া যায়নি — অন্য কিছু খুঁজে দেখো।",
+    archive_more:"বিস্তারিত দেখো ⌄", archive_less:"কম দেখো ⌃",
+    cat_money:"টাকা", cat_food:"খাবার", cat_sports:"খেলা", cat_life:"জীবনযাপন", cat_fun:"মজার", cat_career:"পড়াশোনা ও ক্যারিয়ার",
     latest_battle_eyebrow:"সর্বশেষ ব্যাটল", latest_battle_h:"আজকের লড়াই",
     all_battles_eyebrow:"ব্যাটল", all_battles_h:"সব ব্যাটল, এক জায়গায়।",
     all_battles_sub:"দুই পক্ষ, একটাই প্রশ্ন — তুমি কোন দলে? ভোট দাও, দেখো বাংলাদেশ কোন দিকে।",
@@ -597,6 +644,16 @@ const I18N = {
     roots_my:"My Bangladesh",
     roots_theme_green:"Green", roots_theme_red:"Red", roots_theme_sky:"Blue", roots_theme_amber:"Golden",
     nav_battle:"Battles",
+    nav_archive:"Archive",
+    see_archive:"See past votes →",
+    archive_eyebrow:"VOTE ARCHIVE", archive_h:"What did Bangladesh say before?",
+    archive_sub:"Every past question and its result lives here. Search any topic and see what Bangladesh thinks.",
+    archive_search_ph:"Search a question…", archive_all:"All", archive_votes:"votes", archive_count:"questions",
+    archive_leader:"Most picked", archive_closed:"Voting on this question is closed — results only.",
+    archive_today:"This is today's question", archive_vote_now:"Vote now →",
+    archive_empty:"Nothing found — try a different search.",
+    archive_more:"See details ⌄", archive_less:"Show less ⌃",
+    cat_money:"Money", cat_food:"Food", cat_sports:"Sports", cat_life:"Lifestyle", cat_fun:"Fun", cat_career:"Study & career",
     latest_battle_eyebrow:"LATEST BATTLE", latest_battle_h:"Today's face-off",
     all_battles_eyebrow:"BATTLES", all_battles_h:"All battles, in one place.",
     all_battles_sub:"Two sides, one question — which side are you on? Vote and see where Bangladesh stands.",
@@ -952,7 +1009,7 @@ function applyLang(){
   fillDistrictSelect(mapDistrictSel, true);
   colorMap(); renderDistrictDetail();
   tickCountdown();
-  renderBattles(); renderLatestBattle();
+  renderBattles(); renderLatestBattle(); renderArchive();
   if(!document.getElementById("view-roots").classList.contains("hidden")){
     if(rootsDone()) showRootsPoster(); else renderRootsStep();
   }
@@ -1134,6 +1191,99 @@ document.getElementById("latestBattle").addEventListener("click", e=>{
   const btn = e.target.closest(".vs-side");
   if(btn) voteBattle(btn.dataset.battle, btn.dataset.side);
 });
+// ---------- vote archive: every past question, filterable & searchable ----------
+const ARCHIVE_FALLBACK = {"experiments":[{"cat":"money","date":"2026-11-08","id":"247","num":247,"options":[{"base":31347,"bn":"ব্যবসা শুরু করব","en":"Start a business","key":"business"},{"base":22273,"bn":"বিদেশ যাব","en":"Go abroad","key":"abroad"},{"base":17323,"bn":"জমিয়ে / বিনিয়োগ করব","en":"Save / invest it","key":"save"},{"base":11548,"bn":"দামি কিছু কিনব","en":"Buy something expensive","key":"buy"}],"q":{"bn":"হঠাৎ তোমার অ্যাকাউন্টে ৳১০ লাখ এলো। তুমি কী করবে?","en":"৳10 lakh suddenly appears in your account. What would YOU do?"}},{"cat":"food","date":"2026-11-06","id":"246","num":246,"options":[{"base":39500,"bn":"ভাত-ডাল-ভাজি","en":"Rice, dal & bhaji","key":"rice"},{"base":33200,"bn":"পরোটা-ডিম","en":"Paratha & egg","key":"paratha"},{"base":16900,"bn":"রুটি-সবজি","en":"Roti & vegetables","key":"roti"},{"base":11300,"bn":"ব্রেড-জ্যাম","en":"Bread & jam","key":"bread"}],"q":{"bn":"সকালের নাস্তায় কী খেতে ভালোবাসো?","en":"What do you love for breakfast?"}},{"cat":"life","date":"2026-11-04","id":"245","num":245,"options":[{"base":58900,"bn":"ঈদ","en":"Eid","key":"eid"},{"base":27400,"bn":"পহেলা বৈশাখ","en":"Pohela Boishakh","key":"boishakh"},{"base":12300,"bn":"দুর্গাপূজা","en":"Durga Puja","key":"durga"},{"base":18700,"bn":"বিজয় দিবস","en":"Victory Day","key":"bijoy"}],"q":{"bn":"বাংলাদেশের সবচেয়ে বড় উৎসব কোনটা?","en":"Which is Bangladesh's biggest festival?"}},{"cat":"fun","date":"2026-11-02","id":"244","num":244,"options":[{"base":44100,"bn":"ঘুম","en":"Sleep","key":"sleep"},{"base":36800,"bn":"খিচুড়ি-ইলিশ","en":"Khichuri & ilish","key":"khichuri"},{"base":21500,"bn":"বৃষ্টিতে ভেজা","en":"Getting soaked in the rain","key":"rain"},{"base":13400,"bn":"বই পড়া","en":"Reading a book","key":"book"}],"q":{"bn":"বৃষ্টির দিনে কী করতে ভালো লাগে?","en":"What do you love doing on a rainy day?"}},{"cat":"sports","date":"2026-10-31","id":"243","num":243,"options":[{"base":52300,"bn":"মাশরাফি","en":"Mashrafe","key":"mashrafe"},{"base":38700,"bn":"সাকিব","en":"Shakib","key":"shakib"},{"base":15200,"bn":"তামিম","en":"Tamim","key":"tamim"},{"base":9800,"bn":"মুশফিক","en":"Mushfiq","key":"mushfiq"}],"q":{"bn":"বাংলাদেশের সেরা ক্রিকেট অধিনায়ক কে?","en":"Who is Bangladesh's greatest cricket captain?"}},{"cat":"career","date":"2026-10-29","id":"242","num":242,"options":[{"base":38900,"bn":"আমেরিকা","en":"USA","key":"usa"},{"base":31200,"bn":"কানাডা","en":"Canada","key":"canada"},{"base":19800,"bn":"ইংল্যান্ড","en":"England","key":"uk"},{"base":14600,"bn":"অস্ট্রেলিয়া","en":"Australia","key":"australia"}],"q":{"bn":"বিদেশে পড়তে গেলে কোন দেশ?","en":"Which country would you pick to study abroad?"}},{"cat":"money","date":"2026-10-27","id":"241","num":241,"options":[{"base":41200,"bn":"মাকে দেব","en":"Give it to my mother","key":"mom"},{"base":18450,"bn":"নিজের জন্য কিছু কিনব","en":"Buy something for myself","key":"self"},{"base":33780,"bn":"সেভ করব","en":"Save it","key":"save"},{"base":12940,"bn":"ঘুরতে যাব","en":"Go on a trip","key":"travel"}],"q":{"bn":"প্রথম বেতন পেলে কী করবে?","en":"What would you do with your first salary?"}}]};
+let ARCHIVE = null;
+let archCat = "all", archQuery = "", archOpen = {};
+const ARCH_CATS = ["money","food","sports","life","fun","career"];
+const ARCH_COLORS = ["#16a34a","#0ea5e9","#f59e0b","#e11d2e"];
+const BN_MONTHS = ["জানুয়ারি","ফেব্রুয়ারি","মার্চ","এপ্রিল","মে","জুন","জুলাই","আগস্ট","সেপ্টেম্বর","অক্টোবর","নভেম্বর","ডিসেম্বর"];
+const EN_MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function fmtArchDate(iso){
+  const p = iso.split("-").map(Number);
+  const yBn = String(p[0]).replace(/[0-9]/g, d=>"০১২৩৪৫৬৭৮৯"[+d]);
+  if(lang === "bn") return fmt(p[2]) + " " + BN_MONTHS[p[1]-1] + " " + yBn;
+  return p[2] + " " + EN_MONTHS[p[1]-1] + " " + p[0];
+}
+async function loadArchive(){
+  if(ARCHIVE) return ARCHIVE;
+  try{
+    const res = await fetch("questions.json", {cache:"no-store"});
+    if(!res.ok) throw new Error("http " + res.status);
+    const j = await res.json();
+    ARCHIVE = j.experiments || [];
+  }catch(e){ ARCHIVE = ARCHIVE_FALLBACK.experiments.slice(); }
+  return ARCHIVE;
+}
+function archiveCounts(exp){
+  const opts = exp.options.map(o=>{
+    const c = exp.id === "247" ? o.base + (live[o.key]||0) : o.base;
+    return {...o, count:c};
+  });
+  const total = opts.reduce((s,o)=>s+o.count, 0);
+  opts.forEach(o=>{ o.pct = total ? Math.round(o.count/total*100) : 0; });
+  opts.sort((a,b)=>b.count-a.count);
+  return {opts, total};
+}
+function archiveCardHtml(exp){
+  const c = archiveCounts(exp);
+  const top = c.opts[0];
+  const open = !!archOpen[exp.id];
+  const isToday = exp.id === "247";
+  const q = lang === "bn" ? exp.q.bn : exp.q.en;
+  const eyebrow = (lang === "bn" ? "এক্সপেরিমেন্ট #" : "EXPERIMENT #") + fmt(exp.num) + " · " + fmtArchDate(exp.date);
+  let inner = `<div class="eyebrow">📚 ${eyebrow}</div><span class="arch-cat">${t("cat_" + exp.cat)}</span><h3>${q}</h3><div class="arch-top">${t("archive_leader")}: <b>${lang === "bn" ? top.bn : top.en}</b> · ${fmt(top.pct)}%</div><div class="bar"><i style="width:${top.pct}%;background:${ARCH_COLORS[0]}"></i></div>`;
+  if(open){
+    inner += `<div class="arch-rows">` + c.opts.map((o,i)=>`<div class="arch-row"><span>${lang === "bn" ? o.bn : o.en}</span><b>${fmt(o.pct)}%</b></div><div class="bar"><i style="width:${o.pct}%;background:${ARCH_COLORS[i % 4]}"></i></div><div class="arch-count-line">${fmt(o.count)} ${t("archive_votes")}</div>`).join("") + `</div>`;
+    inner += isToday
+      ? `<div class="vs-meta">${t("archive_today")} · <a href="#home" class="arch-link">${t("archive_vote_now")}</a></div>`
+      : `<div class="vs-meta">${t("archive_closed")}</div>`;
+  }
+  inner += `<div class="vs-meta">${fmt(c.total)} ${t("archive_votes")} · ${open ? t("archive_less") : t("archive_more")}</div>`;
+  return `<article class="battle-card arch-card" data-exp="${exp.id}">${inner}</article>`;
+}
+function renderArchiveCats(){
+  const el = document.getElementById("archiveCats");
+  if(!el) return;
+  el.innerHTML = ["all", ...ARCH_CATS].map(c=>`<button type="button" class="arch-chip${archCat === c ? " active" : ""}" data-cat="${c}">${c === "all" ? t("archive_all") : t("cat_" + c)}</button>`).join("");
+}
+function renderArchive(){
+  const list = document.getElementById("archiveList");
+  const msg = document.getElementById("archiveMsg");
+  const cnt = document.getElementById("archiveCount");
+  const search = document.getElementById("archiveSearch");
+  if(!list || !ARCHIVE) return;
+  if(search) search.placeholder = t("archive_search_ph");
+  renderArchiveCats();
+  const q = archQuery.trim().toLowerCase();
+  const items = ARCHIVE.filter(exp=>{
+    if(archCat !== "all" && exp.cat !== archCat) return false;
+    if(!q) return true;
+    return (exp.q.bn + " " + exp.q.en + " " + t("cat_" + exp.cat)).toLowerCase().includes(q);
+  });
+  list.innerHTML = items.map(archiveCardHtml).join("");
+  if(cnt) cnt.textContent = fmt(items.length) + " " + t("archive_count");
+  if(msg) msg.textContent = items.length ? "" : t("archive_empty");
+}
+document.getElementById("archiveCats").addEventListener("click", e=>{
+  const chip = e.target.closest(".arch-chip");
+  if(!chip) return;
+  archCat = chip.dataset.cat;
+  renderArchive();
+});
+document.getElementById("archiveSearch").addEventListener("input", e=>{
+  archQuery = e.target.value;
+  renderArchive();
+});
+document.getElementById("archiveList").addEventListener("click", e=>{
+  if(e.target.closest("a")) return;
+  const card = e.target.closest(".arch-card");
+  if(!card) return;
+  const id = card.dataset.exp;
+  archOpen[id] = !archOpen[id];
+  renderArchive();
+});
+
 
 const CENTROIDS = {"Barguna": [90.1121, 22.0953], "Barishal": [90.3696, 22.7022], "Bhola": [90.7101, 22.1785], "Jhalokati": [90.187, 22.5721], "Patuakhali": [90.4548, 22.2249], "Pirojpur": [89.9759, 22.5791], "Bandarban": [92.3686, 21.8311], "Brahmanbaria": [91.1115, 23.9608], "Chandpur": [90.8518, 23.2513], "Chattogram": [91.7539, 22.515], "Cox's Bazar": [92.0282, 21.5641], "Cumilla": [91.1809, 23.4576], "Feni": [91.4067, 22.9409], "Khagrachari": [91.949, 23.1322], "Lakshmipur": [90.8282, 22.9447], "Noakhali": [91.0973, 22.8724], "Rangamati": [92.2985, 22.7324], "Dhaka": [90.3372, 23.8105], "Faridpur": [89.6309, 23.5424], "Gazipur": [90.4125, 24.0958], "Gopalganj": [89.8879, 23.0488], "Kishoreganj": [90.9821, 24.426], "Madaripur": [90.187, 23.2393], "Manikganj": [90.0003, 23.8617], "Munshiganj": [90.4127, 23.4981], "Narayanganj": [90.5636, 23.7147], "Narsingdi": [90.786, 24.1344], "Rajbari": [89.5875, 23.7151], "Shariatpur": [90.4348, 23.2423], "Tangail": [89.9948, 24.3917], "Bagerhat": [89.7895, 22.6602], "Chuadanga": [88.8263, 23.6161], "Jashore": [89.2182, 23.1634], "Jhenaidah": [89.1726, 23.545], "Khulna": [89.3967, 22.6738], "Kushtia": [89.1099, 23.8907], "Magura": [89.4364, 23.429], "Meherpur": [88.6724, 23.8052], "Narail": [89.584, 23.1163], "Satkhira": [89.1115, 22.3155], "Jamalpur": [89.7853, 25.0831], "Mymensingh": [90.4073, 24.7539], "Netrokona": [90.8656, 24.8103], "Sherpur": [90.1495, 25.0746], "Bogura": [89.3697, 24.851], "Joypurhat": [89.0945, 25.0947], "Naogaon": [88.7531, 24.9132], "Natore": [89.0076, 24.4102], "Chapai Nawabganj": [88.2912, 24.7413], "Pabna": [89.4481, 24.1585], "Rajshahi": [88.6049, 24.3733], "Sirajganj": [89.57, 24.3141], "Dinajpur": [88.6332, 25.6279], "Gaibandha": [89.543, 25.3297], "Kurigram": [89.6295, 25.8072], "Lalmonirhat": [89.2847, 25.9923], "Nilphamari": [88.9414, 25.8483], "Panchagarh": [88.5952, 26.2709], "Rangpur": [89.2508, 25.7468], "Thakurgaon": [88.4283, 26.0418], "Habiganj": [91.4507, 24.4771], "Moulvibazar": [91.7315, 24.3095], "Sunamganj": [91.3992, 25.0715], "Sylhet": [91.87, 24.8993]};
 // ---------- roots story (shikorer golpo): on-device only, no server ----------
@@ -1407,12 +1557,19 @@ function showView(v){
   const home = document.getElementById("view-home");
   const battles = document.getElementById("view-battles");
   const rootsV = document.getElementById("view-roots");
+  const archV = document.getElementById("view-archive");
   home.classList.toggle("hidden", v !== "home");
   battles.classList.toggle("hidden", v !== "battles");
   rootsV.classList.toggle("hidden", v !== "roots");
+  archV.classList.toggle("hidden", v !== "archive");
   document.getElementById("navHomeLink").classList.toggle("active", v === "home");
   document.getElementById("navBattlesLink").classList.toggle("active", v === "battles");
   document.getElementById("navRootsLink").classList.toggle("active", v === "roots");
+  document.getElementById("navArchiveLink").classList.toggle("active", v === "archive");
+  if(v === "archive"){
+    loadArchive().then(()=>{ renderArchive(); });
+    window.scrollTo({top:0});
+  }
   if(v === "battles"){
     loadBattles().then(()=>{ renderBattles(); fetchBattleCounts(); });
     window.scrollTo({top:0});
@@ -1425,6 +1582,7 @@ function showView(v){
 window.addEventListener("hashchange", ()=>{
   if(location.hash === "#battles") showView("battles");
   else if(location.hash === "#roots") showView("roots");
+  else if(location.hash === "#archive") showView("archive");
   else if(location.hash === "#home" || location.hash === "" || location.hash.startsWith("#vote") || location.hash.startsWith("#map") || location.hash.startsWith("#how")) showView("home");
 });
 
@@ -1474,10 +1632,12 @@ if("IntersectionObserver" in window){
   await fetchLiveCounts();
   await fetchDistrictVotes();
   await loadBattles();
+  await loadArchive();
   renderLatestBattle();
   fetchBattleCounts();
   if(location.hash === "#battles") showView("battles");
   else if(location.hash === "#roots") showView("roots");
+  else if(location.hash === "#archive") showView("archive");
   else showView("home");
   const myVote = await fetchMyVote();
   if(myVote && (!picked || picked.key !== myVote.key)){
@@ -1496,6 +1656,7 @@ if("IntersectionObserver" in window){
   <a href="#home" id="navHomeLink"><span class="bn-ic">🏠</span><span data-i18n="nav_home">হোম</span></a>
   <a href="#battles" id="navBattlesLink"><span class="bn-ic">⚔️</span><span data-i18n="nav_battle">ব্যাটল</span></a>
   <a href="#roots" id="navRootsLink"><span class="bn-ic">🌱</span><span data-i18n="nav_roots">শিকড়</span></a>
+  <a href="#archive" id="navArchiveLink"><span class="bn-ic">📚</span><span data-i18n="nav_archive">আর্কাইভ</span></a>
 </nav>
 </body>
 </html>
