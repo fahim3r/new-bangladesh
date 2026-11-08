@@ -432,6 +432,7 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
           <button class="btn ghost" id="rootsSkip" type="button" data-i18n="roots_skip">স্কিপ করো</button>
           <button class="btn primary" id="rootsNext" type="button" data-i18n="roots_next">পরের প্রশ্ন</button>
         </div>
+        <p id="rootsHint" style="text-align:center;color:#991b1b;font-weight:700;min-height:20px;margin:8px 0 0"></p>
       </div>
       <div id="rootsPoster" class="hidden">
         <div class="poster" id="posterCard">
@@ -1180,6 +1181,7 @@ function districtOptions(sel, val){
 }
 function renderRootsStep(){
   const step = ROOT_STEPS[rootStep];
+  document.getElementById("rootsHint").textContent = "";
   const body = document.getElementById("rootsStep");
   const dots = document.getElementById("rootsDots");
   dots.innerHTML = ROOT_STEPS.map((_, i)=>`<i class="${i===rootStep ? "on" : i<rootStep ? "done" : ""}"></i>`).join("");
@@ -1216,10 +1218,10 @@ function renderRootsStep(){
   validateRootsStep();
 }
 function validateRootsStep(){
-  const step = ROOT_STEPS[rootStep];
-  const nextBtn = document.getElementById("rootsNext");
-  if(step === "name" || step === "parents" || step === "theme"){ nextBtn.disabled = false; return; }
-  nextBtn.disabled = !roots[step];
+  // Next is never disabled: the click handler reads the live inputs and
+  // shows a hint if a required answer is missing. (Disabling it once
+  // trapped users when a selection didn't fire a change event.)
+  document.getElementById("rootsNext").disabled = false;
 }
 document.getElementById("rootsStep").addEventListener("change", validateRootsStep);
 document.getElementById("rootsBack").onclick = ()=>{ if(rootStep > 0){ rootStep--; renderRootsStep(); } };
@@ -1231,8 +1233,16 @@ document.getElementById("rootsSkip").onclick = ()=>{
 };
 document.getElementById("rootsNext").onclick = ()=>{
   const step = ROOT_STEPS[rootStep];
+  // read the visible inputs directly: a missed `change` event must never lose an answer
+  if(step === "name"){ const inp = document.getElementById("rootName"); if(inp) roots.name = inp.value.trim(); }
+  else if(step === "parents"){ const m = document.getElementById("rootMom"), f = document.getElementById("rootDad"); if(m) roots.mom = m.value; if(f) roots.dad = f.value; }
+  else if(step !== "theme"){ const sel = document.getElementById("rootSel"); if(sel) roots[step] = sel.value; }
   if(step === "theme"){ saveRoots(); showRootsPoster(); return; }
-  if(step !== "name" && step !== "parents" && !roots[step]) return;
+  if(step !== "name" && step !== "parents" && !roots[step]){
+    document.getElementById("rootsHint").textContent = t("roots_pick");
+    return;
+  }
+  document.getElementById("rootsHint").textContent = "";
   saveRoots();
   rootStep++; renderRootsStep();
 };
