@@ -91,6 +91,23 @@ h1 .red{color:var(--red);display:inline-block;animation:wordPop .8s .35s cubic-b
 .row b{font-size:15.5px}
 .pct{color:var(--muted);font-weight:600;white-space:nowrap}
 .you{font-size:11px;font-weight:800;color:#fff;background:var(--red);border-radius:99px;padding:3px 9px;letter-spacing:.04em;white-space:nowrap}
+/* ---------- guess panel ---------- */
+.guess{margin-top:6px;padding:20px;border-radius:20px;background:linear-gradient(135deg,#f0fdf4,#fef9c3);border:1px solid #bbf7d0;text-align:center;animation:fadeUp .5s both}
+.guess-tag{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:linear-gradient(135deg,var(--forest),var(--emerald));border-radius:99px;padding:5px 12px}
+.guess h3{margin:12px 0 4px;font-size:19px;color:var(--forest)}
+.guess-sub{margin:4px 0 6px;color:var(--muted);line-height:1.6;font-size:15px}
+.guess-big{font-size:52px;font-weight:800;color:var(--forest);line-height:1.1}
+.guess-big span{animation:pop .3s both}
+@keyframes pop{from{transform:scale(.85)}to{transform:scale(1)}}
+#guessSlider{-webkit-appearance:none;appearance:none;width:100%;height:12px;border-radius:99px;margin:16px 0 6px;outline:none;cursor:pointer;
+  background:linear-gradient(90deg,var(--emerald) var(--fill,25%),rgba(15,61,46,.12) var(--fill,25%))}
+#guessSlider::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:#fff;border:4px solid var(--red);box-shadow:0 4px 14px rgba(225,29,46,.35);cursor:grab}
+#guessSlider::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#fff;border:4px solid var(--red);box-shadow:0 4px 14px rgba(225,29,46,.35);cursor:grab}
+.guess-scale{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;font-weight:600;margin-bottom:16px}
+.guess .btn{width:100%;margin-bottom:8px}
+.guess-line{margin-top:14px;padding:14px;border-radius:16px;background:#fff;border:1px solid #bbf7d0;text-align:center;animation:fadeUp .5s both}
+.guess-line b{color:var(--forest);font-size:17px}
+.guess-line .score{display:inline-block;margin-top:6px;background:linear-gradient(135deg,var(--forest),var(--emerald));color:#fff;font-weight:800;border-radius:99px;padding:4px 14px}
 .result{margin-top:20px;padding:18px;border-radius:20px;background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #bbf7d0;animation:fadeUp .6s both}
 .result h2{margin:0 0 6px;font-size:19px;color:var(--forest)}
 .result p{margin:5px 0;color:#334155;line-height:1.6;font-size:15px}
@@ -187,12 +204,23 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
         <div class="eyebrow"><span data-i18n="exp">এক্সপেরিমেন্ট #২৪৭</span> · <span data-i18n="today">আজ</span></div>
         <div class="q" id="questionText">হঠাৎ তোমার অ্যাকাউন্টে ৳১০ লাখ এলো। তুমি কী করবে?</div>
         <div id="options"></div>
+        <div id="guess" class="guess hidden">
+          <div class="guess-tag" data-i18n="guess_tag">গেস বাংলাদেশ</div>
+          <h3 id="guessTitle">—</h3>
+          <p class="guess-sub" id="guessSub">—</p>
+          <div class="guess-big"><span id="guessVal">২৫%</span></div>
+          <input type="range" id="guessSlider" min="0" max="100" value="25" step="1" aria-label="Guess percentage">
+          <div class="guess-scale"><span>০%</span><span>৫০%</span><span>১০০%</span></div>
+          <button class="btn primary" id="revealBtn" type="button" data-i18n="guess_reveal">রেজাল্ট দেখো</button>
+          <button class="btn ghost" id="backBtn" type="button" data-i18n="guess_back">উত্তর বদলাও</button>
+        </div>
         <div id="result" class="hidden"></div>
         <div id="share" class="share hidden">
           <div class="sharecard" id="sharecard">
             <div class="eyebrow">NEW BANGLADESH · <span data-i18n="exp_en">EXPERIMENT #247</span></div>
             <h3 id="cardChoice">—</h3>
             <p id="cardMatch">—</p>
+            <p id="cardGuess">—</p>
             <p><span class="big" id="cardType">—</span></p>
             <p>newbangladesh.bond</p>
           </div>
@@ -251,14 +279,20 @@ const I18N = {
     how_eyebrow:"কীভাবে কাজ করে", how_h:"১০ সেকেন্ডে, তিন ধাপে।",
     how_sub:"কোনো সাইন-আপ নেই, কোনো বিজ্ঞাপন নেই। শুধু তুমি, একটি প্রশ্ন, আর পুরো বাংলাদেশ।",
     s1_h:"ভোট দাও", s1_p:"আজকের প্রশ্নে তোমার উত্তরটা বেছে নাও। এক ট্যাপেই হয়ে যাবে।",
-    s2_h:"রেজাল্ট দেখো", s2_p:"তোমার সাথে কত শতাংশ বাংলাদেশ একমত, সেটা এখনই দেখে নাও।",
-    s3_h:"শেয়ার করো", s3_p:"তোমার নিজের রেজাল্ট কার্ড ডাউনলোড করে বন্ধুকে চ্যালেঞ্জ করো।",
+    s2_h:"বাংলাদেশকে গেস করো", s2_p:"তোমার কী মনে হয় — কত % বাংলাদেশ তোমার মতোই বাছবে? স্লাইডারটা টেনে গেস করো।",
+    s3_h:"রেজাল্ট দেখো ও শেয়ার করো", s3_p:"আসল রেজাল্ট আর তোমার গেসের স্কোর দেখো, তারপর কার্ডটা বন্ধুকে পাঠাও।",
     pill1:"কোনো সাইন-আপ নেই", pill2:"কোনো বিজ্ঞাপন নেই", pill3:"সম্পূর্ণ ফ্রি",
     foot_tag:"বাংলাদেশ উত্তর দিচ্ছে।", foot_live:"লাইভ ভোটিং — তোমার ভোট সবার সাথে গোনা হবে।",
     your_choice:"তোমার পছন্দ", spoken:"বাংলাদেশ বলেছে", match:"তোমার উত্তর {p}% বাংলাদেশের সাথে মিলেছে।",
     voted:"জন ভোট দিয়েছে।", live:" লাইভ গোনা।", copied:"চ্যালেঞ্জ লিংক কপি হয়ে গেছে — বন্ধুকে পাঠাও!",
     already:"তুমি ইতিমধ্যে ভোট দিয়েছো — এক ডিভাইস থেকে একবারই ভোট দেওয়া যায়।",
     picked_prefix:"আমি বেছেছি: ", match_card:"{p}% বাংলাদেশ আমার সাথে একমত।",
+    guess_tag:"গেস বাংলাদেশ", guess_h:"তুমি কতটা চেনো বাংলাদেশকে?",
+    guess_sub:"তুমি '{o}' বেছেছো। তোমার কী মনে হয় — কত % বাংলাদেশ তোমার মতোই বাছবে?",
+    guess_reveal:"রেজাল্ট দেখো", guess_back:"উত্তর বদলাও",
+    guess_line:"তোমার গেস {g}% · আসল {a}%",
+    guess_perfect:"একদম নিখুঁত!", guess_close:"খুব কাছাকাছি!", guess_ok:"মোটামুটি কাছাকাছি", guess_miss:"এবার মিললো না — আবার চেষ্টা করো!",
+    guess_score:"গেস স্কোর", guess_card:"গেস {g}% · আসল {a}% · স্কোর {s}/১০০",
     challenge_text:"আমি '{o}' বেছেছি। তুমি কী বাছবে? ",
     title:"নিউ বাংলাদেশ — বাংলাদেশ কী ভাবছে?"
   },
@@ -275,14 +309,20 @@ const I18N = {
     how_eyebrow:"HOW IT WORKS", how_h:"In 10 seconds, three steps.",
     how_sub:"No sign-up, no ads. Just you, one question, and the whole of Bangladesh.",
     s1_h:"Vote", s1_p:"Pick your answer to today's question. One tap and you're done.",
-    s2_h:"See the result", s2_p:"See instantly what percentage of Bangladesh agrees with you.",
-    s3_h:"Share it", s3_p:"Download your personal result card and challenge a friend.",
+    s2_h:"Guess Bangladesh", s2_p:"What do you think — what % of Bangladesh will pick the same as you? Drag the slider and guess.",
+    s3_h:"See the result & share", s3_p:"See the real result and your guess score, then send the card to a friend.",
     pill1:"No sign-up", pill2:"No ads", pill3:"Totally free",
     foot_tag:"Bangladesh is answering.", foot_live:"Live voting — your vote counts with everyone.",
     your_choice:"Your choice", spoken:"Bangladesh has spoken", match:"Your answer matches {p}% of Bangladesh.",
     voted:"people have voted.", live:" Live count.", copied:"Challenge link copied — send it to your friend!",
     already:"You already voted — one vote per device.",
     picked_prefix:"I chose: ", match_card:"{p}% of Bangladesh agrees with me.",
+    guess_tag:"Guess Bangladesh", guess_h:"How well do you know Bangladesh?",
+    guess_sub:"You chose '{o}'. What do you think — what % of Bangladesh will pick the same?",
+    guess_reveal:"See the result", guess_back:"Change answer",
+    guess_line:"Your guess {g}% · Actual {a}%",
+    guess_perfect:"Spot on!", guess_close:"So close!", guess_ok:"Pretty close", guess_miss:"Not this time — try again tomorrow!",
+    guess_score:"Guess score", guess_card:"Guess {g}% · Actual {a}% · Score {s}/100",
     challenge_text:"I chose '{o}'. What will you choose? ",
     title:"New Bangladesh — What does Bangladesh think?"
   }
@@ -346,10 +386,23 @@ let picked = null;
 try{ picked = localStorage.getItem("nb247") ? JSON.parse(localStorage.getItem("nb247")) : null; }catch(e){ picked = null; }
 if(picked && picked.key){ picked = OPTIONS.find(o=>o.key===picked.key) || null; }
 else if(picked && picked.label){ picked = OPTIONS.find(o=>DB_LABEL[o.key]===picked.label) || null; }
+let guess = null;
+try{ const g = localStorage.getItem("nb247_guess"); guess = g === null ? null : parseInt(g, 10); }catch(e){ guess = null; }
+let awaitingGuess = false; // user picked an answer, guess step is open, vote not submitted yet
 
 const optionsEl = document.getElementById("options");
 const resultEl = document.getElementById("result");
 const shareEl = document.getElementById("share");
+const guessEl = document.getElementById("guess");
+const guessSlider = document.getElementById("guessSlider");
+const guessVal = document.getElementById("guessVal");
+
+function syncSlider(){
+  const v = parseInt(guessSlider.value, 10);
+  guessVal.textContent = fmt(v) + "%";
+  guessSlider.style.setProperty("--fill", v + "%");
+}
+guessSlider.addEventListener("input", syncSlider);
 
 function renderOptions(){
   optionsEl.innerHTML = "";
@@ -364,6 +417,15 @@ function renderOptions(){
 async function vote(i){
   picked = OPTIONS[i];
   localStorage.setItem("nb247", JSON.stringify({key:picked.key}));
+  awaitingGuess = true;
+  guessSlider.value = guess === null ? 25 : guess;
+  syncSlider();
+  render();
+}
+async function submitVote(){
+  guess = parseInt(guessSlider.value, 10);
+  localStorage.setItem("nb247_guess", String(guess));
+  awaitingGuess = false;
   render();
   if(sb){
     try{
@@ -373,13 +435,30 @@ async function vote(i){
     }catch(e){ /* offline: local result already shown */ }
   }
 }
+document.getElementById("revealBtn").onclick=()=>submitVote();
+document.getElementById("backBtn").onclick=()=>{ awaitingGuess=false; picked=null; localStorage.removeItem("nb247"); render(); };
+function guessTier(diff){
+  if(diff<=3) return t("guess_perfect");
+  if(diff<=10) return t("guess_close");
+  if(diff<=20) return t("guess_ok");
+  return t("guess_miss");
+}
 function render(){
   document.getElementById("questionText").textContent = t("question");
   document.getElementById("statVotes").textContent = fmt(totalVotes());
   document.getElementById("statOpts").textContent = fmt(4);
   document.getElementById("statQNum").textContent = fmt(1);
   document.getElementById("statSignupNum").textContent = fmt(0);
-  if(!picked){ renderOptions(); resultEl.classList.add("hidden"); shareEl.classList.add("hidden"); return; }
+  if(!picked){ renderOptions(); guessEl.classList.add("hidden"); resultEl.classList.add("hidden"); shareEl.classList.add("hidden"); return; }
+  if(awaitingGuess){
+    optionsEl.innerHTML="";
+    document.getElementById("guessTitle").textContent = t("guess_h");
+    document.getElementById("guessSub").textContent = t("guess_sub").replace("{o}", label(picked));
+    guessEl.classList.remove("hidden");
+    resultEl.classList.add("hidden"); shareEl.classList.add("hidden");
+    return;
+  }
+  guessEl.classList.add("hidden");
   const rows = counts();
   const my = rows.find(o=>o.key===picked.key) || rows[0];
   optionsEl.innerHTML="";
@@ -390,9 +469,19 @@ function render(){
     optionsEl.appendChild(wrap);
   });
   resultEl.classList.remove("hidden");
-  resultEl.innerHTML = `<h2>${t("spoken")}</h2><p><b>${label(picked)}</b> — ${t("match").replace("{p}", fmt(my.pct))}</p><p>${fmt(totalVotes())} ${t("voted")}${liveLoaded ? t("live") : ""}</p>`;
+  let guessHtml = "";
+  let guessCard = "";
+  if(guess !== null){
+    const diff = Math.abs(guess - my.pct);
+    const score = 100 - diff;
+    guessHtml = `<div class="guess-line"><b>${t("guess_line").replace("{g}", fmt(guess)).replace("{a}", fmt(my.pct))}</b><br><span class="score">${t("guess_score")}: ${fmt(score)}/${fmt(100)} — ${guessTier(diff)}</span></div>`;
+    guessCard = t("guess_card").replace("{g}", fmt(guess)).replace("{a}", fmt(my.pct)).replace("{s}", fmt(score));
+  }
+  resultEl.innerHTML = `<h2>${t("spoken")}</h2><p><b>${label(picked)}</b> — ${t("match").replace("{p}", fmt(my.pct))}</p><p>${fmt(totalVotes())} ${t("voted")}${liveLoaded ? t("live") : ""}</p>${guessHtml}`;
   document.getElementById("cardChoice").textContent = t("picked_prefix") + label(picked);
   document.getElementById("cardMatch").textContent = t("match_card").replace("{p}", fmt(my.pct));
+  document.getElementById("cardGuess").textContent = guessCard;
+  document.getElementById("cardGuess").style.display = guessCard ? "" : "none";
   document.getElementById("cardType").textContent = typeName(picked);
   shareEl.classList.remove("hidden");
 }
@@ -416,7 +505,7 @@ document.getElementById("againBtn").onclick=async()=>{
     render();
     return;
   }
-  localStorage.removeItem("nb247"); picked=null; render();
+  localStorage.removeItem("nb247"); localStorage.removeItem("nb247_guess"); picked=null; guess=null; awaitingGuess=false; render();
 };
 document.getElementById("challengeBtn").onclick=async()=>{
   const url = location.origin + location.pathname + "?exp=247&pick=" + encodeURIComponent(DB_LABEL[picked.key]);
@@ -437,8 +526,14 @@ document.getElementById("downloadBtn").onclick=()=>{
   const words=(t("picked_prefix")+label(picked)).split(" "); let line="", y=760;
   words.forEach(w=>{ if(x.measureText(line+" "+w).width>900){ x.fillText(line.trim(),540,y); y+=70; line=w; } else line+=" "+w; });
   x.fillText(line.trim(),540,y);
-  x.fillStyle="#d1fae5"; x.font="38px Arial"; x.fillText(t("match_card").replace("{p}", my.pct),540,y+110);
-  x.fillStyle="#ffffff"; x.font="bold 44px Arial"; x.fillText(typeName(picked),540,y+190);
+  x.fillStyle="#d1fae5"; x.font="38px Arial"; x.fillText(t("match_card").replace("{p}", my.pct),540,y+105);
+  if(guess !== null){
+    const score = 100 - Math.abs(guess - my.pct);
+    x.fillStyle="#86efac"; x.font="36px Arial"; x.fillText(t("guess_card").replace("{g}", guess).replace("{a}", my.pct).replace("{s}", score),540,y+165);
+    x.fillStyle="#ffffff"; x.font="bold 44px Arial"; x.fillText(typeName(picked),540,y+245);
+  } else {
+    x.fillStyle="#ffffff"; x.font="bold 44px Arial"; x.fillText(typeName(picked),540,y+190);
+  }
   x.fillStyle="#86efac"; x.font="36px Arial"; x.fillText("newbangladesh.bond",540,1250);
   const a=document.createElement("a"); a.download="new-bangladesh-card.png"; a.href=c.toDataURL("image/png"); a.click();
 };
@@ -449,6 +544,11 @@ document.getElementById("downloadBtn").onclick=()=>{
   if(myVote && (!picked || picked.key !== myVote.key)){
     picked = myVote;
     localStorage.setItem("nb247", JSON.stringify({key:picked.key}));
+  } else if(picked && !myVote && sb){
+    // picked locally but never submitted (e.g. reloaded mid-guess): reopen the guess step
+    awaitingGuess = true;
+    guessSlider.value = guess === null ? 25 : guess;
+    syncSlider();
   }
   render();
 })();
