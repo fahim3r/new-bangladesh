@@ -92,7 +92,7 @@ footer{margin-top:28px;text-align:center;color:var(--muted);font-size:13px;line-
 const SUPABASE_URL = "https://bocazyqiomwtnnvhzpio.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_f3Glh5QbXqaiBBNrPhfhHA_LB99iMcp";
 const EXPERIMENT_ID = "247";
-const supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
 const OPTIONS = [
   {label:"Start a business", base:31347, type:"The Risk Taker"},
@@ -110,9 +110,9 @@ function getVoterId(){
   return id;
 }
 async function fetchLiveCounts(){
-  if(!supabase) return;
+  if(!sb) return;
   try{
-    const {data, error} = await supabase.from("votes").select("option_label").eq("experiment_id", EXPERIMENT_ID).limit(10000);
+    const {data, error} = await sb.from("votes").select("option_label").eq("experiment_id", EXPERIMENT_ID).limit(10000);
     if(error) return;
     live = {};
     (data||[]).forEach(r=>{ live[r.option_label] = (live[r.option_label]||0)+1; });
@@ -120,9 +120,9 @@ async function fetchLiveCounts(){
   }catch(e){ /* fall back to starting counts */ }
 }
 async function fetchMyVote(){
-  if(!supabase) return null;
+  if(!sb) return null;
   try{
-    const {data, error} = await supabase.from("votes").select("option_label").eq("experiment_id", EXPERIMENT_ID).eq("voter_hash", getVoterId()).maybeSingle();
+    const {data, error} = await sb.from("votes").select("option_label").eq("experiment_id", EXPERIMENT_ID).eq("voter_hash", getVoterId()).maybeSingle();
     if(error || !data) return null;
     return OPTIONS.find(o=>o.label===data.option_label) || null;
   }catch(e){ return null; }
@@ -155,9 +155,9 @@ async function vote(i){
   picked = OPTIONS[i];
   localStorage.setItem("nb247", JSON.stringify(picked));
   render();
-  if(supabase){
+  if(sb){
     try{
-      const {error} = await supabase.from("votes").insert({experiment_id: EXPERIMENT_ID, option_label: picked.label, voter_hash: getVoterId()});
+      const {error} = await sb.from("votes").insert({experiment_id: EXPERIMENT_ID, option_label: picked.label, voter_hash: getVoterId()});
       if(error && error.code !== "23505"){
         // insert failed for another reason; results still show from starting counts
       }
