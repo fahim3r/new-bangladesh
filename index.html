@@ -2574,19 +2574,6 @@ function globeDraw(now){
     x.fillStyle = "rgba(183,215,200," + a.toFixed(2) + ")"; x.fill();
   }
   const FONT = GLOBE_FONT;
-  // every city, named on the map (rings + names, never plain dots)
-  globeCityLabelLayout().forEach(L=>{
-    x.beginPath(); x.arc(L.mx, L.my, 5, 0, Math.PI * 2); x.strokeStyle = "rgba(255,255,255,.9)"; x.lineWidth = 3; x.stroke();
-    x.beginPath(); x.arc(L.mx, L.my, 5, 0, Math.PI * 2); x.strokeStyle = "#14532d"; x.lineWidth = 1.6; x.stroke();
-    if(L.selected) return; // big gold label is drawn with the arc marker below
-    const name = lang === "bn" ? L.c.bn : L.c.en;
-    if(Math.hypot(L.lx - L.mx, L.ly - L.my) > 30){
-      x.beginPath(); x.moveTo(L.mx, L.my); x.lineTo(L.lx, L.ly); x.strokeStyle = "rgba(255,255,255,.45)"; x.lineWidth = 1.2; x.stroke();
-    }
-    x.font = "700 15px " + FONT; x.textAlign = "center"; x.textBaseline = "middle";
-    x.lineWidth = 4; x.strokeStyle = "rgba(4,20,15,.85)"; x.strokeText(name, L.lx, L.ly);
-    x.fillStyle = "#fff"; x.fillText(name, L.lx, L.ly);
-  });
   const home = globeHomeLatLon();
   const city = globe.city ? WORLD_CITIES.find(c=>c.en === globe.city) : null;
   // arc: city -> home district, lifted great-circle thread
@@ -2636,6 +2623,20 @@ function globeDraw(now){
       }
     }
   }
+  // every city, named on the map (rings + names, never plain dots) — drawn AFTER
+  // the arc and its moving dot, so a name never hides under the red thread or gold dot
+  globeCityLabelLayout().forEach(L=>{
+    x.beginPath(); x.arc(L.mx, L.my, 5, 0, Math.PI * 2); x.strokeStyle = "rgba(255,255,255,.9)"; x.lineWidth = 3; x.stroke();
+    x.beginPath(); x.arc(L.mx, L.my, 5, 0, Math.PI * 2); x.strokeStyle = "#14532d"; x.lineWidth = 1.6; x.stroke();
+    if(L.selected) return; // big gold label is drawn with the arc marker below
+    const name = lang === "bn" ? L.c.bn : L.c.en;
+    if(Math.hypot(L.lx - L.mx, L.ly - L.my) > 30){
+      x.beginPath(); x.moveTo(L.mx, L.my); x.lineTo(L.lx, L.ly); x.strokeStyle = "rgba(255,255,255,.45)"; x.lineWidth = 1.2; x.stroke();
+    }
+    x.font = "700 15px " + FONT; x.textAlign = "center"; x.textBaseline = "middle";
+    x.lineWidth = 4; x.strokeStyle = "rgba(4,20,15,.85)"; x.strokeText(name, L.lx, L.ly);
+    x.fillStyle = "#fff"; x.fillText(name, L.lx, L.ly);
+  });
   // home district marker (red, pulsing when nothing picked yet)
   const hp = globeProject(home.lat * Math.PI / 180, home.lon * Math.PI / 180, 1);
   if(hp.z > 0.02){
