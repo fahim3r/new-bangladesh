@@ -154,6 +154,10 @@ h1 .red{color:var(--red);display:inline-block;animation:wordPop .8s .35s cubic-b
 .sc-styles-label{font-weight:700;font-size:14px;color:var(--muted)}
 .sc-style-btn{border:1.5px solid var(--line);background:rgba(255,255,255,.9);font:inherit;font-weight:800;font-size:14px;padding:8px 16px;border-radius:999px;cursor:pointer;color:var(--ink)}
 .sc-style-btn.active{background:var(--forest);border-color:var(--forest);color:#fff}
+.sc-style-ic{font-size:20px;line-height:1}
+.share-actions{display:flex;gap:12px;justify-content:center;align-items:center}
+.share-actions .icon-btn{flex:0 0 auto;width:58px;height:58px;padding:0;border-radius:50%;font-size:26px;display:flex;align-items:center;justify-content:center}
+.share-actions .icon-btn span{line-height:1}
 .sc-mapbg{display:none;position:absolute;right:-30px;top:70px;width:300px;height:365px;opacity:.08;pointer-events:none;z-index:0}
 .sc-mapbg svg{width:100%;height:100%}
 .sharecard.style-glass .sc-mapbg{display:block}
@@ -411,7 +415,7 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
         </div>
         <div id="result" class="hidden"></div>
         <div id="share" class="share hidden">
-          <div class="sc-styles"><span class="sc-styles-label" data-i18n="card_style_label">কার্ডের স্টাইল</span><button type="button" class="sc-style-btn active" data-style="flag" data-i18n="style_flag">ফ্ল্যাগ হিরো</button><button type="button" class="sc-style-btn" data-style="light" data-i18n="style_light">লাইট পোস্টার</button><button type="button" class="sc-style-btn" data-style="glass" data-i18n="style_glass">গ্লাস নাইট</button></div>
+          <div class="sc-styles"><span class="sc-styles-label" data-i18n="card_style_label">কার্ডের স্টাইল</span><button type="button" class="sc-style-btn active" data-style="flag" aria-label="ফ্ল্যাগ হিরো" title="ফ্ল্যাগ হিরো"><span class="sc-style-ic" aria-hidden="true">🇧🇩</span></button><button type="button" class="sc-style-btn" data-style="light" aria-label="লাইট পোস্টার" title="লাইট পোস্টার"><span class="sc-style-ic" aria-hidden="true">☀️</span></button><button type="button" class="sc-style-btn" data-style="glass" aria-label="গ্লাস নাইট" title="গ্লাস নাইট"><span class="sc-style-ic" aria-hidden="true">🌙</span></button></div>
           <div class="sharecard style-flag" id="sharecard">
             <div class="sc-mapbg" aria-hidden="true"></div>
             <div class="sc-brand">
@@ -425,9 +429,11 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
             <p><span class="sc-type" id="cardType">—</span></p>
             <div class="sc-foot"><span data-i18n="foot_tag">বাংলাদেশ উত্তর দিচ্ছে।</span><b>newbangladesh.bond</b></div>
           </div>
-          <button class="btn green" id="downloadBtn" type="button" data-i18n="download">কার্ড ডাউনলোড করো (PNG)</button>
-          <button class="btn primary" id="challengeBtn" type="button" data-i18n="challenge">বন্ধুকে চ্যালেঞ্জ করো — লিংক কপি</button>
-          <button class="btn ghost" id="againBtn" type="button" data-i18n="again">আবার ভোট দাও</button>
+          <div class="share-actions">
+            <button class="btn green icon-btn" id="downloadBtn" type="button" aria-label="কার্ড ডাউনলোড করো (PNG)" title="কার্ড ডাউনলোড করো (PNG)"><span aria-hidden="true">⬇️</span></button>
+            <button class="btn primary icon-btn" id="challengeBtn" type="button" aria-label="বন্ধুকে চ্যালেঞ্জ করো — লিংক কপি" title="বন্ধুকে চ্যালেঞ্জ করো — লিংক কপি"><span aria-hidden="true">🔗</span></button>
+            <button class="btn ghost icon-btn" id="againBtn" type="button" aria-label="আবার ভোট দাও" title="আবার ভোট দাও"><span aria-hidden="true">🔄</span></button>
+          </div>
           <p id="copyMsg"></p>
         </div>
       </div>
@@ -1168,6 +1174,9 @@ function applyLang(){
   document.documentElement.lang = lang;
   document.title = t("title");
   document.querySelectorAll("[data-i18n]").forEach(el=>{ el.textContent = t(el.dataset.i18n); });
+  // icon-only buttons: keep their accessible names + tooltips translated
+  [["downloadBtn","download"],["challengeBtn","challenge"],["againBtn","again"]].forEach(([id,key])=>{ const b=document.getElementById(id); if(b){ b.setAttribute("aria-label", t(key)); b.title = t(key); } });
+  document.querySelectorAll(".sc-style-btn").forEach(b=>{ const n = t("style_"+b.dataset.style); b.setAttribute("aria-label", n); b.title = n; });
   document.getElementById("langBn").classList.toggle("active", lang==="bn");
   document.getElementById("langEn").classList.toggle("active", lang==="en");
   localStorage.setItem("nb_lang", lang);
