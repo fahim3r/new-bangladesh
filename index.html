@@ -336,6 +336,15 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
 .globe-pick label{display:block;color:#ffd99a;font-weight:800;font-size:14px;margin:12px 0 4px}
 .globe-select{width:100%;padding:13px 16px;border-radius:999px;border:1.5px solid rgba(255,255,255,.25);background:#fff;font:inherit;font-size:16px;font-weight:600;color:var(--ink)}
 .globe-dist{font-size:20px;font-weight:800;color:#ffd99a;margin:18px auto 0;line-height:1.5;max-width:520px}
+.globe-toggle-row{display:flex;justify-content:center;margin:16px 0 4px}
+.globe-toggle{display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.08);border:1px solid rgba(247,241,230,.25);border-radius:999px;padding:8px 14px;color:#f7f1e6;font-weight:700;font-size:15px;cursor:pointer}
+.globe-toggle-knob{width:34px;height:20px;border-radius:999px;background:rgba(247,241,230,.25);position:relative;flex:none;transition:background .2s}
+.globe-toggle-knob::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s}
+.globe-toggle[aria-checked="true"] .globe-toggle-knob{background:#16a34a}
+.globe-toggle[aria-checked="true"] .globe-toggle-knob::after{left:16px}
+.globe-abroad-empty{color:#ffd99a;font-weight:700;margin:8px 0 0}
+.globe-tally{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0 0}
+.globe-tally-chip{background:rgba(255,255,255,.1);border:1px solid rgba(247,241,230,.2);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:700;color:#f7f1e6}
 .globe-note{color:rgba(247,241,230,.65);font-size:13.5px;margin:12px 0 0}
 
 /* ---------- bottom nav: same glass pill as the top header ---------- */
@@ -613,6 +622,11 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
           <select id="globeCity" class="globe-select"></select>
         </div>
         <p id="globeDist" class="globe-dist"></p>
+        <div class="globe-toggle-row">
+          <button id="abroadToggle" type="button" class="globe-toggle" role="switch" aria-checked="false"><span class="globe-toggle-knob" aria-hidden="true"></span><span data-i18n="abroad_lines_h">🌍 প্রবাসীদের লাইন দেখো</span></button>
+        </div>
+        <p id="abroadEmpty" class="globe-abroad-empty hidden" data-i18n="abroad_lines_empty">এখনো কেউ বাহিরে থেকে ডেটা দেয় নাই — তুমি প্রথম হও!</p>
+        <div id="abroadTally" class="globe-tally hidden"></div>
         <div id="globeCardSec" class="hidden">
           <p class="globe-card-cap" data-i18n="globe_card_h">এই গ্লোবটা শেয়ার করো</p>
           <canvas id="globeCardCanvas" class="globe-card-canvas" width="1080" height="1350"></canvas>
@@ -729,9 +743,9 @@ const I18N = {
     roots_png_fail:"এই ব্রাউজারে PNG বানানো যাচ্ছে না।",
     roots_my:"আমার বাংলাদেশ",
     globe_h:"দুনিয়া থেকে দেশে", globe_sub:"প্রবাসে থাকো? গ্লোবের শহরে ট্যাপ করো, বা নিচে থেকে বাছো — গ্লোব ঘুরে দেখাবে বাড়ি থেকে কত দূরে আছো।",
-    globe_city:"এখন কোন শহরে আছো?", globe_home:"বাড়ি কোন জেলায়?", globe_drag:"এক আঙুলে টেনে ঘোরাও, দুই আঙুলে চিমটি দিয়ে জুম করো — সব শহরের নাম গ্লোবেই আছে।",
+    globe_city:"এখন কোন শহরে আছো?", globe_home:"বাড়ি কোন জেলায়?", globe_drag:"এক আঙুলে টেনে ঘোরাও, দুই আঙুলে চিমটি দিয়ে জুম করো — জুম করলে শহরের নাম আসবে।",
     globe_none:"উপরে শহর বাছো — সুতোটা টেনে দেব বাড়ি পর্যন্ত।", globe_dist:"{c} থেকে {h} — {d} কিমি দূরে",
-    globe_note:"🔒 এটাও শুধু তোমার ডিভাইসেই থাকে — সার্ভারে কিছু যায় না।", globe_pick_city:"শহর বাছো…", globe_pick_which:"এখানে কয়েকটা শহর কাছাকাছি — কোনটা?", globe_card_h:"এই গ্লোবটা শেয়ার করো", globe_card_download:"গ্লোব কার্ড ডাউনলোড করো (PNG)", globe_card_share:"গ্লোব কার্ড শেয়ার করো", globe_card_shared:"শেয়ার হয়ে গেছে — দুনিয়াটা পাঠিয়ে দাও!", globe_card_downloaded:"কার্ড ডাউনলোড হয়েছে — গ্যালারি থেকে শেয়ার করো!", globe_bangladesh:"বাংলাদেশ",
+    globe_note:"🔒 তোমার গল্প শুধু তোমার ডিভাইসেই থাকে। শহর বাছলে শুধু শহর + দেশ + জেলার সংখ্যাটা যায় — কোনো নাম যায় না।", globe_pick_city:"শহর বাছো…", globe_pick_which:"এখানে কয়েকটা শহর কাছাকাছি — কোনটা?", abroad_lines_h:"🌍 প্রবাসীদের লাইন দেখো", abroad_lines_empty:"এখনো কেউ বাহিরে থেকে ডেটা দেয় নাই — তুমি প্রথম হও!", globe_card_h:"এই গ্লোবটা শেয়ার করো", globe_card_download:"গ্লোব কার্ড ডাউনলোড করো (PNG)", globe_card_share:"গ্লোব কার্ড শেয়ার করো", globe_card_shared:"শেয়ার হয়ে গেছে — দুনিয়াটা পাঠিয়ে দাও!", globe_card_downloaded:"কার্ড ডাউনলোড হয়েছে — গ্যালারি থেকে শেয়ার করো!", globe_bangladesh:"বাংলাদেশ",
     roots_theme_green:"সবুজ", roots_theme_red:"লাল", roots_theme_sky:"নীল", roots_theme_amber:"সোনালি",
     nav_battle:"ব্যাটল",
     nav_archive:"আর্কাইভ",
@@ -838,9 +852,9 @@ const I18N = {
     roots_png_fail:"This browser can't make the PNG.",
     roots_my:"My Bangladesh",
     globe_h:"From the world to home", globe_sub:"Living abroad? Tap a city on the globe, or pick below — it will turn and show how far home is.",
-    globe_city:"Which city are you in now?", globe_home:"Home district?", globe_drag:"Drag with one finger to spin, pinch with two to zoom — every city is named right on the globe.",
+    globe_city:"Which city are you in now?", globe_home:"Home district?", globe_drag:"Drag with one finger to spin, pinch with two to zoom — zoom in to see city names.",
     globe_none:"Pick a city above — we'll draw the thread all the way home.", globe_dist:"{c} to {h} — {d} km away",
-    globe_note:"🔒 This stays only on your device too — nothing goes to a server.", globe_pick_city:"Pick a city…", globe_pick_which:"Several cities are close together here — which one?", globe_card_h:"Share this globe", globe_card_download:"Download globe card (PNG)", globe_card_share:"Share the globe card", globe_card_shared:"Shared — send the world on!", globe_card_downloaded:"Card downloaded — share it from your gallery!", globe_bangladesh:"Bangladesh",    roots_theme_green:"Green", roots_theme_red:"Red", roots_theme_sky:"Blue", roots_theme_amber:"Golden",
+    globe_note:"🔒 Your story stays only on your device. Picking a city sends only an anonymous count (city + country + district) — never a name.", globe_pick_city:"Pick a city…", globe_pick_which:"Several cities are close together here — which one?", abroad_lines_h:"🌍 Show abroad voters' lines", abroad_lines_empty:"Nobody abroad has shared their location yet — be the first!", globe_card_h:"Share this globe", globe_card_download:"Download globe card (PNG)", globe_card_share:"Share the globe card", globe_card_shared:"Shared — send the world on!", globe_card_downloaded:"Card downloaded — share it from your gallery!", globe_bangladesh:"Bangladesh",    roots_theme_green:"Green", roots_theme_red:"Red", roots_theme_sky:"Blue", roots_theme_amber:"Golden",
     nav_battle:"Battles",
     nav_archive:"Archive",
     nav_community:"Community",
@@ -1281,6 +1295,7 @@ function applyLang(){
     if(rootsDone()) showRootsPoster(); else renderRootsStep();
     if(typeof initGlobe === "function") initGlobe();
     if(typeof updateGlobeUI === "function") updateGlobeUI();
+    if(typeof renderAbroadTally === "function") renderAbroadTally();
   }
   render();
 }
@@ -2440,7 +2455,44 @@ document.getElementById("rootsShare").onclick = async ()=>{
 // Dotted orthographic globe, canvas only — no library, no image, no font.
 // Land dots: 3-degree grid rasterised from Natural Earth country polygons,
 // packed as a bitmask (48 rows x 120 cols) so the whole world is ~1 KB.
-const WORLD_DOTS_B64 = "AAAAAAAAAAAAAAAAAAAAAAAABf3//wAAAAAIAAAAAAABAO///ABgAAAAAAAAAAABm8B//AAAAYB/wD4AAAAXU/A/+AAAAh7//hwAA//5jJwf8AA/gF//////d////w8fAwB/P///////A////AYMAAHv////////A+f/+BgAAAPr//////8wAAD//h8AADFP/////+BgAAD//7+AAEH//////8DAAAA////AAB///////+AAAAAP//5gAB///////+AAAAAf//0AAA/8c////8AAAAAf//gAAH3cO////xAAAAAf/+AAAHAX+///8hAAAAAP/+AAAAcAf///+SAAAAAH/8AAAD8A////+AAAAAAB/gAAAH//////+AAAAAAC8EAAAP//+///+AAAAAAAcAAAAf//fx//8AAAAAAAcyAAAf//vwffAAAAAAAAPgIAAf//vgcPAAAAAAAAA4AAAf//2AYHgAAAAAAAAIgAAf//5AIFgAAAAAAAAD8AAP//+AMFAgAAAAAAAB+AAHv/+AACEAAAAAAAAB/wAAD/8AAGMAAAAAAAAD/wAAD/4AACeAAAAAAAAD/+AAD/wAADaTAAAAAAAH//gAB/gAAAAB4AAAAAAD//gAB/wAAAEhQAAAAAAB//AAB/wAAAAAAAAAAAAB//AAB/yAAAA8gAAAAAAAf+AAD/mAAAB/gAAAAAAAf+AAB/GAAAH/wQAAAAAAf4AAB/EAAAP/4AAAAAAAfwAAA+AAAAP/8AAAAAAAfwAAA+AAAAH/8AAAAAAAfgAAAcAAAAHH4AAAAAAA+AAAAAAAAAAB4CAAAAAA8AAAAAAAAAAAABAAAAAA4AAAAAAAAAAAQCAAAAAA4AAAAAAAAAAAAMAAAAAB4AAAAAAAAAAAAAAAAAABgAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+// Globe data built from Natural Earth 110m (ne_110m_admin_0_countries + ne_110m_populated_places).
+// COUNTRY_META: [nameEn, nameBn, labelLon10, labelLat10, ringStart, ringCount, colorIdx]
+//   colorIdx: 0-7 = PALETTE index, -2 = Bangladesh brand green, -3 = Antarctica pale.
+// WORLD_GEO_B64: base64 of little-endian Uint16 pairs [lon10, lat10]; RING_LENS[i] = points in ring i.
+// WORLD_MAJOR_CITIES: [lon10, lat10, nameEn, nameBn] (probashi-city duplicates removed).
+const GLOBE_PALETTE=["#5b8dc9","#7fb069","#e9c46a","#ef8354","#b388eb","#4db6ac","#e07a5f","#c77dff"];
+const BD_GLOBE_COLOR="#16a34a";
+const AQ_GLOBE_COLOR="#dfe7e3";
+const COUNTRY_META=[["Fiji","ফিজি",3580,722,0,2,0],["Tanzania","তানজানিয়া",2150,839,2,1,2],["Western Sahara","পশ্চিম সাহারা",1674,1140,3,1,5],["Canada","কানাডা",781,1503,4,30,2],["United States of America","মার্কিন যুক্তরাষ্ট্র",825,1295,34,6,1],["Kazakhstan","কাজাখস্তান",2487,1391,40,1,2],["Uzbekistan","উজবেকিস্তান",2440,1317,41,1,3],["Papua New Guinea","পাপুয়া নিউগিনি",3239,843,42,4,2],["Indonesia","ইন্দোনেশিয়া",2819,890,46,13,1],["Argentina","আর্জেন্টিনা",1158,565,59,2,1],["Chile","চিলি",1077,518,61,2,2],["Democratic Republic of the Congo","গণতান্ত্রিক কঙ্গো প্রজাতন্ত্র",2035,881,63,1,0],["Somalia","সোমালিয়া",2252,936,64,1,1],["Kenya","কেনিয়া",2179,905,65,1,4],["Sudan","সুদান",2093,1063,66,1,1],["Chad","চাদ",1986,1051,67,1,0],["Haiti","হাইতি",1078,1093,68,1,2],["Dominican Republic","ডোমিনিকান প্রজাতন্ত্র",1093,1091,69,1,0],["Russia","রাশিয়া",2247,1482,70,14,0],["The Bahamas","বাহামা দ্বীপপুঞ্জ",1029,1164,84,3,2],["Falkland Islands","ফকল্যান্ড দ্বীপপুঞ্জ",1213,384,87,1,0],["Norway","নরওয়ে",1897,1514,88,4,1],["Greenland","গ্রিনল্যান্ড",1407,1643,92,1,3],["French Southern and Antarctic Lands","ফ্র. এস. অ্যান্ড অ্যান্টার্কটিক ল্যান্ড",2491,407,93,1,0],["East Timor","পূর্ব তিমুর",3059,812,94,1,0],["South Africa","দক্ষিণ আফ্রিকা",2037,603,95,2,0],["Lesotho","লেসোথো",2082,605,97,1,1],["Mexico","মেক্সিকো",777,1139,98,1,0],["Uruguay","উরুগুয়ে",1240,570,99,1,2],["Brazil","ব্রাজিল",1304,779,100,1,0],["Bolivia","বলিভিয়া",1154,733,101,1,3],["Peru","পেরু",1071,770,102,1,1],["Colombia","কলম্বিয়া",1068,934,103,1,2],["Panama","পানামা",996,987,104,1,0],["Costa Rica","কোস্টা রিকা",959,1001,105,1,2],["Nicaragua","নিকারাগুয়া",949,1027,106,1,1],["Honduras","হন্ডুরাস",931,1048,107,1,2],["El Salvador","এল সালভাদোর",911,1037,108,1,4],["Guatemala","গুয়াতেমালা",895,1050,109,1,3],["Belize","বেলিজ",913,1072,110,1,4],["Venezuela","ভেনেজুয়েলা",1154,972,111,1,3],["Guyana","গায়ানা",1211,951,112,1,1],["Suriname","সুরিনাম",1241,941,113,1,2],["France","ফ্রান্স",1826,1367,114,3,1],["Ecuador","ইকুয়েডর",1018,887,117,1,0],["Puerto Rico","পুয়ের্তো রিকো",1135,1082,118,1,0],["Jamaica","জ্যামাইকা",1027,1081,119,1,0],["Cuba","কিউবা",1020,1113,120,1,0],["Zimbabwe","জিম্বাবুয়ে",2099,711,121,1,5],["Botswana","বতসোয়ানা",2042,679,122,1,4],["Namibia","নামিবিয়া",1971,694,123,1,2],["Senegal","সেনেগাল",1652,1051,124,1,3],["Mali","মালি",1780,1087,125,1,2],["Mauritania","মৌরিতানিয়া",1703,1096,126,1,4],["Benin","বেনিন",1824,1003,127,1,5],["Niger","নাইজার",1895,1074,128,1,3],["Nigeria","নাইজেরিয়া",1875,994,129,1,4],["Cameroon","ক্যামেরুন",1925,946,130,1,5],["Togo","টোগো",1811,988,131,1,6],["Ghana","ঘানা",1790,977,132,1,4],["Ivory Coast","কোত দিভোয়ার",1744,975,133,1,3],["Guinea","গিনি",1700,1006,134,1,0],["Guinea-Bissau","গিনি-বিসাউ",1655,1022,135,1,2],["Liberia","লাইবেরিয়া",1705,964,136,1,2],["Sierra Leone","সিয়েরা লিওন",1682,986,137,1,3],["Burkina Faso","বুর্কিনা ফাসো",1786,1027,138,1,0],["Central African Republic","মধ্য আফ্রিকান প্রজাতন্ত্র",2009,970,139,1,2],["Republic of the Congo","কঙ্গো প্রজাতন্ত্র",1959,901,140,1,3],["Gabon","গ্যাবন",1918,896,141,1,4],["Equatorial Guinea","বিষুবীয় গিনি",1890,923,142,1,2],["Zambia","জাম্বিয়া",2064,753,143,1,3],["Malawi","মালাউই",2136,766,144,1,0],["Mozambique","মোজাম্বিক",2178,761,145,1,1],["Eswatini","ইসোয়াতিনি",2115,635,146,1,2],["Angola","অ্যাঙ্গোলা",1980,778,147,2,1],["Burundi","বুরুন্ডি",2099,867,149,1,1],["Israel","ইসরায়েল",2148,1209,150,1,4],["Lebanon","লেবানন",2160,1241,151,1,3],["Madagascar","মাদাগাস্কার",2267,714,152,1,0],["Palestine","ফিলিস্তিন অঞ্চল",2153,1220,153,1,5],["The Gambia","গাম্বিয়া",1650,1036,154,1,4],["Tunisia","তিউনিসিয়া",1890,1237,155,1,3],["Algeria","আলজেরিয়া",1828,1174,156,1,0],["Jordan","জর্ডান",2164,1208,157,1,2],["United Arab Emirates","সংযুক্ত আরব আমিরাত",2345,1135,158,1,2],["Qatar","কাতার",2311,1152,159,1,4],["Kuwait","কুয়েত",2273,1194,160,1,2],["Iraq","ইরাক",2233,1231,161,1,3],["Oman","ওমান",2373,1121,162,1,3],["Vanuatu","ভানুয়াতু",3469,746,163,2,0],["Cambodia","কম্বোডিয়া",2845,1026,165,1,1],["Thailand","থাইল্যান্ড",2811,1055,166,1,3],["Laos","লাওস",2825,1094,167,1,4],["Myanmar","মিয়ানমার",2758,1116,168,1,2],["Vietnam","ভিয়েতনাম",2854,1117,169,1,0],["North Korea","উত্তর কোরিয়া",3064,1299,170,1,3],["South Korea","দক্ষিণ কোরিয়া",3081,1264,171,1,0],["Mongolia","মঙ্গোলিয়া",2842,1360,172,1,3],["India","ভারত",2594,1127,173,1,0],["Bangladesh","বাংলাদেশ",2697,1142,174,1,-2],["Bhutan","ভুটান",2700,1175,175,1,3],["Nepal","নেপাল",2636,1183,176,1,2],["Pakistan","পাকিস্তান",2485,1193,177,1,2],["Afghanistan","আফগানিস্তান",2465,1242,178,1,4],["Tajikistan","তাজিকিস্তান",2526,1282,179,1,6],["Kyrgyzstan","কিরগিজস্তান",2545,1317,180,1,5],["Turkmenistan","তুর্কমেনিস্তান",2387,1299,181,1,5],["Iran","ইরান",2349,1222,182,1,1],["Syria","সিরিয়া",2183,1250,183,1,1],["Armenia","আর্মেনিয়া",2248,1305,184,1,3],["Sweden","সুইডেন",1990,1559,185,1,2],["Belarus","বেলারুশ",2084,1438,186,1,3],["Ukraine","ইউক্রেন",2121,1397,187,1,1],["Poland","পোল্যান্ড",1995,1420,188,1,4],["Austria","অস্ট্রিয়া",1941,1375,189,1,5],["Hungary","হাঙ্গেরি",1994,1371,190,1,3],["Moldova","মলদোভা",2085,1374,191,1,3],["Romania","রোমানিয়া",2050,1357,192,1,2],["Lithuania","লিথুয়ানিয়া",2041,1451,193,1,1],["Latvia","লাতভিয়া",2055,1471,194,1,5],["Estonia","এস্তোনিয়া",2059,1487,195,1,4],["Germany","জার্মানি",1897,1410,196,1,3],["Bulgaria","বুলগেরিয়া",2052,1325,197,1,3],["Greece","গ্রিস",2017,1295,198,2,1],["Turkey","তুরস্ক",2145,1293,200,2,2],["Albania","আলবেনিয়া",2001,1307,202,1,2],["Croatia","ক্রোয়েশিয়া",1964,1358,203,1,4],["Switzerland","সুইজারল্যান্ড",1875,1367,204,1,4],["Luxembourg","লুক্সেমবুর্গ",1861,1397,205,1,5],["Belgium","বেলজিয়াম",1848,1408,206,1,4],["Netherlands","নেদারল্যান্ডস",1856,1424,207,1,2],["Portugal","পর্তুগাল",1717,1296,208,1,3],["Spain","স্পেন",1765,1301,209,1,2],["Ireland","প্রজাতন্ত্রী আয়ারল্যান্ড",1722,1431,210,1,3],["New Caledonia","নতুন ক্যালিডোনিয়া",3451,689,211,1,0],["Solomon Islands","সলোমন দ্বীপপুঞ্জ",3392,820,212,4,0],["New Zealand","নিউজিল্যান্ড",3528,502,216,2,0],["Australia","অস্ট্রেলিয়া",3140,659,218,2,0],["Sri Lanka","শ্রীলঙ্কা",2607,976,220,1,1],["People's Republic of China","গণচীন",2863,1225,221,2,1],["Taiwan","তাইওয়ান",3009,1137,223,1,0],["Italy","ইতালি",1911,1347,224,3,2],["Denmark","ডেনমার্ক",1890,1460,227,2,4],["United Kingdom","যুক্তরাজ্য",1779,1444,229,2,2],["Iceland","আইসল্যান্ড",1613,1548,231,1,1],["Azerbaijan","আজারবাইজান",2272,1304,232,2,4],["Georgia","জর্জিয়া",2237,1319,234,1,1],["Philippines","ফিলিপাইন",3025,1012,235,7,0],["Malaysia","মালয়েশিয়া",2938,925,242,2,2],["Brunei","ব্রুনাই",2946,944,244,1,0],["Slovenia","স্লোভেনিয়া",1949,1361,245,1,6],["Finland","ফিনল্যান্ড",2073,1533,246,1,3],["Slovakia","স্লোভাকিয়া",1990,1387,247,1,6],["Czech Republic","চেক প্রজাতন্ত্র",1954,1399,248,1,1],["Eritrea","ইরিত্রিয়া",2183,1058,249,1,3],["Japan","জাপান",3184,1261,250,3,2],["Paraguay","প্যারাগুয়ে",1199,683,253,1,2],["Yemen","ইয়েমেন",2259,1053,254,1,2],["Saudi Arabia","সৌদি আরব",2247,1138,255,1,0],["Antarctica","অ্যান্টার্কটিকা",2159,102,256,8,-3],["Turkish Republic of Northern Cyprus","উত্তর সাইপ্রাস",2137,1252,264,1,0],["Cyprus","সাইপ্রাস",2131,1249,265,1,1],["Morocco","মরক্কো",1728,1217,266,1,3],["Egypt","মিশর",2094,1162,267,1,3],["Libya","লিবিয়া",1980,1166,268,1,2],["Ethiopia","ইথিওপিয়া",2191,980,269,1,0],["Djibouti","জিবুতি",2225,1020,270,1,4],["Somaliland","সোমালিল্যান্ড",2267,994,271,1,2],["Uganda","উগান্ডা",2129,920,272,1,1],["Rwanda","রুয়ান্ডা",2101,881,273,1,3],["Bosnia and Herzegovina","বসনিয়া ও হার্জেগোভিনা",1981,1341,274,1,1],["North Macedonia","উত্তর মেসিডোনিয়া",2016,1316,275,1,4],["Serbia","সার্বিয়া",2008,1342,276,1,5],["Montenegro","মন্টিনিগ্রো",1991,1328,277,1,3],["Kosovo","কসোভো",2009,1326,278,1,6],["Trinidad and Tobago","ত্রিনিদাদ ও টোবাগো",1191,1010,279,1,0],["South Sudan","দক্ষিণ সুদান",2104,972,280,1,3]];
+const RING_LENS=[3,4,12,8,94,3,4,3,3,3,5,9,4,4,10,5,29,5,4,5,3,4,6,10,19,8,4,6,7,21,4,6,3,3,48,4,3,4,31,3,39,17,9,4,5,3,16,3,3,12,3,3,4,17,3,4,4,5,8,4,33,8,25,21,9,10,17,15,6,4,3,170,6,4,6,3,3,4,4,9,9,12,4,5,3,3,3,3,5,21,4,3,50,4,3,18,4,4,34,5,53,15,19,22,9,5,5,5,4,9,4,20,8,6,5,13,4,10,3,4,9,7,10,8,10,14,13,6,17,10,12,4,6,7,11,4,5,5,10,10,14,11,4,15,8,18,4,3,14,5,5,4,12,3,3,8,13,8,6,3,4,11,8,3,3,7,17,13,20,16,7,6,19,40,11,5,6,17,17,12,8,15,21,5,5,14,10,16,8,7,7,5,8,5,9,5,12,5,3,11,15,4,5,6,5,3,4,4,6,12,7,4,3,3,3,3,10,9,5,43,4,5,71,4,15,5,4,6,3,4,14,9,11,3,5,4,4,8,4,9,3,6,5,11,4,4,16,5,6,8,17,6,4,11,8,19,5,4,7,3,3,3,4,105,3,3,12,8,14,13,5,8,7,4,4,5,6,5,5,4,14];
+const WORLD_GEO_B64="EA7jAgMO2gIKDuAC/Q3VAgIOzgL2Dc4C+Q3WAlsIewOQCFUDkAgvA5sIHQOTCBcDYggRA1kIJgM7CDEDLQhXAzwIYgM4CHkDRwh6A7EGmQSxBocEkAaHBIcGWQRdBlYEdAZbBJYGkQSwBpkEPAJuBQ4CgAUJAo8F7wGjBfQBswW9AdoFqQHRBYYB3wWGAT0GswE1BgcCRQYeAjsGLAJCBi0COgaIAjUGlQIwBocCKwaZAikGxwImBtICKwbIAi8GzgIzBuMCNAYRAygGNwMyBkcDLgZHAyUGWgM3BkMDQQZQA1MGZwNNBnUDQgZsAz0GfwM7Bn4DMQaMAzkGmAMyBp4DJAaxAz8GzgM9BtsDOAbUAy0G2gMjBq4DHgafAwwGfQMABloD5QVVA9EFZAPQBW0DvwXRA6sF0wOZBekDhAX2A5IF6gOnBQsEuQX3A9AFAwTbBfsD8wUmBPQFUATnBVME0gVkBMoFggTfBaIEvgWeBLcFywSmBdsEjQWwBHoFcAR6BUEEWAV9BHAFhgRrBX0EZQWDBFIFoQRPBasEWgWyBE8FegQ3BXIEQQWEBEkFaQRHBWIEWwVUBF4FPQRGBRsERgXQAyUFyQMoBdMDOAXOA0kFlANnBXQDZQVUA3IFWAJuBcAD9QXVA/kFwgPyBeoDXAbgA2UGDQRcBu0DWwblA/EF7wPyBeQD8AVgA3IGQANxBlwDdQZeA4sGRAOOBl8DjAZAA5gGTAOUBjsDjwYuA5kGOwOYBpYDbAZsA3AGXQN/Bj0DhAZ0A4QGjAN4Bt0DeQbqA3EGqwNsBq8Ckga9ApAGmQKNBqECkQayApgGvwKWBqMClAatApgG3ASFBdAEdgXxBHAF9QRXBeoEWAXqBGIF3gRZBbYEYwXKBH8F3gSIBcEDDwbnAwEGoAP/Ba0DFQa7AxIG9ANYBlgERQZqBDgGWAQzBp0EIQaJBA4GYAQbBoEE/gV+BPcFWAQBBnIE7wVXBPMFHAQLBvYDCgYkBBMGMQQlBisELQbyA0IGkQNEBokDSAaTA0wGhQNMBoIDVgaUA2MGrgNmBqYDYAauA1kG0QNmBuEDVQZXA2kGfwNnBlkDVAZIA10GTQNnBjsCfQZ+AowGdQKBBkkCewbZAaAF4wGhBeABlgXoAY4F1AGiBekCnQYjA48G6gKZBjUCaQUEAn0FHgJ7BTECbwVJAmwGhQJjBjkCSQYdAlMGMQJlBicCawbSAnoG5wJ3BqYCbAaVAm8GqgJ0Bm8CdAaGAoEGxQJ3BrcCgAbOAn4G3wJfBvMCSgYVAzwGBQM7BggDNAabAjEGcwJABqQCRAZtAkUGaAJJBn8CTQZeAlAGiAJhBpICXwaNAlsGvQJeBs4CUQbMAl8G1QJgBhwDWwYRA2IGOgNmBjMDXgZDA1oGQQNRBjADTQYHA1wG3gJkBvMCYgbqAlwG2wJjBi8DgwY3A38GMgNyBgcDeAYGA38GLgOCBkgDqgZsA7EGrgOdBmcDkwZcA5gGZQOeBkEDpgZ0A7cG7wPDBp4EvgZjBLMGeQSzBkAEogYHBJ0GFgSVBuoDiAb9A4QG4gN+BokDgQaaA4gGlQOPBrYDiwaYA5QGtQOdBqMDpwbWA6kGnAOpBnYDtAYYBCYGBAQoBhEELwYZBCgGRQM7BkwDNwZFAzQGIgM6BjIDQQZCAz0GgwR3BZ4EbwWMBHIFiARaBZwEVAWEBFcFPAJuBVQDcgV0A2UFlANnBc4DSQXNAyUFGwRGBT0ERgVUBF4FYgRbBWoERAVLBDkFRAQrBUwEJAUnBB0FOQQdBSQEHAUbBAkFFQQPBRkEBAURBPgEDQQMBQ0EAQUGBAIFEwToBNsDvgTkA4AE1wOHBMMDrwSoA7QEiAOyBIoDqARVA6sEPQOaBDkDhgQqA4wEFgOqBPkCqQTfAsIEsgK9BI0CywR1AskEUgLeBCwCFwUxAksFKQJmBT4CWwU/AmYF9gBNBPwARwTzAEEE8gBOBIcA4AWQANsFfQDeBQwByAUXAcQF/wC+BQYBxgWGAT0GhgHfBakB0QW9AdoF9AGzBe8BqAXLAckFkQHXBUkB5QUbAdQFJgHpBdgAtAWXAKYF1QC+BeYA0QW0AM8FrwDcBZMA4QWPAPEFmgD7BcAAAga5AAgGwAAMBpYACAZ3ABUGmwAeBrcAGQaEADAGigA1BuoATgaGAT0GUwACBnEA/QVSAP4FcgpwBVwKWgVICl0FQQpLBSgKRQUxCjQFKworBe4JNQXnCS0F0AkvBbYJGwWjCSAFkQk5BXQJNwVRCUwFNwlGBTgJIQUlCSsFFQkmBRUJMAX/CEIFGglJBRoJWQXzCFQF2QhoBeMIfQXuCHcFBAmJBTUJfgVtCYAFYAmMBXEJlgVuCaAFuwmuBeYJmwUJCqUFKAqBBUoKgwVsCnYFOAkhBTcJRgVRCUwFdAk3BZEJOQWjCSAFswkbBc4JKwXICSMF4wkdBdYJFQW9CRsFrQkQBbQJAgWuCfcEUgkwBUMJIQWKDGoDzAxHA8gMOgPrDBoDzwwfA68MOAOaDCcDigwpA4oMSQP+DF8DAA1UA+sMaQP6DGQD8QxKA9MMSwPsDE0D+QxbA/MMTAMUDU8DHw1AAxMNUgOKDGoDigwpA4EMMQNoDDADcww7A2sMTgNBDGEDOgxbAzAMaANBDG4DIQx7A0QMfANIDGgDUwxiA2YMcwN/DGwD6gsrA9wLHAPgCycDRgw/A0kMTgNLDEYDowutA50LpAOuC40DoguMA5ELXANWC2cDSguIA1ELmANZC4wDgguSA48LrwOaC68DFgxoAyQMXQMJDGgD/QteA/QLZAMADGEDBwyaAw8MjwMJDHsDBAyWA9ULjQPsC5ID3QuGA7oLhgO4C38DwQt2A9kLfgPHC3ED2AtPA84LTwPTC1cDxwtWA8ILagO2C0sDrAtoA7gLigPJC44DuwsdA64LJAO/Cx4DxQsvA9ULMwO3CywDvwsyA6cLMAOvCy0DlwsqA6MLMwNFC0QDjQswAyYLPwMtC0kDQQtFAxwLeQMtC2UDKgtJAwoLWgPBCrsD1wq4AxYLhQMYC3kDWgR2AWMEagF+BGEBWgRfAcgEVgK/BCwC0AQTArgEAQKZBAAClQTqAX0E6QF+BN8BjQTaAXwE0QF4BMIBZwS8AWQEtQF4BKwBVQSJAV8EeQE5BHwBKgSXAUAExAE3BN0BTgQuAkcESgJdBHcCXASPAnEEqgKEBKAClASoAsYEiAK+BHUC2wRyAusEhQLwBHcC1QRjAloEdgFaBF8BagRfAV8EWAFCBF0BHQR0AUEEZwFTBHcBUATUAmIEnwJqBJ4CXASPAl0EdwJHBEoCTgQuAjcE3QFABMQBKgSXATkEfAFaBHkBPgRpARsEeQEUBJ0BIwSvARQEsgEgBMsBLATHATEE3AEhBNQBLAT7ASgEEAI+BEACTQTPAi0IVwM7CDEDJwgvAyQIDgMwCAoDMQj/AhgIEAPmBxUD4Qc7A9EHPwO3BzMDqwdJA4IHSgOoB2EDywe2A+gHrAMJCLkDMQiyA0AImgMzCIoDLQhjA6gIcwOiCKADrQiuA8oItgPxCOMD8Qj2AwcJ/APuCLkDqgh2A5AIVQNbCHsDZgiXA1wIrgNpCLsDhQioA6sIqwOiCKADqAhzA5QIWQP+B9YD4wcCBO4HIQT3ByAE9wdMBAIITAQCCGAEeQhgBH8IPgSICDgEeQguBFwI2wNPCP4DQgjmAxQI4wMKCOwD9wfaA/YHSAT3ByAE7gchBOMHAgTtB/MDvAfTA6EHzgOUB+MDowfoA48HFASgByoEpwdQBJ0HaQSnB24EzgdbBDsESQQ7BDgEHwQ7BDUEPwQqBEgEMgRLBDsEOAQ8BEsEXQQ+BDsENgQDDksGEA5PBgUOSAbzCFQF2whCBe4IJgXmCCAFdwhIBY8IWgWHCF8FlQhjBZkIdAVqCH4FWgiPBUYIjQVBCJcFTwiaBT0IsAUiCLYFGQjDBRoIzwUrCNwFIQjhBUMI+QU0CAAGOAgGBi8IDQY2CBYGKwghBjQIKQYkCDAGJgg3BkkIPwajCCcGowggBogIGAZUCB4GZAgXBmUICAZ6CAIGfAgPBpQICQacCAwGlggTBq0IHQa/CBkGxQggBrsIMgbXCC8G3AgpBtAIIgbXCB8GIQk1BikJNAYfCS4GVAk1Bl8JLwZrCTUGYAk7BmYJPwa1CS0GvAkyBqUJOwajCUoGwwleBuAJVgbWCU4G4AlEBt4JNgbpCTAG0QkbBtwJGgb3CSoG9Qk2BugJPAbwCUYG4wlOBvUJVQbzCVwG/QlXBvkJTQYECkwG/wlTBhAKVwY3ClIGLQpkBmwKZwZkCm0GcApzBvgKgAYcC40GOAuBBn0LegZOC2oG2AteBtkLZQb+C2QGKQxIBjMMUgZ/DE8GdwxYBoUMXAbfDFYGAg1IBj4NSQZRDToGlg08BqgNMwa0DTYGsQ1BBhAONgYQDg4G9g0KBggO8wXRDe0Frw3bBaEN4gVrDdsFXA3KBWgNxAVdDakFTA2jBSgNggUaDa4FHw28BW0N5wV1DfYFSQ3hBUEN7gUnDeoFDg3aBRYN0wWWDNIFTwynBW4MngV/DKIFjQyXBYEMaAVNDDYFMww1BSQMKgUmDEYFOwxHBU4MaQUmDGIFFgxyBQUMdgXzC5QF3AubBboLlAW/C4wFowtzBYALegVFC3EF5QqMBdUKdQWiCoAFcgpwBUoKgwUoCoEFCQqlBeYJmwW7Ca4FbgmgBXEJlgVgCYwFbQmABTUJfgUECYkF7gh3BeMIfQXZCGgF7ghWBbIKrgbHCrEG8gqiBu8KmQbaCpgGmAqnBgwLnQYmC5cG6gqPBgULnQZ0DH0Gswx4BqsMcAZ2DG4GYgx1BmcMewbSDHUG6wxzBsAMdwZ/DGIGpAxgBoAMYQbICKoGCwmrBtkIpgbfCKoG6wejBc0HpAXdB6wF6wemBR8JZQY0CXMGbAl/BrkJgQZRCWsGMglYBkcJRwYMCU8GKAlkBp0MnQWvDG4FoAxxBZoMYwWjDFEFmwxXBZUMUAWRDJkFmwykBTMAJAY5ABsGNgAjBlEAIQZlABgGSwASBkYABwYNABkGAQAXBgAADgYAADYGGAAuBg0ASQYAAEgGAABPBhcASwZWCFAFdQhLBVsIQAVNCEkFWAhPBfIDkAT+A5AE8wOMBP4DkgQEBIcE/gORBPoDgAQBBHIE+AN6BKQEfgHHBIEBqQR5AZ8HoQbfB5oGpweEBnAHoQaRB6EGPwg8BiYINwYqCD4GHQhCBv8HMgbcBzoGzwcwBrwHMgaQBwQGhgcFBoMH3QV2B9EFcAfXBVwHywVBB84FOgfwBXEHCQacByoG/QdKBkEIRQY0CEIGGgilBu4Hnga2B6cGBgioBv8HjwbXB40G8QeRBjQFvgb5BccGOAa/BskFugYrBrUGIAawBmoGtwaOBrEGQAamBlcGpQZDBpgGQwaMBk8GhgYvBoIGQgZ9BkQGdAY5BnQGRgZrBhwGYQYpBlYGEAZXBi4GRwYJBk4GDAZIBgAGQgYpBkEGegUTBlwF9wVWBd0FJQXlBQQFAAbsBCQGCwU/BuUEPAboBEgGBgVGBtoEUQblBFoGvgR3BlsEfQY+BIYGbASKBisEkAZ3BJ4GYASlBpoEsQaVBLYGEAW8BksFtQYzBboGuQmeAcoJlwG3CZIBuQmcAeoLKwMBDDAD6wspA6sHZgLPB2cCzweMAtkHeALgB3kC8QeHAgkIhQIuCKcCQAilAkcIkAJGCIICOwh5AlAIeQI1CE0CCggxAswHKALABy8CswdZAioIYgIWCFkCHQhSAi0IXwIqCGICHQhSAhYIWQIlCGYCdQLJBI0CywSyAr0E3wLCBPkCqQQPA64EKgOMBD0DhwQ1A2QESQNABFgDOQR2A0EEgQNWBKEDWwSaAzsEegM2BH8DJQRzAyUEbgMVBF0DIwRCAyEE/QI7BOkCSwTkAmgEpgKmBJ0CvASLAr4EwgJuBL0CaASmAnsEpQKIBIkCmQSSAqIEeQLABMgEVgLuBEQC7gQsAsYEKwLFBE4C8gQyAu4ERALIBFYC8AR/AuYEgwLpBJQC3gSUAtoEpALFBKcCyQTOAsIE4QKuBOECqwT6AnoEEAN7BCIDRwQWA0cEJQM2BB8DJAQ5Ay8ETwNNBFkDTASJA1QEjgNOBJUDZQSYA3kEjAOOBJoDgAStA5EEqgOpBLgDsAS2A7oEkQPYBJYD2ASdA/cEmQMHBa4DFAWVAxAFgwMiBYIDIgV4AyoFfgNHBXQDSgVpA3gFZwOkBVEDrQU7A6kFKgOFBQEDfwXRAm8FqQIsBYsCHwVlAvkEOAJRBBYDewQiA3oEEAOrBPoCrgThAsIE4QLFBLwCngTAApUEpgKIBKgChASgAnEEqgJiBJ8CUATUAlkEBgNNBFkDLwRPAyQEOQM2BB8DRwQlA0cEFgNRBBYDWQQGA1YE3wJIBM0CEATyAtoDVQPlA2ID5ANYA/YDVwMZBIMDLQRtA0wEaQNIBF4DawSRA2UEmANOBJUDVASOA0wEiQNNBFkDRQRfA0wEaQMtBG0DGQSDAwIEiAPyA5UDBQSqAwEE2QMTBOIDGwTzAz4EAAQrBOADOATKA2cEwQNiBKADaASbAwIE2wP9A8wD8QPeA+QDzQPKA9YDzwPkA9oD3APsA+QD/wPdA88D5APKA9YDrQPxA8MD8QPKA+gDwwPxA68D8wObAwUEyQMaBMID8wPJAxoEnwMGBIoDFASZAyMExgMdBIoDFASZAwcEhgMLBIgDFARuAxUEcwMlBH8DJQR6AzYEjQM2BIwDIwSWAyEEgwMNBHMDEQSNAzYElwM7BI8DIwSMAy4EqQS4A5EEqgOABK0DjgSaA3EEiwNiBKADZwTBAzgEygMrBOADLwTtAz8E+gM3BOcDPwTfAz4E8gNNBP4DXgTuA50E7wOVBOwDsgTYA6IEwAPTBJcDtASWA7AEtgOiBMADsgTYA80EwAPEBK0DzASgA+cEmwPTBJcDyASlA80EwAPsBL4D6QSfAwMFrgP3BJkD5wSbA+wEvgMCBbIDRgdzBVkHbgVEB1cFUgc5BRoHKwX1BjYF/AZQBdoGawX4BmoF9QZ2Bf4GcQUhB4MFQwdyBV8HLgVmBzIFZAciBV0HKwUWBIIDFQR0A/YDVwPkA1gD6gNpA94DbgPfA3kD5wOMA/MDkgMSBIUDcQQ9BHgEOgRpBD0EAAQ9BA4ENwT5AzoE/gM9BNEDbAT5A2UEIgRPBP4DSwQFBFAE9QNcBNYDZgS2A18EzwNrBEAIpQIgCK0CBQjTAhYI0QIvCOgCSwjgAkoIsQIuCKcCCQiFAvEHhwLgB3kC1wd7As8HqgLZB6oC2QfNAgUI0wIoCKwCzweMAs8HZwKrB2YCfQfXAgMI1ALZB80C2QeqAs8HqgJhBgwEWAYXBGcGKQR2BioEjgYWBJUGAARhBgAEYAYIBH4GCwRsBgwElQYABJMGHgTRBh8ExwZ+BNcGfgQoB0MEMwdEBCwHIAT9BhoE4AYLBNIG7AO4BuoDrQb/A5UG/QNdBlYEhwZZBJAGhwSxBocEsQaWBNcGfgTHBn4E0QYfBJMGHgSOBhYEdgYqBGMGJQRjBlIEIwfDAxsHwQMQB+0DIQf+Ay4H7wMjB9MDnQdpBKcHUASgByoEjwcUBJoHCQSWBwEEiwcMBGIHBAQ+Bw8EMQcLBCwH+QMSBwUEDAcZBCwHIAQzB0QEgAdvBJUHZQQjB8MDNAcNBGIHBASLBwwEmgf9A30HygNkB8QDXQe0A0MHrwMsB8MDmQcFBKMH6AOUB+MDogfRA5kHswOnB5UDaAebA2AHuwNtB8oDfQfKA5gH+AOWBwQEEQfyAxsHwQMTB78DCAfyAwgH8gMTB78D9AazA+gGwwPrBvIDBAfzA7gG6gPsBuQD6wa2A7sGsAO8Br0DsgbFA7YG6QN/BgIErQb/A7gG6gO1BtEDrAbNA6YG2QOfBtcDmQboA4QG3QNxBvIDfwb+A2EGAAR/BgIEcQbyA2IG/gO0BtEDuwawA5YGyAOiBtgDsQbRA4QG3QOZBugDogbYA5YGyAOFBtYD0gbsA90GCAT9BhoEDAcZBBIHBQQeBwIEEQfyA+sG8gPsBuQD1gbqAxoIuAPoB6wDywe2A6gHmwOZB7MDoQfOA7wH0wPtB/MD8wfeAxgIvAPBB6cDqAdhA5oHUgN/B1IDdwdcA3sHaAOGB3EDlAdrA5gHdwOXB5ADiwebA6cHlQOtB6QDugeoA3kHmwOKB5sDlweQA5gHdwOUB2sDhgdxA3sHaAN3B1wDYAd5A2cHjgN5B48DaAebA3kHmwN5B48DZQeQAzsIMQNUCCMDVAj4AjYI8AIWCNEC8AfVAuMH4wLjBwMD+AcDA/cHFwMxCP8CMAgKAyQIDgMkCCgDNwgyA1AIKANfCB4DYgj8Am0I8gJmCNwCYQjyAk8I+wJUCCMDYggRA38IEAObCB0DoAjxApMI3QJkCL4CawiTAkkIeQJACKUCTwi5AlAI3QI3COUCNgjwAlQI+AJhCPICZgjcAm0I8gJfCAkDSQh5AjsIeQI+CIMCSAh9AooHVAOCB0oDhgdYA4MHRwOrB0kDtwczA9EHPwPhBzsD5gcVA/gHFAP4BwMD4wcDA+MH4wLwB9UCfQfXApEHEwOCB0UDOQhsAzwIYgMtCFcDKghoAzMIbQNtCMsEZQirBF8IvARnCM8EbQjLBG4I0QRnCM8EdAjeBHEI1gT3CAcDAAnnAvkI5wLfCIsCzgiEAsAIigK5CKACxQjCAsAI1gLECOIC5QjyAvQIDANqCL8EaAjJBGsIwgRhBgwEfgYLBGAGCARnB7MEUwfZBFwH9QRnB/kEdgf3BG0H2wR7B88EbAe1BLEGlgSxBqQE+wbHBPIG5AT8BukEXAf1BFMH2QRqB6oEZQeJBIAHbwRBB0gEKAdDBNcGfgRrCMgEjAjSBJAIxgR6CL8EhAi1BHEIqARlCKsEawjCBAwJdgQkCXUEOwmFBC4JZQQQCWoEDAl0BAQJfAQJCYkEBwl6BOgIsATsCKIE2ginBOEIsQSQCMYEjAjSBKII3ASlCPAEtAj6BMgI+ATVCOkEzgjYBO4IrwTHCKgEnAjDBDAJZwQ8CX0EXgljBEkJQQQbCSsEEAlCBC4JTAQ1CWAEkA3lApYN3wKQDeICjA3nAooN8gKODegCCgv+Aw4LEgQ6CxIEOwv/AyoL+AMuC/IDDwv0AyQLEwQOCxIECgv+A/EKCgToCuADBQvCA/wKvQPeCtgD7Ar7A94KGwTlCiYE1go8BPEKUAT9CkcE+wozBBgLOgQnCxcEOgsSBCQLEwQoCyAEGAs6BPsKMwT9CkcE8QpQBAILWAQBC2MEHAtUBCALSwQXC0UEPAscBPEKUATWCjwE5QomBN4KGwTsCvsD4grnA9QKLQTCCiEEtgokBLcKOgSjClsEvwqOBNMKkwTVCp8E4wqXBNgKcwTjCnUE6AphBPwKXgTzClQEGwvtAzsL/wM8CxwEFwtFBCALSwQcC1QEEAtUBAYLZQQlC24EQQtcBCkLQwRJCx0ETQsKBEwL+QMkC9oDIwvnAyIMLAUDDBIFCgwEBecLAQXuCw4F4wsTBRwMMgX2C/0ECwwGBRcM6AT5C9wE9QvzBP0L9QR2CnEFogqABdUKdQXlCowFRQtxBZcLdwWNC2EFpQtlBbYLWgV3C0QFZwtHBWYLOQVYCzEFIgskBcsKLwXBCj4FlQpJBY8KYQV4CmoF1QqfBNMKkwS/Co4EpwpgBKEKcASYCm8EpAp+BIsKgQR+CowEgQqABHkKeQSBCl0EbgpbBGkKTgQrCiMEJwrsAw8K1APnCSQE3glaBMkJVQSyCXEEzgl4BL8JkQTWCZsE+QnHBOkJ2wQSCucEHQrbBBsKvwQzCrIEKQqkBEkKlgR5CowEfwqdBIkKjwSgCpAEnQqaBLoKqQTJCqsEygqgBKcKYASkClMEmgpoBIIKYQR5CnkEgQqABH4KjASLCoEEpAp+BJgKbwShCnAEnQqaBKAKkASACpMEjAqfBJkKnAR5CpsEeQqMBHAKjAQpCqQENwq0BG4KnAQSCucE6QnbBPkJxwTWCZsEvwmRBM4JeASyCXEEoAmCBG8JfwSBCZAEaQmuBJ8JrwSlCb0EvQnDBNYJ8QT4CfcEAgrrBKEJ+gS8CfgEzAkFBdYJ8wT4CfcE0QntBNQJ5ATDCdgEvQnDBKUJvQSfCa8EaQmuBHIJtwRlCc4EbAnpBH4J5gSeCfoErgn3BLQJAgWqCQsFvQkbBc4JFgW/CQ8F6QkOBfUJBAX2CfoE1gnzBMwJBQWxCfYEzgkrBe4JNQUrCisF6QkOBb8JDwXjCR0FyAkjBdEJKgUVCSYFJQkrBUMJIQVSCTAFoQn6BJkJ/QR2CeUERQkABSMJ+AQjCQoFFwkUBRkJHQUrCR4FIQkpBRgJHwXuCK8EzgjYBNUI6QTBCA4F1QgHBekIEAX0CPwEBAn1BD4JAQVrCfEEZQnOBHIJtwRpCa4EgQmQBG8JfwRGCYUEPQmTBCsJjQQLCZsE/QixBPEIswRtCMsEdwj0BK8I+ASiCNwEeAjHBNkICAW9CBcFvAgfBcoIIAXZCA8FdgfRBYYH6QV/B/sFsAcsBtYHNwbzBysG9wcYBroH9wWzB+kFxAfdBbAHzwWnB7UFiQeuBX4HwgUiCLYFPQiwBU8ImgVBCJcFRgiNBToIhQXzB4gF8wefBQcIowUXCLIFRgiNBVoIjwVqCH4FmQh0BZUIYwVmCE0FRQhXBScISQUpCFQFNAhUBScIZQXlB2gF9wd8BfMHiAU6CIUFPQiMBfMHnwX4B38F7AduBaoHfAWVB5YFlQeeBbgHqQXwB6IFsgdlBagHVwWaB1QFZwdbBYkHXwWQB20FsQdpBeUHaAXrB2MF2gdTBcEHTgWqB1kFsgdlBeMHZwUSCGYFJwhlBTQIVAUiCEsFFQhlBSIISwUwCEkFJgg5Be0HOgXSB1EF7wdlBRIIZgUhCE8FEQiwBQcIowXzB58F2we0BQcItQUZCMMFIgi2BREIsAUBCLgF2we0BekHxgXxB74FBAjIBREIwwUgCNcFGQjDBfsHxgXxB9QFIAjXBZUHngWeB4MFggd7BZAHbQWJB18FUwdgBVkHbgVEB3kFTwedBWAHoAVdB6oFkAehBesHPgUmCDkFIAgoBe4HIQXoBzwFDwjlBPMH5QQJCOQE7gchBRIIJAX1BxsF/AcVBeoHFwX4B/0E7wf/BPAH8ATpB/AE0gcQBewHIQXICPgEdwj0BHEI6gRyCPMEYwj0BDEI7QQcCPMEDggPBSwIIAVXCCgFhwgdBbIIJAXICBEFwQgOBcgI+AQNCCYFKgghBRAIFgUSCCQF2gccBdIHEAXKBxcFzQcvBdYHHwWuB1UFygdIBaYHRAXBBy0FkQdHBaYHUgVoB18FcAdVBUQHUwVLB18FXQdiBUQHeQVGB3MFQgd5BUYHgAVBB3MFIQeDBUAHggVNB5sFRgeABSkHhQVFB5sFrgYnBcgGIgW5BvQErwb1BKkGBwWuBiMFvQb3BL0GEAXIBiIFrgYnBaoGMgW4BjkFJgctBRAHHgUJBwcF8wbzBNIG6wTHBvUEygafBcQGjwWkBooFrAaVBacGnwW8BqsFwgahBYINsQKPDaYCcA27An8NtAJdDRsDVQ0eA1sNHANZDSQDTg0xA1UNKQNRDSEDRQ0oA08NJANEDTQDNg06AzwNOAPxDfMB6A3nAdsN5wHgDe8B0g35AdsNDgLGDSsC6A0MAgEOCwLyDfUBqQ3QAcgN7wHWDecByw3NAbsNygGyDbkBpQ2yAYsNtgGhDc0BzQzsAc8M1AG8DNEBrwztAcUM6gH1C0IC3QsxArcLMAKkCyUChgsuAo4LQgJ1C38Cfgt9AnkLowLBC78C8Qv2Av8L+gIYDO4CIgwHAzYMCwM0DBUDXQwNA1MM7gKCDNMCmQwZA6cM8wK2DO4CwAzGAtgMuALhDKUC6wykAgENhwIIDWsCAQ1IAuQMDgK/DP4BsgwJAqQMAAKGDAgCfAwbAm0MIAJuDCwCYAwjAmoMOwJYDCcCRww+AikMSQL/C0ECOgrPAysKwAMpCuYDNQraA08LOgRHCz0ESwtKBFwLTQRXCz8EKworBTEKNAUoCkUFQQpLBUgKXQVcCloFYgppBXYKcQWWClkFlQpJBcEKPgXLCi8FIgskBUwLLQVmCzkFZwtHBXcLRAWeC1cFtQtXBaULZQWLC2UFlwt3BbELeQW/C4wFuguUBc4LmgXzC5QFBQx2BRYMcgUmDGIFTgxpBTsMRwUmDEYFIgwsBRwMMgUKDCMF/QsmBcMLCQXOCxgFyAsdBZ8LBwW1C/gE0Av7BLAL4QTLC8EEyQueBKsLeQSPC2gEXAtaBFgLTwRTC1oENgteBCULbgQBC2MEAgtYBOgKYQTjCnUE2ApzBOMKlwTKCqAEyQqrBKUKmwSMCp8EgAqVBH8KnQRiCp4EGwq/BB0K2wQCCusE6QkOBSkKKQXKC3gEvwtgBLkLcATMC34EcAdZBZIHVQWTB0wFgwdKBYYHPQW/BxIFsQcYBbMHCQWlB/8EogcUBXgHLAVuBzsFUgc5BUwHUAVwB1UFnAcBBaMHAgWfB/IEhAf8BJEHAAVfBx0FagcZBWAHCQVaBx4FaweqBV0HqgVZB7kFcgfFBXUHuQVoB68FhAe1BYEHqAV1B7IFygafBbwGoQW8BqsFzwamBekGmgXLBrwF1gbOBeoGzgXfBsQF9AbFBekGtAUZB5MFFgeFBdQGeAXmBoYF0waMBd4GjwXaBpsFdwYdBoAGDwZNBv8FJAYEBi4GCAYYBg0GKgYSBhUGFAZmBh0G2AgnBeYIIAXuCCYFAAkXBfgIFgXxCAMF6QgQBdkICAXKCCAF2QgfBdUIJQXVCAcFyAgRBdEIDQWYCDYFzwgtBdoIIAWoCCMFmwgzBcALAwS7CwsExwsHBMUL/gPSC+gD4Qv0A9YL3gPQC+UD+AvYA+4LvAPcC9IDywvMA9sL2wPvC94D7gvmA/cL3AOpC+EDnAvYA7ML9gOuC+gDzws6BMkLEwTgCw4E4QsBBL4LDwTCCxUEtwseBL8LPQTOCz0EzAv2A9cL+APMC/ED7wv+A/IL8gPqC/UD6AvpA+MLAgTsCwEE8QrFAw4LuwMaC5ED/gqgA/MKwAOjC60DjwuvA4ILkgNSC5EDUQuYA2ALlwN+C7EDiQuvA5cLyQOwC7oDqguxA4sLugOJC68DgwusA4ILtQOSB1UFrgdVBaEHSwWRB1AFJgg3BiQIMAY0CCkGKwghBj8I9AUhCOEF7QfaBd0H4wXfB/wFBggPBvQHHAbzBysG1gc3Bv8HMgYOCD4GKgg+BuoHbwW7B2IFsQdpBcIHcwXgB3MFngeDBcUHcwWXB2oFhQdzBYIHewWaB4IFdAgUBHkILgSICDgEkQgjBLcIAwSYCBUEgwgaBIAIEgSTDAwFgwzjBFYM0wRPDN4EJgzXBDAMzwQpDL8EHgy+BBYM0QQ2DOYEVQznBF8M+QRmDPQEegwCBYMMIAWODCIFkwwUBa4MPAW1DEAFtww1BYAMJAWUDEwFpww+BTQM0wRDDNwETAzWBDQMzgTCBLoCxQSnAtoEpALeBJQC6QSUAtsEcgK+BHUCxgSIApUEpgKeBMACwgS9AhAJQgQbCSsEEgkgBLsIAgSyCBwEugg0BN4ILQTzCD4EZgiqBH8IsASECLUEegi/BJAIxgTHCKgE4wimBP4IjwQQCWoEMAlnBC4JTATzCD4E3ggtBLoINAS0CCcEjwhZBIkIcQRiCJ0EZAimBCEFeABRBXMAVwVkAOoEXgAhBXgAcQRhALQEZACuBFoAdwRfACUEuwA3BLwAOwTNAEkE0wBdBLoAQQSvABoEtwAJA7UARgOvAA4DsQA+AqMAZQKlAEgCoAAPAqUAMAKhAB0CowCjAHIAvAB0ANAAaQCpAG8AEA41ABAOAAAAAAAAAAA1AAkAOwBkAD0A2wAuAHEBMgAIAT8ADwFQAOgAWQAmAVcAUAFhAPcAbQDbAHgA2ACDAB8BfgBTAYcAUgGSAMABnQBNApsAlQKjAKUCmQDUApQAHwOXAAcDnwD7Aq4ARQOkAIMDpwCMA64AGwShAGYErwBbBMsAYwTjAIwE+wDGBAsBzAQJAZwE/ACbBO4AdwTcAJ4EwQCoBKMARgSGAAQEhQAnBHkA/QN0APwDbADCBEQAFgVTAFwFTwDrBWEA3wVrAKQFaQCiBXUAWQaVAGsGmwBjBqEAbgapAKEGuwC+BrcAwwa/AAYHuABVB8kAdAfAAI4HyAAXCMMAWwjXAIoIygApCfIAbgncALkJ3QDBCdAArgnFALsJwQCvCbUAwwmxAOsJyQAQCs0ARArkAGwK5AB4Cu4AiQrkAMYK4gDtCuQADAv0AC4L5wB4C/EAtgvjAEwM7gBPDPcAZwzmALcM5wDYDNgADw3WAFgNwgC4DbcApQ2jAIUNnABsDYoAdw12AI4NcABaDWwARg1bAKYNPgD/DTcATwjjBGII6QRRCOMETwjjBFwI4gRLCOME8gbkBPsGxwSxBqQEsAaTBJYGkQR0BlsEXgZaBHgGiwSoBq8EsQbQBM0G6gTuBuQEeQhgBAIIYAQECMAEXwi8BGUIqwReCJoESwiuBHcIYgQCCGAEAghMBPYHSASnB24ElQdlBG8HeARlB4kEZwezBHsHzwTHB7ME2QfLBO0HygQECMAEAgiFBOYI1APKCLYDlAimA3IIsANSCNIDdAgUBIMIGgShCBEEsAgBBKoI8wO0CPEDvQjgA90I1AOwCAEEuQgABLQI8QOqCPMDrAj9A/EI9gPxCOMD5gjUA70I4AOyCO4Dtwj3A8EI7APxCPYDWwh7AzAIdwNACJoDPAinA1wIrgNmCJcDWwiFAzgIeQM8CG0DKghoAzIIdgPCBy8FqAdIBcoHRQXDBzQF6AcrBe4HIQXWBx8F2AcpBeMHKwXEB08F0gdRBesHQgXpBy0FyAc3BccHSwXRBy4FygcnBcEHLQXIBzcF0wcwBdYHJwXRBy4F2Ac1BeIHLwXXByYFnwTwA6cE8QOnBOkDnwTsAzwIpwMxCLIDIAiwA/cH2gMDCOsDFAjjA0II5gNJCPwDVAj+A1wI2wNSCNIDaQi7A1YIqgNACKoD";
+const WORLD_MAJOR_CITIES=[[1924,1339,"San Marino","সান মারিনো"],[1895,1371,"Vaduz","ফাডুৎস"],[2112,635,"Lobamba","লোবাম্বা"],[1861,1396,"Luxembourg","লুক্সেমবুর্গ শহর"],[3381,969,"Palikir","পালিকির"],[3514,971,"Majuro","মাজুরো"],[3592,815,"Funafuti","ফুনাফুতি"],[3146,975,"Melekeok","মেলেকেওক"],[1703,1161,"Bir Lehlou","বির লেহলোউ"],[1874,1337,"Monaco","মোনাকো"],[3530,913,"South Tarawa","দক্ষিণ তারাওয়া"],[2232,783,"Moroni","মোরোনি"],[1815,1325,"Andorra la Vella","আন্দরা লা ভেলিয়া"],[1185,1007,"Port of Spain","পোর্ট অব স্পেন"],[2101,880,"Kigali","কিগালি"],[2111,637,"Mbabane","অম্বাবানে"],[2116,948,"Juba","জুবা"],[1843,1421,"The Hague","হেগ"],[1945,1361,"Ljubljana","লিউব্লিয়ানা"],[1971,1382,"Bratislava","ব্রাতিস্লাভা"],[1993,1325,"Podgorica","পোডগোরিকা"],[2599,969,"Sri Jayawardenepura Kotte","শ্রী জয়াবর্ধেনেপুরা কোট্টে"],[3006,1064,"Baguio","বাগেোইউ"],[2158,838,"Dodoma","দোদোমা"],[1875,1369,"Bern","বের্ন"],[1668,1171,"Laayoune","লাইউন"],[2012,1327,"Pristina","প্রিস্টিনা"],[1186,1053,"Roseau","রোসেউ"],[2231,1016,"Djibouti","জিবুতি"],[3157,1250,"Kyoto","কিয়োটো"],[1634,1035,"Banjul","বাঞ্জুল"],[2014,1320,"Skopje","স্কপিয়ে"],[1204,1031,"Bridgetown","ব্রিজটাউন"],[1826,965,"Porto-Novo","পোর্তো নভো"],[2094,866,"Bujumbura","বুুজুম্বুরা"],[1188,1032,"Kingstown","কিংসটাউন"],[1190,1040,"Castries","কাস্তেরিস"],[1173,1073,"Basseterre","সেন্ট কিটস অ্যান্ড নেভিস"],[2375,698,"Port Louis","পোর্ট লুইস"],[1183,1021,"St. George's","সেন্ট জর্জেস"],[1181,1071,"Saint John's","সেন্টজোন্স"],[1238,551,"Montevideo","মোন্তেবিদেও"],[1812,961,"Lomé","লোমে"],[1902,1268,"Tunis","তিউনিস"],[2384,1279,"Ashgabat","আশখাবাদ"],[2083,746,"Lusaka","লুসাকা"],[2110,722,"Harare","হারারে"],[3056,814,"Dili","দিলি"],[3483,723,"Port Vila","পোর্ট ভিলা"],[928,1041,"Tegucigalpa","তেগুসিগালপা"],[1218,968,"Georgetown","জর্জটাউন"],[1581,1541,"Reykjavík","রেইকিয়াভিক"],[1077,1085,"Port-au-Prince","পর্তোপ্রাঁস"],[2126,903,"Kampala","কাম্পালা"],[1248,958,"Paramaribo","প্যারামারিবো"],[1821,1035,"Niamey","নিয়ামে"],[2488,1286,"Dushanbe","দুশান্বে"],[1224,647,"Asunción","আসুনসিওন"],[937,1022,"Managua","মানাগুয়া"],[1668,985,"Freetown","ফ্রিটাউন"],[2531,1237,"Islamabad","ইসলামাবাদ"],[2653,1177,"Kathmandu","কাঠমান্ডু"],[2062,609,"Bloemfontein","ব্লুমফন্টেইন"],[2082,643,"Pretoria","প্রিটোরিয়া"],[3272,805,"Port Moresby","পোর্ট মোর্সবি"],[3399,806,"Honiara","হোনিয়ারা"],[1005,990,"Panama City","পানামা সিটি"],[1732,1240,"Rabat","রাবাত"],[2089,1370,"Chișinău","কিশিনাউ"],[2126,640,"Maputo","মাপুতো"],[2254,921,"Mogadishu","মোগাদিশু"],[2599,969,"Colombo","কলম্বো"],[2869,1379,"Ulaanbaatar","উলানবাটর"],[1971,674,"Windhoek","উইন্ডহোক"],[1875,991,"Abuja","আবুজা"],[1644,1019,"Bissau","বিসাউ"],[2159,1220,"Amman","আম্মান"],[2053,1447,"Vilnius","ভিলনিয়াস"],[2041,1470,"Riga","রিগা"],[2546,1329,"Bishkek","বিশকেক"],[2075,607,"Maseru","মাসেরু"],[2275,711,"Antananarivo","আন্তানানারিভো"],[1015,898,"Quito","কিতো"],[959,999,"San José","স্যান হোসে"],[908,1037,"San Salvador","সান সালভাদর"],[1032,1080,"Kingston","কিংস্টন"],[1950,1021,"N'Djamena","এনজামেনা"],[1888,938,"Malabo","মালাবু"],[2189,1053,"Asmara","আসমারা"],[1960,1358,"Zagreb","জাগরেব"],[2047,1494,"Tallinn","তালিন"],[2138,760,"Lilongwe","লিলোঙ্গুই"],[895,1046,"Guatemala City","গুয়াতেমালা নগরী"],[1895,904,"Libreville","লিব্রভিল"],[3584,719,"Suva","সুভা"],[1084,570,"Valparaíso","ভালপারাইসো"],[1640,1081,"Nouakchott","নুওয়াকশুত"],[1720,1027,"Bamako","বামাকো"],[2155,1239,"Beirut","বৈরুত"],[2248,1317,"Tbilisi","তিবিলিসি"],[2514,1412,"Nur-Sultan","নুর-সুলতান"],[2826,1080,"Vientiane","ভিয়েনতিয়েন"],[1953,857,"Brazzaville","ব্রাজাভিল"],[1663,995,"Conakry","কোনাক্রি"],[1747,968,"Yamoussoukro","ইয়ামুসুক্রো"],[1043,1354,"Ottawa","অটোয়া"],[2005,1348,"Belgrade","বেলগ্রেড"],[2949,949,"Bandar Seri Begawan","বন্দর সেরি বেগাওয়ান"],[1147,710,"Sucre","সুক্রে"],[912,1073,"Belmopan","বেলমোপান"],[1986,944,"Bangui","বাঙ্গুই"],[1915,939,"Yaoundé","ইয়াউন্দে"],[1998,1313,"Tirana","তিরানা"],[2245,1302,"Yerevan","ইয়েরেভান"],[2299,1304,"Baku","বাকু"],[2849,1016,"Phnom Penh","নমপেন"],[1118,735,"La Paz","লা পাজ"],[1824,964,"Cotonou","কোটোনো"],[2033,1327,"Sofia","সফিয়া"],[2076,1439,"Minsk","মিন্স্ক"],[2696,1175,"Thimphu","থিম্ফু"],[2059,654,"Gaborone","গ্যাবোরোন"],[3291,547,"Canberra","ক্যানবেরা"],[1785,1024,"Ouagadougou","ওয়াগাদুগু"],[1984,1339,"Sarajevo","সারায়েভো"],[2761,1098,"Naypyidaw","নেপিডো"],[48,689,"Nuku'alofa","নুকুয়ালোফা"],[2241,996,"Hargeisa","হারগেইসা"],[2354,854,"Victoria","ভিক্তোরিয়া"],[1867,903,"São Tomé","সাও তমে"],[82,762,"Apia","আপিয়া"],[1945,1259,"Valletta","ভাল্লেত্তা"],[2535,942,"Malé","মালে"],[2152,1218,"Jerusalem","জেরুসালেম"],[1565,1049,"Praia","প্রাইয়া"],[1026,1151,"Nassau","নাসাউ"],[2134,1252,"Nicosia","নিকোসিয়া"],[3548,487,"Wellington","ওয়েলিংটন"],[2858,1110,"Hanoi","হ্যানয়"],[2129,1299,"Ankara","আঙ্কারা"],[1991,1375,"Budapest","বুদাপেস্ট"],[2242,1054,"Sanaa","সানা"],[2061,1344,"Bucharest","বুখারেস্ট"],[2163,1235,"Damascus","দামেস্ক"],[1709,1287,"Lisbon","লিসবন"],[2125,1056,"Khartoum","খার্তুম"],[1907,1499,"Oslo","অসলো"],[2010,1422,"Warsaw","ওয়ারশ"],[3058,1290,"Pyongyang","পিয়ং ইয়াং"],[2193,832,"Dar es Salaam","দারুস সালাম"],[1737,1433,"Dublin","ডাবলিন"],[1692,963,"Monrovia","মনরোভিয়া"],[976,1131,"Havana","হাভানা"],[1944,1401,"Prague","প্রাগ"],[1101,1085,"Santo Domingo","সান্তো দোমিঙ্গো"],[1798,956,"Accra","আক্রা"],[1932,1229,"Tripoli","ত্রিপোলি"],[2148,1221,"Tel Aviv","তেল আবিব"],[2049,1502,"Helsinki","হেলসিঙ্কি"],[1926,1457,"Copenhagen","কোপেনহেগেন"],[1760,953,"Abidjan","আবিজান"],[1321,742,"Brasília","ব্রাসিলিয়া"],[1843,1408,"Brussels","ব্রাসেলস"],[2704,1137,"Dhaka","ঢাকা"],[1932,812,"Luanda","লুয়ান্ডা"],[1830,1268,"Algiers","আলজিয়ার্স"],[2762,1068,"Yangon","ইয়াঙ্গুন"],[750,1297,"Denver","ডেনভার"],[998,1158,"Miami","মায়ামি"],[956,1237,"Atlanta","আটলান্টা"],[1131,1005,"Caracas","কারাকাস"],[2105,1404,"Kyiv","কিয়েভ"],[2493,1313,"Tashkent","তাশখন্দ"],[1861,1362,"Geneva","জেনেভা"],[1981,1493,"Stockholm","স্টকহোম"],[2805,1038,"Bangkok","ব্যাংকক"],[1029,780,"Lima","লিমা"],[1625,1047,"Dakar","ডাকার"],[2080,638,"Johannesburg","জোহানেসবার্গ"],[1724,1236,"Casablanca","কাসাব্লাঙ্কা"],[3010,1046,"Manila","ম্যানিলা"],[797,1157,"Monterrey","মোন্তেররেই"],[2676,1338,"Ürümqi","উরুমচি"],[2841,1207,"Chengdu","ছেংতু"],[3155,1247,"Osaka","ওসাকা"],[1953,857,"Kinshasa","কিনশাসা"],[2572,1186,"New Delhi","নতুন দিল্লি"],[2576,1030,"Bengaluru","বেঙ্গালুরু"],[2037,1280,"Athens","অ্যাথেন্স"],[2244,1233,"Baghdad","বাগদাদ"],[2187,990,"Addis Ababa","আদ্দিস আবাবা"],[2314,1257,"Tehran","তেহরান"],[569,1393,"Vancouver","ভ্যানকুভার"],[1216,554,"Buenos Aires","বুয়েনোস আইরেস"],[2492,1245,"Kabul","কাবুল"],[1964,1382,"Vienna","ভিয়েনা"],[3016,1150,"Taipei","তাইপে"],[3548,532,"Auckland","অকল্যান্ড"],[1030,1289,"Washington","ওয়াশিংটন"],[2090,1310,"Istanbul","ইস্তাম্বুল"],[1984,561,"Cape Town","কেপ টাউন"],[2176,1458,"Moscow","মস্কো"],[809,1094,"Mexico City","মেক্সিকো সিটি"],[1834,964,"Lagos","লেগোস"],[2964,1299,"Beijing","বেইজিং"],[2168,887,"Nairobi","নাইরোবি"],[2868,838,"Jakarta","জাকার্তা"],[1059,946,"Bogotá","বোগোতা"],[2112,1201,"Cairo","কায়রো"],[3014,1212,"Shanghai","সাংহাই"],[2529,1091,"Mumbai","মুম্বই"],[1093,566,"Santiago","সান্তিয়াগো"],[2684,1126,"Kolkata","কলকাতা"],[1368,671,"Rio de Janeiro","রিউ দি জানেইরু"],[1334,664,"São Paulo","সাও পাওলো"]];
+// Decode the packed country geometry once: [{en, bn, lx, ly, color, rings:[[[lon,lat],...]]}]
+// (coords stored as (deg+180)*10 / (deg+90)*10 little-endian Uint16, base64)
+const WORLD_GEO = (()=>{
+  const out = [];
+  try{
+    if(typeof atob !== "function") return out;
+    const bin = atob(WORLD_GEO_B64);
+    const u16 = new Uint16Array(bin.length >> 1);
+    for(let i = 0; i < u16.length; i++) u16[i] = bin.charCodeAt(i * 2) | (bin.charCodeAt(i * 2 + 1) << 8);
+    let p = 0, ring = 0;
+    COUNTRY_META.forEach(m=>{
+      const rings = [];
+      for(let r = 0; r < m[5]; r++){
+        const len = RING_LENS[ring++];
+        const pts = [];
+        for(let k = 0; k < len; k++){ pts.push([u16[p] / 10 - 180, u16[p + 1] / 10 - 90]); p += 2; }
+        rings.push(pts);
+      }
+      out.push({en: m[0], bn: m[1], lx: m[2] / 10 - 180, ly: m[3] / 10 - 90, color: m[6], rings});
+    });
+  }catch(e){}
+  return out;
+})();
+const WORLD_MAJOR = WORLD_MAJOR_CITIES.map(c=>({lon: c[0] / 10 - 180, lat: c[1] / 10 - 90, en: c[2], bn: c[3]}));
+// country flag emoji for the abroad-voters tally (only the 32 probashi countries appear there)
+const COUNTRY_FLAG = {"Saudi Arabia":"🇸🇦","Qatar":"🇶🇦","UAE":"🇦🇪","Malaysia":"🇲🇾","Singapore":"🇸🇬","Kuwait":"🇰🇼","Oman":"🇴🇲","Bahrain":"🇧🇭","United Kingdom":"🇬🇧","France":"🇫🇷","Italy":"🇮🇹","Germany":"🇩🇪","Netherlands":"🇳🇱","Spain":"🇪🇸","USA":"🇺🇸","Canada":"🇨🇦","Australia":"🇦🇺","Japan":"🇯🇵","South Korea":"🇰🇷","Hong Kong":"🇭🇰"};
 const WORLD_CITIES = [
   {en:"Riyadh", bn:"রিয়াদ", co:"Saudi Arabia", cobn:"সৌদি আরব", lat:24.7136, lon:46.6753},
   {en:"Dammam", bn:"দাম্মাম", co:"Saudi Arabia", cobn:"সৌদি আরব", lat:26.4207, lon:50.0888},
@@ -2475,21 +2527,6 @@ const WORLD_CITIES = [
   {en:"Seoul", bn:"সিউল", co:"South Korea", cobn:"দক্ষিণ কোরিয়া", lat:37.5665, lon:126.9780},
   {en:"Hong Kong", bn:"হংকং", co:"Hong Kong", cobn:"হংকং", lat:22.3193, lon:114.1694}
 ];
-const WORLD_DOTS = (()=>{
-  const out = [];
-  try{
-    if(typeof atob !== "function") return out;
-    const bin = atob(WORLD_DOTS_B64);
-    for(let r = 0; r < 48; r++) for(let c = 0; c < 120; c++){
-      const i = r * 120 + c;
-      if((bin.charCodeAt(i >> 3) >> (7 - (i & 7))) & 1){
-        const lat = (84 - 3 * r) * Math.PI / 180, lon = (-180 + 3 * c) * Math.PI / 180;
-        out.push({lat, lon, cl: Math.cos(lat), sl: Math.sin(lat)});
-      }
-    }
-  }catch(e){}
-  return out;
-})();
 let globe = null;
 function globeCityLabel(c){ return lang === "bn" ? c.bn + ", " + c.cobn : c.en + ", " + c.co; }
 function globeHomeLatLon(){
@@ -2501,12 +2538,13 @@ function globeHaversineKm(a, b){
   const h = Math.sin(dLa / 2) ** 2 + Math.cos(a.lat * Math.PI / 180) * Math.cos(b.lat * Math.PI / 180) * Math.sin(dLo / 2) ** 2;
   return Math.round(2 * R * Math.asin(Math.min(1, Math.sqrt(h))));
 }
-function globeSave(){ roots.abroad = globe.city || ""; if(globe.city) roots.now = ""; saveRoots(); }
+function globeSave(){ roots.abroad = globe.city || ""; if(globe.city) roots.now = ""; saveRoots(); submitAbroadVote(); }
 function globeSyncFromRoots(){
   if(!globe) return;
   globe.city = roots.abroad || "";
   globe.home = rootsHomeDistrict();
   updateGlobeUI();
+  submitAbroadVote();
 }
 function globeProject(lat, lon, alt){
   const dlon = lon - globe.center;
@@ -2524,9 +2562,9 @@ const GLOBE_FONT = "'Noto Sans Bengali','Hind Siliguri',Arial,sans-serif";
 // decide collisions: Gulf names are 50-90px wide, so an 18px centre gap still stacked them.
 function globeCityLabelLayout(){
   const x = globe.ctx;
-  const placed = []; // {x,y,w,h} label boxes already taken
+  const placed = [...(globe.countryLabelBoxes || [])]; // country names first, so city names never stack on them
   const out = [];
-  const offs = [[0, -13], [0, 21], [-16, -13], [16, -13], [-16, 21], [16, 21], [0, -30], [0, 38], [-26, 4], [26, 4], [-34, -22], [34, -22], [-34, 30], [34, 30], [0, -48], [0, 56], [-52, 4], [52, 4], [-70, -30], [70, -30], [-70, 38], [70, 38], [0, -66], [0, 74], [-70, 4], [70, 4], [-90, -40], [90, -40], [-90, 48], [90, 48], [0, -92], [0, 100], [-110, 4], [110, 4]];
+  const offs = [[0, -13], [0, 21], [-16, -13], [16, -13], [-16, 21], [16, 21], [0, -30], [0, 38], [-26, 4], [26, 4], [-34, -22], [34, -22], [-34, 30], [34, 30], [0, -48], [0, 56], [-52, 4], [52, 4], [-70, -30], [70, -30], [-70, 38], [70, 38], [0, -66], [0, 74], [-70, 4], [70, 4], [-90, -40], [90, -40], [-90, 48], [90, 48], [0, -92], [0, 100], [-110, 4], [110, 4], [0, -110], [0, 118], [-130, -30], [130, -30], [-130, 38], [130, 38], [-130, 4], [130, 4], [-150, -40], [150, -40]];
   const boxOverlap = (a, b)=>{
     const ox = Math.max(0, Math.min(a.x + a.w / 2, b.x + b.w / 2) - Math.max(a.x - a.w / 2, b.x - b.w / 2));
     const oy = Math.max(0, Math.min(a.y + a.h / 2, b.y + b.h / 2) - Math.max(a.y - a.h / 2, b.y - b.h / 2));
@@ -2585,55 +2623,133 @@ function globeCityLabelLayout(){
   });
   return out;
 }
+// clip a projected ring to the visible hemisphere (chord clip at z=0)
+function clipFront(pts){
+  const out = [];
+  for(let i = 0; i < pts.length; i++){
+    const a = pts[i], b = pts[(i + 1) % pts.length];
+    const aIn = a.z > 0, bIn = b.z > 0;
+    if(aIn) out.push(a);
+    if(aIn !== bIn){
+      const t = a.z / (a.z - b.z);
+      out.push({x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t, z: 0});
+    }
+  }
+  return out;
+}
+// lifted great-circle points between two lat/lon spots (degrees)
+function globeArcPoints(aLat, aLon, bLat, bLon, lift){
+  const aLa = aLat * Math.PI / 180, aLo = aLon * Math.PI / 180;
+  const bLa = bLat * Math.PI / 180, bLo = bLon * Math.PI / 180;
+  const va = [Math.cos(aLa) * Math.cos(aLo), Math.sin(aLa), Math.cos(aLa) * Math.sin(aLo)];
+  const vb = [Math.cos(bLa) * Math.cos(bLo), Math.sin(bLa), Math.cos(bLa) * Math.sin(bLo)];
+  const dot = Math.max(-1, Math.min(1, va[0] * vb[0] + va[1] * vb[1] + va[2] * vb[2]));
+  const om = Math.acos(dot) || 0.0001;
+  const N = 48, pts = [];
+  for(let k = 0; k <= N; k++){
+    const tt = k / N;
+    const s1 = Math.sin((1 - tt) * om) / Math.sin(om), s2 = Math.sin(tt * om) / Math.sin(om);
+    const vx = s1 * va[0] + s2 * vb[0], vy = s1 * va[1] + s2 * vb[1], vz = s1 * va[2] + s2 * vb[2];
+    const la = Math.asin(Math.max(-1, Math.min(1, vy))), lo = Math.atan2(vz, vx);
+    const alt = 1 + lift * Math.sin(Math.PI * tt);
+    pts.push({p: globeProject(la, lo, alt), tt});
+  }
+  return {pts, N};
+}
+function strokeGlobeArc(x, pts, color, width, dashed, now){
+  x.strokeStyle = color; x.lineWidth = width; x.lineCap = "round";
+  if(dashed && !reducedMotion){ x.setLineDash([7, 7]); x.lineDashOffset = -(now / 40) % 14; }
+  x.beginPath();
+  let pen = false;
+  pts.forEach(({p})=>{
+    if(p.z > 0.02){ if(!pen){ x.moveTo(p.x, p.y); pen = true; } else x.lineTo(p.x, p.y); }
+    else pen = false;
+  });
+  x.stroke(); x.setLineDash([]);
+}
 function globeDraw(now){
   const cv = globe.cv, x = globe.ctx;
   if(!cv || !x) return;
   const W = cv.width, H = cv.height;
   globe.cx = W / 2; globe.cy = H / 2; globe.R = W * 0.44 * globe.zoom;
   x.clearRect(0, 0, W, H);
-  // sphere
-  const g = x.createRadialGradient(globe.cx - globe.R * 0.3, globe.cy - globe.R * 0.35, globe.R * 0.1, globe.cx, globe.cy, globe.R);
-  g.addColorStop(0, "#17503c"); g.addColorStop(1, "#0b2e22");
-  x.beginPath(); x.arc(globe.cx, globe.cy, globe.R, 0, Math.PI * 2); x.fillStyle = g; x.fill();
+  // sphere (ocean): deep green disc; land countries paint over it
+  x.beginPath(); x.arc(globe.cx, globe.cy, globe.R, 0, Math.PI * 2); x.fillStyle = "#0d3527"; x.fill();
+  // countries: real shapes, each its own colour (projected once, reused for fill + borders)
+  const proj = [];
+  WORLD_GEO.forEach(ctry=>{
+    const rings = ctry.rings.map(ring=> ring.map(([lon, lat])=> globeProject(lat * Math.PI / 180, lon * Math.PI / 180, 1)));
+    const col = ctry.color === -2 ? BD_GLOBE_COLOR : ctry.color === -3 ? AQ_GLOBE_COLOR : GLOBE_PALETTE[ctry.color];
+    proj.push({col, rings});
+  });
+  proj.forEach(({col, rings})=>{
+    x.fillStyle = col;
+    rings.forEach(pts=>{
+      const cl = clipFront(pts);
+      if(cl.length < 3) return;
+      x.beginPath();
+      cl.forEach((p, i)=>{ if(i === 0) x.moveTo(p.x, p.y); else x.lineTo(p.x, p.y); });
+      x.closePath(); x.fill();
+    });
+  });
+  // 3D shading over the land: bright centre, dark limb (before arcs and labels)
+  const sh = x.createRadialGradient(globe.cx - globe.R * 0.3, globe.cy - globe.R * 0.35, globe.R * 0.1, globe.cx, globe.cy, globe.R);
+  sh.addColorStop(0, "rgba(0,0,0,0)"); sh.addColorStop(0.75, "rgba(4,20,15,.08)"); sh.addColorStop(1, "rgba(4,20,15,.45)");
+  x.beginPath(); x.arc(globe.cx, globe.cy, globe.R, 0, Math.PI * 2); x.fillStyle = sh; x.fill();
   x.strokeStyle = "rgba(247,241,230,.22)"; x.lineWidth = 1.5; x.stroke();
-  // land dots
-  for(let i = 0; i < WORLD_DOTS.length; i++){
-    const d = WORLD_DOTS[i];
-    const p = globeProject(d.lat, d.lon, 1);
-    if(p.z <= 0.02) continue;
-    const a = 0.25 + 0.75 * p.z;
-    x.beginPath(); x.arc(p.x, p.y, 1.4 + 1.8 * p.z, 0, Math.PI * 2);
-    x.fillStyle = "rgba(183,215,200," + a.toFixed(2) + ")"; x.fill();
-  }
+  // country borders: front-facing edges only, so no chord lines cut across the sphere
+  x.strokeStyle = "rgba(255,255,255,.30)"; x.lineWidth = 1;
+  x.beginPath();
+  proj.forEach(({rings})=> rings.forEach(pts=>{
+    for(let i = 0; i < pts.length; i++){
+      const a = pts[i], b = pts[(i + 1) % pts.length];
+      if(a.z > 0.02 && b.z > 0.02){ x.moveTo(a.x, a.y); x.lineTo(b.x, b.y); }
+    }
+  }));
+  x.stroke();
+  // country names on the face (kept for the city layout + tap picking, so names never stack)
+  const countryBoxes = [];
+  WORLD_GEO.forEach(ctry=>{
+    const p = globeProject(ctry.ly * Math.PI / 180, ctry.lx * Math.PI / 180, 1);
+    if(p.z < 0.25) return;
+    const name = lang === "bn" ? ctry.bn : ctry.en;
+    if(name.length > 20) return; // very long names (e.g. DR Congo) would span a third of the globe
+    x.font = "700 13px " + GLOBE_FONT;
+    let w = name.length * 8;
+    try{ w = x.measureText(name).width; }catch(e){}
+    if(w > globe.R * 1.1) return;
+    const box = {x: p.x, y: p.y, w: w + 8, h: 17};
+    if(countryBoxes.some(q=> Math.abs(q.x - box.x) < (q.w + box.w) / 2 - 2 && Math.abs(q.y - box.y) < 15)) return;
+    countryBoxes.push(box);
+    x.textAlign = "center"; x.textBaseline = "middle";
+    x.lineWidth = 3; x.strokeStyle = "rgba(4,20,15,.7)"; x.strokeText(name, p.x, p.y);
+    x.fillStyle = "rgba(255,255,255,.92)"; x.fillText(name, p.x, p.y);
+  });
+  globe.countryLabelBoxes = countryBoxes;
   const FONT = GLOBE_FONT;
   const home = globeHomeLatLon();
   const city = globe.city ? WORLD_CITIES.find(c=>c.en === globe.city) : null;
+  // community lines (toggle): one gold arc per city -> home district, thicker when more people
+  if(abroadLinesOn && abroadLines.length){
+    abroadLines.forEach(L=>{
+      const c = WORLD_CITIES.find(v=>v.en === L.city);
+      const h = CENTROIDS[L.home];
+      if(!c || !h) return;
+      const {pts} = globeArcPoints(c.lat, c.lon, h[1], h[0], 0.22);
+      strokeGlobeArc(x, pts, "#ffd99a", 1.5 + Math.min(3, L.count), false, now);
+      const p = globeProject(c.lat * Math.PI / 180, c.lon * Math.PI / 180, 1);
+      if(p.z > 0.05){
+        const txt = "×" + fmt(L.count);
+        x.font = "700 13px " + FONT; x.textAlign = "left"; x.textBaseline = "middle";
+        x.lineWidth = 3; x.strokeStyle = "rgba(4,20,15,.8)"; x.strokeText(txt, p.x + 10, p.y - 10);
+        x.fillStyle = "#ffd99a"; x.fillText(txt, p.x + 10, p.y - 10);
+      }
+    });
+  }
   // arc: city -> home district, lifted great-circle thread
   if(city){
-    const aLat = city.lat * Math.PI / 180, aLon = city.lon * Math.PI / 180;
-    const bLat = home.lat * Math.PI / 180, bLon = home.lon * Math.PI / 180;
-    const va = [Math.cos(aLat) * Math.cos(aLon), Math.sin(aLat), Math.cos(aLat) * Math.sin(aLon)];
-    const vb = [Math.cos(bLat) * Math.cos(bLon), Math.sin(bLat), Math.cos(bLat) * Math.sin(bLon)];
-    const dot = Math.max(-1, Math.min(1, va[0] * vb[0] + va[1] * vb[1] + va[2] * vb[2]));
-    const om = Math.acos(dot);
-    const N = 48;
-    x.strokeStyle = "#f42a41"; x.lineWidth = 3; x.lineCap = "round";
-    if(!reducedMotion){ x.setLineDash([7, 7]); x.lineDashOffset = -(now / 40) % 14; }
-    x.beginPath();
-    let pen = false;
-    const arcPts = [];
-    for(let k = 0; k <= N; k++){
-      const tt = k / N;
-      const s1 = Math.sin((1 - tt) * om) / Math.sin(om), s2 = Math.sin(tt * om) / Math.sin(om);
-      const vx = s1 * va[0] + s2 * vb[0], vy = s1 * va[1] + s2 * vb[1], vz = s1 * va[2] + s2 * vb[2];
-      const la = Math.asin(Math.max(-1, Math.min(1, vy))), lo = Math.atan2(vz, vx);
-      const alt = 1 + 0.32 * Math.sin(Math.PI * tt);
-      const p = globeProject(la, lo, alt);
-      arcPts.push({p, tt});
-      if(p.z > 0.02){ if(!pen){ x.moveTo(p.x, p.y); pen = true; } else x.lineTo(p.x, p.y); }
-      else pen = false;
-    }
-    x.stroke(); x.setLineDash([]);
+    const {pts: arcPts, N} = globeArcPoints(city.lat, city.lon, home.lat, home.lon, 0.32);
+    strokeGlobeArc(x, arcPts, "#f42a41", 3, true, now);
     // moving gold dot along the thread
     if(!reducedMotion){
       const mt = ((now / 2600) % 1);
@@ -2644,7 +2760,7 @@ function globeDraw(now){
       }
     }
     // city marker + label
-    const cp = globeProject(aLat, aLon, 1);
+    const cp = globeProject(city.lat * Math.PI / 180, city.lon * Math.PI / 180, 1);
     if(cp.z > 0.02){
       x.beginPath(); x.arc(cp.x, cp.y, 6, 0, Math.PI * 2); x.fillStyle = "#ffd99a"; x.fill();
       x.beginPath(); x.arc(cp.x, cp.y, 10, 0, Math.PI * 2); x.strokeStyle = "#fff"; x.lineWidth = 2; x.stroke();
@@ -2654,6 +2770,25 @@ function globeDraw(now){
         x.fillStyle = "#ffd99a"; x.fillText(lang === "bn" ? city.bn : city.en, cp.x, cp.y - 14);
       }
     }
+  }
+  // major world cities appear when zoomed in — the default view stays country-level
+  if(globe.zoom > 1.35){
+    const used = [...(globe.countryLabelBoxes || [])];
+    WORLD_MAJOR.forEach(c=>{
+      const p = globeProject(c.lat * Math.PI / 180, c.lon * Math.PI / 180, 1);
+      if(p.z <= 0.05) return;
+      const name = lang === "bn" ? c.bn : c.en;
+      x.font = "600 12px " + FONT;
+      let w = name.length * 7;
+      try{ w = x.measureText(name).width; }catch(e){}
+      const box = {x: p.x, y: p.y - 11, w: w + 6, h: 15};
+      if(used.some(q=> Math.abs(q.x - box.x) < (q.w + box.w) / 2 && Math.abs(q.y - box.y) < 14)) return;
+      used.push(box);
+      x.beginPath(); x.arc(p.x, p.y, 2.5, 0, Math.PI * 2); x.fillStyle = "rgba(255,255,255,.85)"; x.fill();
+      x.textAlign = "center"; x.textBaseline = "middle";
+      x.lineWidth = 3; x.strokeStyle = "rgba(4,20,15,.7)"; x.strokeText(name, p.x, p.y - 11);
+      x.fillStyle = "rgba(255,255,255,.9)"; x.fillText(name, p.x, p.y - 11);
+    });
   }
   // every city, named on the map (rings + names, never plain dots) — drawn AFTER
   // the arc and its moving dot, so a name never hides under the red thread or gold dot
@@ -2723,6 +2858,79 @@ function updateGlobeUI(){
   }
   renderGlobeCard();
 }
+// --- Abroad voters' lines (toggle): anonymous counts only, no names, no personal data ---
+let abroadLines = []; // [{city, home, count}]
+let abroadByCountry = []; // [{co, cobn, count}] sorted desc
+let abroadLinesOn = false;
+let abroadTimer = null;
+async function fetchAbroadLines(){
+  if(!sb) return;
+  try{
+    const {data, error} = await sb.from("abroad_votes").select("city,country,home_district").limit(5000);
+    if(error || !data) return;
+    const groups = new Map(), byCountry = new Map();
+    data.forEach(r=>{
+      const c = WORLD_CITIES.find(v=>v.en === r.city);
+      if(!c || !CENTROIDS[r.home_district]) return;
+      const k = r.city + "|" + r.home_district;
+      groups.set(k, (groups.get(k) || 0) + 1);
+      const cur = byCountry.get(c.co) || {co: c.co, cobn: c.cobn, count: 0};
+      cur.count++; byCountry.set(c.co, cur);
+    });
+    abroadLines = [...groups.entries()].map(([k, count])=>{ const [city, home] = k.split("|"); return {city, home, count}; });
+    abroadByCountry = [...byCountry.values()].sort((a, b)=> b.count - a.count);
+  }catch(e){}
+  renderAbroadTally();
+  if(globe && globe.cv) globeDraw(performance.now());
+}
+function renderAbroadTally(){
+  const tally = document.getElementById("abroadTally"), empty = document.getElementById("abroadEmpty");
+  if(!tally || !empty) return;
+  if(!abroadLinesOn){ tally.classList.add("hidden"); empty.classList.add("hidden"); return; }
+  if(abroadByCountry.length === 0){
+    tally.classList.add("hidden"); empty.classList.remove("hidden");
+  } else {
+    empty.classList.add("hidden");
+    tally.classList.remove("hidden");
+    tally.innerHTML = abroadByCountry.map(c=>{
+      const flag = COUNTRY_FLAG[c.co] || "🌍";
+      const name = lang === "bn" ? c.cobn : c.co;
+      return `<span class="globe-tally-chip">${flag} ${escapeHtml(name)} · ${fmt(c.count)} ${lang === "bn" ? "জন" : ""}</span>`;
+    }).join("");
+  }
+}
+// One anonymous count per device per (city, home district): city + country + home district
+// only — no name, no voter id. Retries on next load if the insert failed (e.g. offline).
+async function submitAbroadVote(){
+  if(!sb) return;
+  const city = rootsAbroadCity();
+  if(!city) return;
+  const home = rootsHomeDistrict();
+  const key = city.en + "|" + home;
+  let sent = {};
+  try{ sent = JSON.parse(localStorage.getItem("nb_abroad_sent") || "{}"); }catch(e){}
+  if(sent[key]) return;
+  try{
+    const {error} = await sb.from("abroad_votes").insert({city: city.en, country: city.co, home_district: home});
+    if(error) return;
+    sent[key] = 1;
+    try{ localStorage.setItem("nb_abroad_sent", JSON.stringify(sent)); }catch(e){}
+    if(abroadLinesOn) fetchAbroadLines();
+  }catch(e){}
+}
+document.getElementById("abroadToggle").onclick = ()=>{
+  abroadLinesOn = !abroadLinesOn;
+  const b = document.getElementById("abroadToggle");
+  if(b) b.setAttribute("aria-checked", abroadLinesOn ? "true" : "false");
+  if(abroadLinesOn){
+    fetchAbroadLines();
+    abroadTimer = setInterval(()=>{ if(!document.hidden) fetchAbroadLines(); }, 30000);
+  } else {
+    if(abroadTimer){ clearInterval(abroadTimer); abroadTimer = null; }
+    renderAbroadTally();
+    if(globe && globe.cv) globeDraw(performance.now());
+  }
+};
 // Shareable globe card (Phase 2): a 1080x1350 PNG of the globe exactly as it looks
 // right now — live canvas snapshot + name + distance + brand, Roots-poster style.
 function drawGlobeCardCanvas(){
@@ -2981,6 +3189,7 @@ function initGlobe(){
     }catch(e){}
   }
   updateGlobeUI();
+  submitAbroadVote(); // a story saved earlier sends its one anonymous count now
   if(typeof requestAnimationFrame === "function") requestAnimationFrame(globeTick);
   else globeDraw(0);
 }
@@ -3001,6 +3210,7 @@ function showView(v){
   document.getElementById("navRootsLink").classList.toggle("active", v === "roots");
   document.getElementById("navArchiveLink").classList.toggle("active", v === "archive");
   document.getElementById("navCommunityLink").classList.toggle("active", v === "community");
+  if(v !== "roots" && abroadTimer){ clearInterval(abroadTimer); abroadTimer = null; }
   if(v === "community"){
     loadCommunity().then(()=>{ renderCommunity(); fetchCommunityVotes(); });
     window.scrollTo({top:0});
