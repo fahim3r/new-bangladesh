@@ -165,6 +165,8 @@ h1 .red{color:var(--red);display:inline-block;animation:wordPop .8s .35s cubic-b
 .share-actions .icon-btn.primary{background:linear-gradient(180deg,var(--emerald),var(--forest))}
 .share-actions .icon-btn:active{transform:scale(.95)}
 .share-actions .icon-btn span{line-height:1}
+.ref-banner{margin:0 0 14px;padding:12px 14px;border-radius:16px;background:linear-gradient(135deg,#fef3c7,#fde68a);border:1.5px solid #f59e0b;color:#78350f;font-weight:700;font-size:15px;display:flex;gap:10px;align-items:center;justify-content:space-between}
+.ref-banner button{flex:0 0 auto;border:0;background:rgba(255,255,255,.7);border-radius:50%;width:28px;height:28px;font-size:15px;cursor:pointer;font-weight:800;color:#78350f}
 .sc-mapbg{display:none;position:absolute;right:-30px;top:70px;width:300px;height:365px;opacity:.08;pointer-events:none;z-index:0}
 .sc-mapbg svg{width:100%;height:100%}
 .sharecard.style-glass .sc-mapbg{display:block}
@@ -386,6 +388,7 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
   </div>
 
   <div id="view-home">
+  <div id="refBanner" class="ref-banner hidden" role="status"><span id="refBannerText"></span><button type="button" id="refBannerX" aria-label="বন্ধ করো">✕</button></div>
   <div class="hero">
     <!-- flat illustration: red sun, green hills, river, palms -->
     <svg class="scene" viewBox="0 0 920 260" fill="none" aria-hidden="true">
@@ -714,7 +717,12 @@ const I18N = {
     map_need_vote:"আগে আজকের প্রশ্নে ভোট দাও, তারপর জেলা যোগ করতে পারবে।",
     map_pick:"একটা জেলা বাছো", map_districts:"টি জেলার ভোট এসেছে", map_note:"ম্যাপে শুধু আসল লাইভ ভোট দেখানো হয় — তাই শুরুতে কিছু জেলা ফাঁকা থাকতে পারে।",
     map_none:"এখনো ভোট আসেনি", guess_district:"তোমার জেলা কোনটি? (ঐচ্ছিক)", district_none:"জেলা বাছো (ঐচ্ছিক)", map_you_are_here:"তুমি এখানে", map_mine:"তোমার জেলা",
-    challenge_text:"আমি '{o}' বেছেছি। তুমি কী বাছবে? ",
+    challenge_text:"আমি '{o}' বেছেছি। তুমি কী বাছবে? ভোট দিলে দুজনেই পাবে ১ টা করে Vote Token! ",
+    ref_banner:"🔥 বন্ধুর চ্যালেঞ্জ! তোমার বন্ধু “{o}” বেছে নিয়েছে — এই প্রশ্নে ভোট দিলে দুজনেই পাবে ১ টা করে Vote Token 🎁",
+    ref_banner_nopick:"🔥 বন্ধুর চ্যালেঞ্জ! এই প্রশ্নে ভোট দিলে তুমি আর তোমার বন্ধু দুজনেই পাবে ১ টা করে Vote Token 🎁",
+    ref_bonus_you:"🎁 রেফারেল বোনাস! তুমি ১ টা Vote Token পেয়েছো!",
+    ref_dismiss:"বন্ধ করো",
+    shared:"শেয়ার হয়ে গেছে — বন্ধুকে পাঠানো হয়েছে!",
     title:"নিউ বাংলাদেশ — বাংলাদেশ কী ভাবছে?"
   },
   en: {
@@ -814,7 +822,12 @@ const I18N = {
     map_need_vote:"Vote on today's question first, then you can add your district.",
     map_pick:"Pick a district", map_districts:"districts have voted so far", map_note:"The map shows only real live votes — so some districts may be empty at first.",
     map_none:"No votes yet", guess_district:"Which district are you from? (optional)", district_none:"Pick a district (optional)", map_you_are_here:"You are here", map_mine:"Your district",
-    challenge_text:"I chose '{o}'. What will you choose? ",
+    challenge_text:"I chose '{o}'. What will you choose? Vote and we both get 1 Vote Token each! ",
+    ref_banner:"🔥 Friend's challenge! Your friend picked “{o}” — vote on this question and you both get 1 Vote Token each 🎁",
+    ref_banner_nopick:"🔥 Friend's challenge! Vote on this question and you both get 1 Vote Token each 🎁",
+    ref_bonus_you:"🎁 Referral bonus! You earned 1 Vote Token!",
+    ref_dismiss:"Dismiss",
+    shared:"Shared — sent to your friend!",
     title:"New Bangladesh — What does Bangladesh think?"
   }
 };
@@ -1038,6 +1051,7 @@ async function submitVote(){
       await fetchLiveCounts();
       await fetchDistrictVotes();
       render();
+      await claimReferralBonus();
     }catch(e){ /* offline: local result already shown */ }
   }
 }
@@ -1192,7 +1206,7 @@ function applyLang(){
   fillDistrictSelect(mapDistrictSel, true);
   colorMap(); renderDistrictDetail();
   tickCountdown();
-  renderBattles(); renderLatestBattle(); renderArchive(); renderCommunity(); renderWinner(); applyCardStyle();
+  renderBattles(); renderLatestBattle(); renderArchive(); renderCommunity(); renderWinner(); applyCardStyle(); renderRefBanner();
   if(!document.getElementById("view-roots").classList.contains("hidden")){
     if(rootsDone()) showRootsPoster(); else renderRootsStep();
   }
@@ -1222,11 +1236,24 @@ document.getElementById("againBtn").onclick=async()=>{
   msg.textContent = ""; msg.className = "";
   render();
 };
+document.getElementById("refBannerX").onclick=()=>{
+  try{ localStorage.setItem("nb_ref_dismissed", pendingRef()); }catch(e){}
+  document.getElementById("refBanner").classList.add("hidden");
+};
 document.getElementById("challengeBtn").onclick=async()=>{
-  const url = location.origin + location.pathname + "?exp=" + EXPERIMENT_ID + "&pick=" + encodeURIComponent(DB_LABEL[picked.key]);
-  const text = t("challenge_text").replace("{o}", label(picked)) + url;
-  try{ await navigator.clipboard.writeText(text); }catch(e){}
+  const url = location.origin + location.pathname + "?exp=" + EXPERIMENT_ID + "&pick=" + encodeURIComponent(DB_LABEL[picked.key]) + "&ref=" + encodeURIComponent(getVoterId());
+  const text = t("challenge_text").replace("{o}", label(picked));
   const m = document.getElementById("copyMsg");
+  if(navigator.share){
+    try{
+      await navigator.share({title: document.title, text: text, url: url});
+      m.textContent = t("shared"); m.className = "ok";
+      return;
+    }catch(e){
+      if(e && e.name === "AbortError") return; // user closed the share sheet: don't copy, don't nag
+    }
+  }
+  try{ await navigator.clipboard.writeText(text + url); }catch(e){}
   m.textContent = t("copied"); m.className = "ok";
 };
 const iconImg = new Image(); iconImg.src = "icon.png";
@@ -1568,6 +1595,84 @@ function renderTokens(){
   }
   const pill = document.getElementById("tokenPill");
   if(pill) pill.textContent = tokenCelebrate ? t("cq_token_award").replace("{n}", fmt(tokens)) : "🪙 " + fmt(tokens) + " " + t("cq_tokens");
+}
+// ---- Referral bonus: share link -> friend votes -> both get +1 Vote Token ----
+function getRefFromUrl(){
+  try{
+    const p = new URLSearchParams(location.search);
+    const ref = (p.get("ref") || "").trim();
+    return ref && ref !== getVoterId() ? ref : "";
+  }catch(e){ return ""; }
+}
+function pendingRef(){
+  try{ return localStorage.getItem("nb_ref") || ""; }catch(e){ return ""; }
+}
+function captureRef(){
+  const r = getRefFromUrl();
+  if(!r) return;
+  try{
+    if(localStorage.getItem("nb_ref_claimed") === r) return; // already claimed this one
+    if(!pendingRef()) localStorage.setItem("nb_ref", r);
+  }catch(e){}
+}
+function refPickLabel(){
+  try{
+    const pick = new URLSearchParams(location.search).get("pick") || "";
+    if(!pick) return "";
+    const hit = (CURRENT ? CURRENT.options : []).find(o => DB_LABEL[o.key] === pick);
+    if(hit) return label(hit);
+    const arch = (typeof ARCHIVE !== "undefined" && ARCHIVE) ? ARCHIVE : [];
+    for(const e of arch){
+      const o = (e.options || []).find(x => x.en === pick);
+      if(o) return lang === "bn" ? o.bn : o.en;
+    }
+    return "";
+  }catch(e){ return ""; }
+}
+function renderRefBanner(){
+  const b = document.getElementById("refBanner");
+  if(!b) return;
+  captureRef();
+  const ref = pendingRef();
+  let alreadyVoted = false;
+  try{ alreadyVoted = !!localStorage.getItem(voteKey(EXPERIMENT_ID)); }catch(e){}
+  let dismissed = false;
+  try{ dismissed = ref && localStorage.getItem("nb_ref_dismissed") === ref; }catch(e){}
+  if(!ref || alreadyVoted || dismissed || !EXPERIMENT_ID){ b.classList.add("hidden"); return; }
+  const pick = refPickLabel();
+  document.getElementById("refBannerText").textContent = pick ? t("ref_banner").replace("{o}", pick) : t("ref_banner_nopick");
+  document.getElementById("refBannerX").setAttribute("aria-label", t("ref_dismiss"));
+  b.classList.remove("hidden");
+}
+async function claimReferralBonus(){
+  const ref = pendingRef();
+  if(!ref || !sb) return false;
+  try{
+    const {error} = await sb.from("referrals").insert({referrer_hash: ref, referee_hash: getVoterId(), experiment_id: EXPERIMENT_ID});
+    if(error) throw error;
+  }catch(e){ return false; } // keep nb_ref: retry on next load
+  try{ localStorage.setItem("nb_ref_claimed", ref); localStorage.removeItem("nb_ref"); }catch(e){}
+  tokens += 1; saveTokens(); renderTokens();
+  tokenCelebrate = true; setTimeout(()=>{ tokenCelebrate = false; renderTokens(); }, 6000);
+  const m = document.getElementById("copyMsg");
+  if(m){ m.textContent = t("ref_bonus_you"); m.className = "ok"; }
+  renderRefBanner();
+  return true;
+}
+async function creditReferralBonus(){
+  if(!sb) return 0;
+  try{
+    const {data, error} = await sb.from("referrals").select("id").eq("referrer_hash", getVoterId());
+    if(error) throw error;
+    const total = (data || []).length;
+    let credited = 0;
+    try{ credited = parseInt(localStorage.getItem("nb_ref_credited") || "0", 10) || 0; }catch(e){}
+    if(total <= credited) return 0;
+    const n = total - credited;
+    try{ localStorage.setItem("nb_ref_credited", String(total)); }catch(e){}
+    tokens += n; saveTokens();
+    return n;
+  }catch(e){ return 0; }
 }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 const cqExp = id => "cq-" + id;
@@ -2123,10 +2228,12 @@ if("IntersectionObserver" in window){
   fetchCommunityVotes();
   markVisitToday();
   const newTokens = awardTokens();
-  if(newTokens > 0){
+  const refNew = await creditReferralBonus();
+  if(newTokens > 0 || refNew > 0){
     tokenCelebrate = true;
     setTimeout(()=>{ tokenCelebrate = false; renderTokens(); }, 6000);
   }
+  if(pendingRef()){ try{ if(localStorage.getItem(voteKey(EXPERIMENT_ID))) await claimReferralBonus(); }catch(e){} }
   applyLang();
   tickCountdown();
   await fetchLiveCounts();
