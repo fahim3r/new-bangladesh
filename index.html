@@ -2741,6 +2741,17 @@ function drawGlobeCardCanvas(){
   x.textAlign = "center"; x.textBaseline = "alphabetic";
   x.fillStyle = "#ffd99a"; x.font = "800 40px " + FONT;
   x.fillText("🌍 " + t("globe_h"), 540, 110);
+  // snapshot the globe centred on the city→home arc, whatever rotation the live
+  // globe is in — otherwise the card can show the far side (no arc, no city).
+  // The swap + restore happen inside one task, so the page never paints the
+  // intermediate frame and the live globe never visibly jumps.
+  let savedCenter = null, savedZoom = null;
+  const midLon = globeArcMidLon();
+  if(globe && globe.cv && midLon !== null){
+    savedCenter = globe.center; savedZoom = globe.zoom;
+    globe.center = midLon; globe.zoom = 1; globe.target = null;
+    globeDraw(performance.now());
+  }
   if(globe && globe.cv){
     const gs = 780, gx = (1080 - gs) / 2, gy = 150;
     x.save();
@@ -2750,6 +2761,7 @@ function drawGlobeCardCanvas(){
     x.strokeStyle = "rgba(247,241,230,.25)"; x.lineWidth = 3;
     x.beginPath(); x.arc(540, gy + gs / 2, gs / 2, 0, Math.PI * 2); x.stroke();
   }
+  if(savedCenter !== null){ globe.center = savedCenter; globe.zoom = savedZoom; globeDraw(performance.now()); }
   const fitFont = (txt, px)=>{
     let fs = px;
     x.font = "800 " + fs + "px " + FONT;
@@ -2812,9 +2824,9 @@ document.getElementById("globeCardShare").onclick = async ()=>{
     ok(t("globe_card_downloaded"));
   } else ok(t("globe_card_shared"));
 };
-function globeTurnToCity(){
+function globeArcMidLon(){
   const city = globe.city ? WORLD_CITIES.find(c=>c.en === globe.city) : null;
-  if(!city) return;
+  if(!city) return null;
   const home = globeHomeLatLon();
   // midpoint of the great-circle arc, as a longitude to centre on
   const aLat = city.lat * Math.PI / 180, aLon = city.lon * Math.PI / 180;
@@ -2822,7 +2834,12 @@ function globeTurnToCity(){
   const va = [Math.cos(aLat) * Math.cos(aLon), Math.sin(aLat), Math.cos(aLat) * Math.sin(aLon)];
   const vb = [Math.cos(bLat) * Math.cos(bLon), Math.sin(bLat), Math.cos(bLat) * Math.sin(bLon)];
   const mx = va[0] + vb[0], my = va[1] + vb[1], mz = va[2] + vb[2];
-  globe.target = Math.atan2(mz, mx);
+  return Math.atan2(mz, mx);
+}
+function globeTurnToCity(){
+  const mid = globeArcMidLon();
+  if(mid === null) return;
+  globe.target = mid;
   globe.lastInteract = performance.now();
 }
 function selectGlobeCity(c){
