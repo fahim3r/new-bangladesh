@@ -2476,6 +2476,49 @@ function globeProject(lat, lon, alt){
   const r = globe.R * (alt || 1);
   return {x: globe.cx + r * x, y: globe.cy - r * y, z};
 }
+const GLOBE_FONT = "'Noto Sans Bengali','Hind Siliguri',Arial,sans-serif";
+// Where every front-facing city name sits on the globe, shared by drawing and tap-picking
+// so a tap on a name picks the same city the name belongs to. Boxes (not centre distance)
+// decide collisions: Gulf names are 50-90px wide, so an 18px centre gap still stacked them.
+function globeCityLabelLayout(){
+  const x = globe.ctx;
+  const placed = []; // {x,y,w,h} label boxes already taken
+  const out = [];
+  const offs = [[0, -13], [0, 21], [-16, -13], [16, -13], [-16, 21], [16, 21], [0, -30], [0, 38], [-26, 4], [26, 4], [-34, -22], [34, -22], [-34, 30], [34, 30], [0, -48], [0, 56], [-52, 4], [52, 4], [-70, -30], [70, -30], [-70, 38], [70, 38], [0, -66], [0, 74], [-70, 4], [70, 4], [-90, -40], [90, -40], [-90, 48], [90, 48], [0, -92], [0, 100], [-110, 4], [110, 4]];
+  WORLD_CITIES.forEach(c=>{
+    const p = globeProject(c.lat * Math.PI / 180, c.lon * Math.PI / 180, 1);
+    if(p.z <= 0.02) return;
+    const selected = globe.city === c.en;
+    const name = lang === "bn" ? c.bn : c.en;
+    const font = selected ? "800 22px " + GLOBE_FONT : "700 15px " + GLOBE_FONT;
+    let w = name.length * 9;
+    try{ x.font = font; w = x.measureText(name).width; }catch(e){}
+    const h = selected ? 26 : 19;
+    if(selected){
+      // big gold label sits above its marker; keep it in the layout so taps on it work too
+      const lx = p.x, ly = p.y - 14 - h / 2;
+      placed.push({x: lx, y: ly, w: w + 6, h});
+      out.push({c, mx: p.x, my: p.y, lx, ly, w, h, selected: true});
+      return;
+    }
+    let best = null, bestOverlap = 1e9;
+    for(const off of offs){
+      const lx = p.x + off[0], ly = p.y + off[1];
+      const box = {x: lx, y: ly, w: w + 6, h};
+      let overlap = 0;
+      placed.forEach(q=>{
+        const ox = Math.max(0, Math.min(box.x + box.w / 2, q.x + q.w / 2) - Math.max(box.x - box.w / 2, q.x - q.w / 2));
+        const oy = Math.max(0, Math.min(box.y + box.h / 2, q.y + q.h / 2) - Math.max(box.y - box.h / 2, q.y - q.h / 2));
+        overlap += ox * oy;
+      });
+      if(overlap === 0){ best = box; break; }
+      if(overlap < bestOverlap){ bestOverlap = overlap; best = box; }
+    }
+    placed.push(best);
+    out.push({c, mx: p.x, my: p.y, lx: best.x, ly: best.y, w, h, selected: false});
+  });
+  return out;
+}
 function globeDraw(now){
   const cv = globe.cv, x = globe.ctx;
   if(!cv || !x) return;
@@ -2496,27 +2539,19 @@ function globeDraw(now){
     x.beginPath(); x.arc(p.x, p.y, 1.4 + 1.8 * p.z, 0, Math.PI * 2);
     x.fillStyle = "rgba(183,215,200," + a.toFixed(2) + ")"; x.fill();
   }
-  const FONT = "'Noto Sans Bengali','Hind Siliguri',Arial,sans-serif";
+  const FONT = GLOBE_FONT;
   // every city, named on the map (rings + names, never plain dots)
-  const placedCityLabels = [];
-  WORLD_CITIES.forEach(c=>{
-    if(globe.city === c.en) return; // selected city gets its big gold marker below
-    const p = globeProject(c.lat * Math.PI / 180, c.lon * Math.PI / 180, 1);
-    if(p.z <= 0.02) return;
-    x.beginPath(); x.arc(p.x, p.y, 5, 0, Math.PI * 2); x.strokeStyle = "rgba(255,255,255,.9)"; x.lineWidth = 3; x.stroke();
-    x.beginPath(); x.arc(p.x, p.y, 5, 0, Math.PI * 2); x.strokeStyle = "#14532d"; x.lineWidth = 1.6; x.stroke();
-    const name = lang === "bn" ? c.bn : c.en;
-    const offs = [[0, -13], [0, 21], [-16, -13], [16, -13], [-16, 21], [16, 21], [0, -30], [0, 38], [-26, 4], [26, 4]];
-    for(const off of offs){
-      const lx = p.x + off[0], ly = p.y + off[1];
-      if(!placedCityLabels.some(q => Math.hypot(q.x - lx, q.y - ly) < 18)){
-        placedCityLabels.push({x: lx, y: ly});
-        x.font = "700 15px " + FONT; x.textAlign = "center"; x.textBaseline = "middle";
-        x.lineWidth = 4; x.strokeStyle = "rgba(4,20,15,.85)"; x.strokeText(name, lx, ly);
-        x.fillStyle = "#fff"; x.fillText(name, lx, ly);
-        break;
-      }
+  globeCityLabelLayout().forEach(L=>{
+    x.beginPath(); x.arc(L.mx, L.my, 5, 0, Math.PI * 2); x.strokeStyle = "rgba(255,255,255,.9)"; x.lineWidth = 3; x.stroke();
+    x.beginPath(); x.arc(L.mx, L.my, 5, 0, Math.PI * 2); x.strokeStyle = "#14532d"; x.lineWidth = 1.6; x.stroke();
+    if(L.selected) return; // big gold label is drawn with the arc marker below
+    const name = lang === "bn" ? L.c.bn : L.c.en;
+    if(Math.hypot(L.lx - L.mx, L.ly - L.my) > 30){
+      x.beginPath(); x.moveTo(L.mx, L.my); x.lineTo(L.lx, L.ly); x.strokeStyle = "rgba(255,255,255,.45)"; x.lineWidth = 1.2; x.stroke();
     }
+    x.font = "700 15px " + FONT; x.textAlign = "center"; x.textBaseline = "middle";
+    x.lineWidth = 4; x.strokeStyle = "rgba(4,20,15,.85)"; x.strokeText(name, L.lx, L.ly);
+    x.fillStyle = "#fff"; x.fillText(name, L.lx, L.ly);
   });
   const home = globeHomeLatLon();
   const city = globe.city ? WORLD_CITIES.find(c=>c.en === globe.city) : null;
@@ -2588,8 +2623,8 @@ function globeTick(now){
   if(!globe || !globe.cv) return;
   const dt = globe.last ? Math.min(100, now - globe.last) : 16;
   globe.last = now;
-  if(!globe.dragging && !reducedMotion && globe.target === null && now - globe.lastInteract > 4000){
-    globe.center += dt * 0.000045; // slow auto-spin, ~2.6 deg/sec
+  if(!globe.dragging && !globe.hovering && !globe.userTouched && !reducedMotion && globe.target === null && now - globe.lastInteract > 4000){
+    globe.center += dt * 0.000045; // slow auto-spin, ~2.6 deg/sec — stops once the user touches the globe, so markers stay still while aiming a tap
   }
   if(globe.target !== null){
     let diff = globe.target - globe.center;
@@ -2638,14 +2673,24 @@ function globeTapPick(e){
   const r = globe.cv.getBoundingClientRect();
   const sx = globe.cv.width / (r.width || 1), sy = globe.cv.height / (r.height || 1);
   const tx = (e.clientX - r.left) * sx, ty = (e.clientY - r.top) * sy;
-  let best = null, bd = 1e9;
-  WORLD_CITIES.forEach(c=>{
-    const p = globeProject(c.lat * Math.PI / 180, c.lon * Math.PI / 180, 1);
-    if(p.z <= 0.02) return;
-    const d = Math.hypot(p.x - tx, p.y - ty);
-    if(d < bd){ bd = d; best = c; }
+  // A tap means what it lands on: a near-exact ring tap wins first (labels can sit
+  // on top of a neighbour's ring in the Gulf cluster), then a tap on a name,
+  // then the nearest ring within finger range.
+  let bestMark = null, bestMarkD = 1e9;
+  let bestLabel = null, bestLabelD = 1e9;
+  globeCityLabelLayout().forEach(L=>{
+    const dMark = Math.hypot(L.mx - tx, L.my - ty);
+    if(dMark < bestMarkD){ bestMarkD = dMark; bestMark = L.c; }
+    if(Math.abs(tx - L.lx) <= L.w / 2 + 12 && Math.abs(ty - L.ly) <= L.h / 2 + 12){
+      const dLab = Math.hypot(L.lx - tx, L.ly - ty);
+      if(dLab < bestLabelD){ bestLabelD = dLab; bestLabel = L.c; }
+    }
   });
-  if(best && bd < 30){
+  let best = null, bd = 1e9;
+  if(bestMarkD <= 12){ best = bestMark; bd = bestMarkD; }
+  else if(bestLabel){ best = bestLabel; bd = 0; }
+  else if(bestMarkD < 46){ best = bestMark; bd = bestMarkD; }
+  if(best && bd < 46){
     globe.city = best.en; globeSave(); updateGlobeUI(); globeTurnToCity();
     if(rootsDone() && !document.getElementById("rootsPoster").classList.contains("hidden")) showRootsPoster();
   }
@@ -2662,7 +2707,7 @@ function initGlobe(){
   globe = {
     cv, ctx, cx: 320, cy: 320, R: 280, zoom: 1,
     center: 90.4 * Math.PI / 180, tilt: 0.18, target: null,
-    dragging: false, lastX: 0, lastY: 0, last: 0, lastInteract: 0, inView: true,
+    dragging: false, hovering: false, userTouched: false, lastX: 0, lastY: 0, last: 0, lastInteract: 0, inView: true,
     city: roots.abroad || "",
     home: rootsHomeDistrict()
   };
@@ -2672,12 +2717,15 @@ function initGlobe(){
     if(rootsDone() && !document.getElementById("rootsPoster").classList.contains("hidden")) showRootsPoster();
   });
   const pointers = new Map();
-  let pinchStart = null, downX = 0, downY = 0, downT = 0;
+  let pinchStart = null, downX = 0, downY = 0, downT = 0, lastTapAt = 0, lastTapX = 0, lastTapY = 0;
   const globeZoomSet = z=>{ globe.zoom = Math.max(1, Math.min(2.6, z)); };
+  cv.addEventListener("pointerenter", ()=>{ globe.hovering = true; });
+  cv.addEventListener("pointerleave", ()=>{ globe.hovering = false; });
   cv.addEventListener("pointerdown", e=>{
     if(cv.setPointerCapture){ try{ cv.setPointerCapture(e.pointerId); }catch(err){} }
     pointers.set(e.pointerId, {x: e.clientX, y: e.clientY});
     globe.target = null;
+    globe.lastInteract = performance.now(); globe.userTouched = true;
     if(pointers.size === 1){ globe.dragging = true; downX = e.clientX; downY = e.clientY; downT = performance.now(); globe.lastX = e.clientX; globe.lastY = e.clientY; cv.classList.add("dragging"); }
     if(pointers.size === 2){
       const ps = [...pointers.values()];
@@ -2706,11 +2754,19 @@ function initGlobe(){
       const moved = e ? Math.hypot(e.clientX - downX, e.clientY - downY) : 99;
       const quick = performance.now() - downT < 500;
       globe.dragging = false; globe.lastInteract = performance.now(); cv.classList.remove("dragging");
-      if(moved < 9 && quick && e) globeTapPick(e);
+      if(moved < 9 && quick && e){ lastTapAt = performance.now(); lastTapX = e.clientX; lastTapY = e.clientY; globeTapPick(e); }
     }
   };
   cv.addEventListener("pointerup", endDrag);
   cv.addEventListener("pointercancel", endDrag);
+  // fallback for taps that arrive as a click without pointer events (some automation / assistive taps)
+  cv.addEventListener("click", e=>{
+    if(performance.now() - lastTapAt < 600 && Math.hypot(e.clientX - lastTapX, e.clientY - lastTapY) < 12) return; // same gesture's pointer tap already handled it
+    if(performance.now() - downT > 600) return; // stale down (e.g. after a drag)
+    if(Math.hypot(e.clientX - downX, e.clientY - downY) > 12) return;
+    lastTapAt = performance.now(); lastTapX = e.clientX; lastTapY = e.clientY;
+    globeTapPick(e);
+  });
   cv.addEventListener("wheel", e=>{
     e.preventDefault();
     globeZoomSet(globe.zoom * Math.exp(-e.deltaY * 0.0012));
