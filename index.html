@@ -300,7 +300,10 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
 .poster{background:var(--glass);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.85);border-radius:26px;padding:26px;box-shadow:0 24px 60px rgba(15,61,46,.14);max-width:640px;margin:28px auto 0;text-align:center}
 .poster h3{margin:6px 0 2px;font-size:27px;color:var(--forest)}
 .poster .poster-sub{color:var(--muted);font-size:14.5px;margin:0 0 10px}
-.poster-map{max-width:340px;margin:10px auto}
+.poster-map{max-width:420px;margin:10px auto}
+.poster-poem{font-size:19px;font-weight:800;margin:16px auto 0;max-width:480px;line-height:1.5}
+.poster-miss{background:#fef2f2;border-radius:12px;padding:4px 10px}
+#rootsMsg{text-align:center;font-size:14px;min-height:20px}
 .poster-map svg{width:100%;height:auto;display:block}
 .poster-lines{text-align:left;max-width:480px;margin:14px auto 0;font-size:16.5px;line-height:1.85;color:var(--ink)}
 .poster-lines b{color:var(--forest)}
@@ -552,12 +555,16 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
           <p class="poster-sub" data-i18n="roots_bond">জায়গার সঙ্গে মানুষের বন্ধন</p>
           <div class="poster-map" id="posterMap"></div>
           <div class="poster-lines" id="posterLines"></div>
+          <p class="poster-poem" id="posterPoem" data-i18n="roots_poem">যেখানেই যাই, শিকড়টা এখানেই — আমার বাংলাদেশ।</p>
           <div class="poster-foot"><b>NEW BANGLADESH</b> · newbangladesh.bond<br><span data-i18n="roots_bond">জায়গার সঙ্গে মানুষের বন্ধন</span></div>
         </div>
         <div class="poster-actions">
-          <button class="btn green" id="rootsDownload" type="button" data-i18n="roots_download">পোস্টার ডাউনলোড করো (PNG)</button>
-          <button class="btn primary" id="rootsCopy" type="button" data-i18n="roots_copy">গল্প কপি করো</button>
-          <button class="btn ghost" id="rootsAgain" type="button" data-i18n="roots_again">আবার বানাও</button>
+          <div class="share-actions">
+            <button class="btn green icon-btn" id="rootsDownload" type="button" aria-label="পোস্টার ডাউনলোড করো (PNG)" title="পোস্টার ডাউনলোড করো (PNG)"><span aria-hidden="true">⬇️</span></button>
+            <button class="btn primary icon-btn" id="rootsShare" type="button" aria-label="পোস্টার শেয়ার করো" title="পোস্টার শেয়ার করো"><span aria-hidden="true">📤</span></button>
+            <button class="btn ghost icon-btn" id="rootsCopy" type="button" aria-label="গল্প কপি করো" title="গল্প কপি করো"><span aria-hidden="true">📋</span></button>
+            <button class="btn ghost icon-btn" id="rootsAgain" type="button" aria-label="আবার বানাও" title="আবার বানাও"><span aria-hidden="true">🔄</span></button>
+          </div>
           <p id="rootsMsg"></p>
         </div>
       </div>
@@ -661,7 +668,7 @@ const I18N = {
     roots_mom:"মায়ের বাড়ি", roots_dad:"বাবার বাড়ি", roots_name_ph:"তোমার নাম (ঐচ্ছিক)",
     roots_pick:"জেলা বাছো",
     roots_skip:"স্কিপ করো", roots_back:"পেছনে", roots_next:"পরের প্রশ্ন", roots_make:"পোস্টার বানাও",
-    roots_download:"পোস্টার ডাউনলোড করো (PNG)", roots_copy:"গল্প কপি করো", roots_again:"আবার বানাও",
+    roots_download:"পোস্টার ডাউনলোড করো (PNG)", roots_copy:"গল্প কপি করো", roots_again:"আবার বানাও", roots_share:"পোস্টার শেয়ার করো", roots_shared:"শেয়ার হয়ে গেছে — স্মৃতিটা পাঠিয়ে দাও!", roots_downloaded:"পোস্টার ডাউনলোড হয়েছে — গ্যালারি থেকে শেয়ার করো!", roots_poem:"যেখানেই যাই, শিকড়টা এখানেই — আমার বাংলাদেশ।",
     roots_copied:"গল্প কপি হয়ে গেছে — পোস্ট করে দাও!",
     roots_png_fail:"এই ব্রাউজারে PNG বানানো যাচ্ছে না।",
     roots_my:"আমার বাংলাদেশ",
@@ -766,7 +773,7 @@ const I18N = {
     roots_mom:"Mother's home", roots_dad:"Father's home", roots_name_ph:"Your name (optional)",
     roots_pick:"Pick a district",
     roots_skip:"Skip", roots_back:"Back", roots_next:"Next question", roots_make:"Make my poster",
-    roots_download:"Download poster (PNG)", roots_copy:"Copy my story", roots_again:"Make again",
+    roots_download:"Download poster (PNG)", roots_copy:"Copy my story", roots_again:"Make again", roots_share:"Share the poster", roots_shared:"Shared — send the memory on!", roots_downloaded:"Poster downloaded — share it from your gallery!", roots_poem:"Wherever I go, my roots stay here — my Bangladesh.",
     roots_copied:"Story copied — post it!",
     roots_png_fail:"This browser can't make the PNG.",
     roots_my:"My Bangladesh",
@@ -1196,7 +1203,7 @@ function applyLang(){
   document.title = t("title");
   document.querySelectorAll("[data-i18n]").forEach(el=>{ el.textContent = t(el.dataset.i18n); });
   // icon-only buttons: keep their accessible names + tooltips translated
-  [["downloadBtn","download"],["challengeBtn","challenge"],["againBtn","again"]].forEach(([id,key])=>{ const b=document.getElementById(id); if(b){ b.setAttribute("aria-label", t(key)); b.title = t(key); } });
+  [["downloadBtn","download"],["challengeBtn","challenge"],["againBtn","again"],["rootsDownload","roots_download"],["rootsShare","roots_share"],["rootsCopy","roots_copy"],["rootsAgain","roots_again"]].forEach(([id,key])=>{ const b=document.getElementById(id); if(b){ b.setAttribute("aria-label", t(key)); b.title = t(key); } });
   document.querySelectorAll(".sc-style-btn").forEach(b=>{ const n = t("style_"+b.dataset.style); b.setAttribute("aria-label", n); b.title = n; });
   document.getElementById("langBn").classList.toggle("active", lang==="bn");
   document.getElementById("langEn").classList.toggle("active", lang==="en");
@@ -1872,7 +1879,7 @@ function renderWinner(){
 }
 
 
-const CENTROIDS = {"Barguna": [90.1121, 22.0953], "Barishal": [90.3696, 22.7022], "Bhola": [90.7101, 22.1785], "Jhalokati": [90.187, 22.5721], "Patuakhali": [90.4548, 22.2249], "Pirojpur": [89.9759, 22.5791], "Bandarban": [92.3686, 21.8311], "Brahmanbaria": [91.1115, 23.9608], "Chandpur": [90.8518, 23.2513], "Chattogram": [91.7539, 22.515], "Cox's Bazar": [92.0282, 21.5641], "Cumilla": [91.1809, 23.4576], "Feni": [91.4067, 22.9409], "Khagrachari": [91.949, 23.1322], "Lakshmipur": [90.8282, 22.9447], "Noakhali": [91.0973, 22.8724], "Rangamati": [92.2985, 22.7324], "Dhaka": [90.3372, 23.8105], "Faridpur": [89.6309, 23.5424], "Gazipur": [90.4125, 24.0958], "Gopalganj": [89.8879, 23.0488], "Kishoreganj": [90.9821, 24.426], "Madaripur": [90.187, 23.2393], "Manikganj": [90.0003, 23.8617], "Munshiganj": [90.4127, 23.4981], "Narayanganj": [90.5636, 23.7147], "Narsingdi": [90.786, 24.1344], "Rajbari": [89.5875, 23.7151], "Shariatpur": [90.4348, 23.2423], "Tangail": [89.9948, 24.3917], "Bagerhat": [89.7895, 22.6602], "Chuadanga": [88.8263, 23.6161], "Jashore": [89.2182, 23.1634], "Jhenaidah": [89.1726, 23.545], "Khulna": [89.3967, 22.6738], "Kushtia": [89.1099, 23.8907], "Magura": [89.4364, 23.429], "Meherpur": [88.6724, 23.8052], "Narail": [89.584, 23.1163], "Satkhira": [89.1115, 22.3155], "Jamalpur": [89.7853, 25.0831], "Mymensingh": [90.4073, 24.7539], "Netrokona": [90.8656, 24.8103], "Sherpur": [90.1495, 25.0746], "Bogura": [89.3697, 24.851], "Joypurhat": [89.0945, 25.0947], "Naogaon": [88.7531, 24.9132], "Natore": [89.0076, 24.4102], "Chapai Nawabganj": [88.2912, 24.7413], "Pabna": [89.4481, 24.1585], "Rajshahi": [88.6049, 24.3733], "Sirajganj": [89.57, 24.3141], "Dinajpur": [88.6332, 25.6279], "Gaibandha": [89.543, 25.3297], "Kurigram": [89.6295, 25.8072], "Lalmonirhat": [89.2847, 25.9923], "Nilphamari": [88.9414, 25.8483], "Panchagarh": [88.5952, 26.2709], "Rangpur": [89.2508, 25.7468], "Thakurgaon": [88.4283, 26.0418], "Habiganj": [91.4507, 24.4771], "Moulvibazar": [91.7315, 24.3095], "Sunamganj": [91.3992, 25.0715], "Sylhet": [91.87, 24.8993]};
+const CENTROIDS = {"Barguna": [90.1121, 22.0953], "Barishal": [90.3696, 22.7022], "Bhola": [90.7101, 22.1785], "Jhalokati": [90.187, 22.5721], "Patuakhali": [90.4548, 22.2249], "Pirojpur": [89.9759, 22.5791], "Bandarban": [92.3686, 21.8311], "Brahmanbaria": [91.1115, 23.9608], "Chandpur": [90.8518, 23.2513], "Chattogram": [91.7539, 22.515], "Cox's Bazar": [92.0282, 21.5641], "Cumilla": [91.1809, 23.4576], "Feni": [91.4067, 22.9409], "Khagrachari": [91.949, 23.1322], "Lakshmipur": [90.8282, 22.9447], "Noakhali": [91.0973, 22.8724], "Rangamati": [92.2985, 22.7324], "Dhaka": [90.3372, 23.8105], "Faridpur": [89.6309, 23.5424], "Gazipur": [90.4125, 24.0958], "Gopalganj": [89.8879, 23.0488], "Kishoreganj": [90.9821, 24.426], "Madaripur": [90.187, 23.2393], "Manikganj": [90.0003, 23.8617], "Munshiganj": [90.4127, 23.4981], "Narayanganj": [90.5636, 23.7147], "Narsingdi": [90.786, 24.1344], "Rajbari": [89.5875, 23.7151], "Shariatpur": [90.4348, 23.2423], "Tangail": [89.9948, 24.3917], "Bagerhat": [89.7895, 22.6602], "Chuadanga": [88.8263, 23.6161], "Jashore": [89.2182, 23.1634], "Jhenaidah": [89.1726, 23.545], "Khulna": [89.3967, 22.6738], "Kushtia": [89.1099, 23.8907], "Magura": [89.4364, 23.429], "Meherpur": [88.6724, 23.8052], "Narail": [89.584, 23.1163], "Satkhira": [89.1115, 22.3155], "Jamalpur": [89.7853, 25.0831], "Mymensingh": [90.4073, 24.7539], "Netrokona": [90.8656, 24.8103], "Sherpur": [90.1495, 25.0746], "Bogura": [89.3697, 24.851], "Joypurhat": [89.0945, 25.0947], "Naogaon": [88.7531, 24.9132], "Natore": [89.0076, 24.4102], "Chapai Nawabganj": [88.2912, 24.7413], "Chapainawabganj": [88.2912, 24.7413], "Pabna": [89.4481, 24.1585], "Rajshahi": [88.6049, 24.3733], "Sirajganj": [89.57, 24.3141], "Dinajpur": [88.6332, 25.6279], "Gaibandha": [89.543, 25.3297], "Kurigram": [89.6295, 25.8072], "Lalmonirhat": [89.2847, 25.9923], "Nilphamari": [88.9414, 25.8483], "Panchagarh": [88.5952, 26.2709], "Rangpur": [89.2508, 25.7468], "Thakurgaon": [88.4283, 26.0418], "Habiganj": [91.4507, 24.4771], "Moulvibazar": [91.7315, 24.3095], "Sunamganj": [91.3992, 25.0715], "Sylhet": [91.87, 24.8993]};
 // ---------- roots story (shikorer golpo): on-device only, no server ----------
 const ROOT_THEMES = {green:"#16a34a", red:"#e11d2e", sky:"#0ea5e9", amber:"#f59e0b"};
 const ROOT_STEPS = ["name","birth","grew","parents","study","now","miss","theme"];
@@ -1906,27 +1913,27 @@ function rootsStoryLines(){
   const n = distinct.length;
   if(lang === "bn"){
     const L = [];
-    L.push(`জন্ম <b>${locative(bn(roots.birth))}</b>।`);
-    L.push(`বেড়ে ওঠা <b>${locative(bn(roots.grew))}</b>।`);
-    if(roots.mom && roots.dad) L.push(`মায়ের বাড়ি <b>${locative(bn(roots.mom))}</b>, বাবার বাড়ি <b>${locative(bn(roots.dad))}</b>।`);
-    else if(roots.mom) L.push(`মায়ের বাড়ি <b>${locative(bn(roots.mom))}</b>।`);
-    else if(roots.dad) L.push(`বাবার বাড়ি <b>${locative(bn(roots.dad))}</b>।`);
-    L.push(`পড়াশোনা <b>${locative(bn(roots.study))}</b>।`);
-    L.push(`এখন থাকি <b>${locative(bn(roots.now))}</b>।`);
+    L.push(`① জন্ম <b>${locative(bn(roots.birth))}</b>।`);
+    L.push(`② বেড়ে ওঠা <b>${locative(bn(roots.grew))}</b>।`);
+    if(roots.mom && roots.dad) L.push(`○ মায়ের বাড়ি <b>${locative(bn(roots.mom))}</b>, বাবার বাড়ি <b>${locative(bn(roots.dad))}</b>।`);
+    else if(roots.mom) L.push(`○ মায়ের বাড়ি <b>${locative(bn(roots.mom))}</b>।`);
+    else if(roots.dad) L.push(`○ বাবার বাড়ি <b>${locative(bn(roots.dad))}</b>।`);
+    L.push(`③ পড়াশোনা <b>${locative(bn(roots.study))}</b>।`);
+    L.push(`④ এখন থাকি <b>${locative(bn(roots.now))}</b>।`);
     L.push(`আমার গল্প <b>${fmt(n)} জায়গায়</b>, শিকড় এক বাংলাদেশে।`);
-    L.push(`সবচেয়ে মিস করি <b>${bn(roots.miss)}</b> ❤️`);
+    L.push(`❤️ সবচেয়ে মিস করি <b>${bn(roots.miss)}</b>`);
     return L;
   }
   const L = [];
-  L.push(`Born in <b>${bn(roots.birth)}</b>.`);
-  L.push(`Grew up in <b>${bn(roots.grew)}</b>.`);
-  if(roots.mom && roots.dad) L.push(`Mother's home in <b>${bn(roots.mom)}</b>, father's home in <b>${bn(roots.dad)}</b>.`);
-  else if(roots.mom) L.push(`Mother's home in <b>${bn(roots.mom)}</b>.`);
-  else if(roots.dad) L.push(`Father's home in <b>${bn(roots.dad)}</b>.`);
-  L.push(`Studied in <b>${bn(roots.study)}</b>.`);
-  L.push(`Now living in <b>${bn(roots.now)}</b>.`);
+  L.push(`① Born in <b>${bn(roots.birth)}</b>.`);
+  L.push(`② Grew up in <b>${bn(roots.grew)}</b>.`);
+  if(roots.mom && roots.dad) L.push(`○ Mother's home in <b>${bn(roots.mom)}</b>, father's home in <b>${bn(roots.dad)}</b>.`);
+  else if(roots.mom) L.push(`○ Mother's home in <b>${bn(roots.mom)}</b>.`);
+  else if(roots.dad) L.push(`○ Father's home in <b>${bn(roots.dad)}</b>.`);
+  L.push(`③ Studied in <b>${bn(roots.study)}</b>.`);
+  L.push(`④ Now living in <b>${bn(roots.now)}</b>.`);
   L.push(`My story spans <b>${fmt(n)} places</b> — but my roots are one Bangladesh.`);
-  L.push(`I miss <b>${bn(roots.miss)}</b> the most. ❤️`);
+  L.push(`❤️ I miss <b>${bn(roots.miss)}</b> the most.`);
   return L;
 }
 function rootsStoryText(){
@@ -2005,52 +2012,121 @@ document.getElementById("rootsNext").onclick = ()=>{
   saveRoots();
   rootStep++; renderRootsStep();
 };
+function spreadXY(xy, placed){
+  let x = xy.x, y = xy.y, k = 0;
+  while(placed.some(p => Math.hypot(p.x - x, p.y - y) < 22) && k < 4){ k++; x = xy.x + 17*k; y = xy.y - 14*k; }
+  placed.push({x, y});
+  return {x, y};
+}
 function journeyPoints(){
   const order = [roots.birth, roots.grew, roots.study, roots.now];
-  return order.map((en, i)=>({en, i: i+1, xy: rootXY(en)})).filter(p=>p.xy);
+  const placed = [];
+  return order.map((en, i)=>({en, i: i+1, xy: rootXY(en)})).filter(p=>p.xy).map(p=>{ p.d = spreadXY(p.xy, placed); return p; });
 }
+function missDisplay(pts){
+  if(!roots.miss) return null;
+  const xy = rootXY(roots.miss); if(!xy) return null;
+  const jp = pts.find(p=>p.en===roots.miss);
+  if(jp) return {en: roots.miss, xy: jp.d};
+  return {en: roots.miss, xy: spreadXY(xy, pts.map(p=>p.d))};
+}
+function parentDisplays(pts){
+  const out = [];
+  [roots.mom, roots.dad].filter(Boolean).forEach(en=>{
+    const xy = rootXY(en); if(!xy) return;
+    const jp = pts.find(p=>p.en===en);
+    out.push({en, xy: jp ? jp.d : xy, onDot: !!jp});
+  });
+  return out;
+}
+function labelSideFor(p, pts){
+  if(p.d.x > 330) return "left";
+  const crowded = pts.some(q=>q!==p && q.d.x > p.d.x && q.d.x < p.d.x + 150 && Math.abs(q.d.y - p.d.y) < 22);
+  return crowded ? "left" : "right";
+}
+function districtNameFor(en){ const d = DISTRICTS.find(x=>x.en===en); return d ? (lang==="bn" ? d.bn : d.en) : en; }
 function renderPosterMap(){
   const el = document.getElementById("posterMap");
   const theme = ROOT_THEMES[roots.theme] || ROOT_THEMES.green;
   const NS = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(NS, "svg");
   svg.setAttribute("viewBox", "0 0 460 560");
-  DISTRICTS.forEach(d=>{
-    const p = document.createElementNS(NS, "path");
-    p.setAttribute("d", d.d); p.setAttribute("fill", "#dcefe2"); p.setAttribute("stroke", "#fff"); p.setAttribute("stroke-width", "0.8");
-    svg.appendChild(p);
-  });
   const pts = journeyPoints();
+  const journeyEns = new Set(pts.map(p=>p.en));
+  const miss = missDisplay(pts);
+  DISTRICTS.forEach(d=>{
+    const path = document.createElementNS(NS, "path");
+    path.setAttribute("d", d.d);
+    if(d.en === roots.miss){ path.setAttribute("fill", "#e11d2e"); path.setAttribute("fill-opacity", "0.28"); }
+    else if(journeyEns.has(d.en)){ path.setAttribute("fill", theme); path.setAttribute("fill-opacity", "0.3"); }
+    else path.setAttribute("fill", "#dcefe2");
+    path.setAttribute("stroke", "#fff"); path.setAttribute("stroke-width", "0.8");
+    svg.appendChild(path);
+  });
   if(pts.length > 1){
     const pl = document.createElementNS(NS, "polyline");
-    pl.setAttribute("points", pts.map(p=>`${p.xy.x},${p.xy.y}`).join(" "));
+    pl.setAttribute("points", pts.map(p=>`${p.d.x},${p.d.y}`).join(" "));
     pl.setAttribute("fill", "none"); pl.setAttribute("stroke", theme); pl.setAttribute("stroke-width", "3.5");
     pl.setAttribute("stroke-linecap", "round"); pl.setAttribute("stroke-linejoin", "round"); pl.setAttribute("stroke-dasharray", "1 7");
     svg.appendChild(pl);
+    const a = pts[pts.length-2].d, b = pts[pts.length-1].d;
+    const dx = b.x-a.x, dy = b.y-a.y, len = Math.hypot(dx, dy);
+    if(len > 34){
+      const mx = (a.x+b.x)/2, my = (a.y+b.y)/2, ang = Math.atan2(dy, dx), s = 7;
+      const ux = Math.cos(ang), uy = Math.sin(ang), vx = -uy, vy = ux;
+      const tri = document.createElementNS(NS, "polygon");
+      tri.setAttribute("points", `${mx+ux*s},${my+uy*s} ${mx-ux*s*0.7+vx*s*0.7},${my-uy*s*0.7+vy*s*0.7} ${mx-ux*s*0.7-vx*s*0.7},${my-uy*s*0.7-vy*s*0.7}`);
+      tri.setAttribute("fill", theme);
+      svg.appendChild(tri);
+    }
   }
-  [roots.mom, roots.dad].filter(Boolean).forEach(en=>{
-    const xy = rootXY(en); if(!xy) return;
+  parentDisplays(pts).forEach(pd=>{
+    const halo = document.createElementNS(NS, "circle");
+    halo.setAttribute("cx", pd.xy.x); halo.setAttribute("cy", pd.xy.y); halo.setAttribute("r", "20");
+    halo.setAttribute("fill", "none"); halo.setAttribute("stroke", "#fff"); halo.setAttribute("stroke-width", "2");
+    svg.appendChild(halo);
     const c = document.createElementNS(NS, "circle");
-    c.setAttribute("cx", xy.x); c.setAttribute("cy", xy.y); c.setAttribute("r", "7");
-    c.setAttribute("fill", "#fff"); c.setAttribute("stroke", theme); c.setAttribute("stroke-width", "2.5");
+    c.setAttribute("cx", pd.xy.x); c.setAttribute("cy", pd.xy.y); c.setAttribute("r", "17");
+    c.setAttribute("fill", "none"); c.setAttribute("stroke", theme); c.setAttribute("stroke-width", "2.5");
     svg.appendChild(c);
+    if(!pd.onDot){
+      const dot = document.createElementNS(NS, "circle");
+      dot.setAttribute("cx", pd.xy.x); dot.setAttribute("cy", pd.xy.y); dot.setAttribute("r", "4.5");
+      dot.setAttribute("fill", theme);
+      svg.appendChild(dot);
+    }
   });
   pts.forEach(p=>{
     const c = document.createElementNS(NS, "circle");
-    c.setAttribute("cx", p.xy.x); c.setAttribute("cy", p.xy.y); c.setAttribute("r", "13");
+    c.setAttribute("cx", p.d.x); c.setAttribute("cy", p.d.y); c.setAttribute("r", "13");
     c.setAttribute("fill", theme); c.setAttribute("stroke", "#fff"); c.setAttribute("stroke-width", "2.5");
     svg.appendChild(c);
     const n = document.createElementNS(NS, "text");
-    n.setAttribute("x", p.xy.x); n.setAttribute("y", p.xy.y + 4.5); n.setAttribute("text-anchor", "middle");
+    n.setAttribute("x", p.d.x); n.setAttribute("y", p.d.y + 4.5); n.setAttribute("text-anchor", "middle");
     n.setAttribute("fill", "#fff"); n.setAttribute("font-size", "13"); n.setAttribute("font-weight", "800");
     n.textContent = p.i; svg.appendChild(n);
+    const lab = document.createElementNS(NS, "text");
+    const side = labelSideFor(p, pts);
+    lab.setAttribute("x", side === "right" ? p.d.x + 20 : p.d.x - 20);
+    lab.setAttribute("y", p.d.y + 6);
+    lab.setAttribute("text-anchor", side === "right" ? "start" : "end");
+    lab.setAttribute("fill", "#0f3d2e"); lab.setAttribute("font-size", "17"); lab.setAttribute("font-weight", "800");
+    lab.setAttribute("stroke", "#fff"); lab.setAttribute("stroke-width", "3.5"); lab.setAttribute("paint-order", "stroke");
+    lab.textContent = districtNameFor(p.en); svg.appendChild(lab);
   });
-  if(roots.miss){
-    const xy = rootXY(roots.miss);
-    if(xy){
-      const h = document.createElementNS(NS, "text");
-      h.setAttribute("x", xy.x); h.setAttribute("y", xy.y - 20); h.setAttribute("text-anchor", "middle"); h.setAttribute("font-size", "26");
-      h.textContent = "❤️"; svg.appendChild(h);
+  if(miss){
+    const h = document.createElementNS(NS, "text");
+    h.setAttribute("x", miss.xy.x); h.setAttribute("y", miss.xy.y - 22); h.setAttribute("text-anchor", "middle"); h.setAttribute("font-size", "26");
+    h.textContent = "❤️"; svg.appendChild(h);
+    if(!journeyEns.has(miss.en)){
+      const lab = document.createElementNS(NS, "text");
+      const side = labelSideFor({d: miss.xy}, pts);
+      lab.setAttribute("x", side === "right" ? miss.xy.x + 20 : miss.xy.x - 20);
+      lab.setAttribute("y", miss.xy.y + 6);
+      lab.setAttribute("text-anchor", side === "right" ? "start" : "end");
+      lab.setAttribute("fill", "#b91c1c"); lab.setAttribute("font-size", "17"); lab.setAttribute("font-weight", "800");
+      lab.setAttribute("stroke", "#fff"); lab.setAttribute("stroke-width", "3.5"); lab.setAttribute("paint-order", "stroke");
+      lab.textContent = districtNameFor(miss.en); svg.appendChild(lab);
     }
   }
   el.innerHTML = ""; el.appendChild(svg);
@@ -2059,7 +2135,11 @@ function showRootsPoster(){
   document.getElementById("rootsWizard").classList.add("hidden");
   document.getElementById("rootsPoster").classList.remove("hidden");
   document.getElementById("posterTitle").textContent = rootsTitle();
-  document.getElementById("posterLines").innerHTML = rootsStoryLines().map(l=>`<div>${l}</div>`).join("");
+  const pl = document.getElementById("posterLines");
+  pl.innerHTML = rootsStoryLines().map(l=>`<div>${l}</div>`).join("");
+  if(pl.lastElementChild) pl.lastElementChild.classList.add("poster-miss");
+  const theme = ROOT_THEMES[roots.theme] || ROOT_THEMES.green;
+  document.getElementById("posterPoem").style.color = theme;
   renderPosterMap();
 }
 document.getElementById("rootsAgain").onclick = ()=>{
@@ -2076,69 +2156,120 @@ document.getElementById("rootsCopy").onclick = async ()=>{
   const m = document.getElementById("rootsMsg");
   m.textContent = t("roots_copied"); m.style.color = "#14532d"; m.style.fontWeight = "700";
 };
-document.getElementById("rootsDownload").onclick = ()=>{
-  const msg = document.getElementById("rootsMsg");
+function drawRootsPosterCanvas(){
   const c = document.createElement("canvas"); c.width = 1080; c.height = 1350;
   const x = c.getContext("2d");
-  if(!x || typeof Path2D === "undefined"){ msg.textContent = t("roots_png_fail"); return; }
+  if(!x || typeof Path2D === "undefined") return null;
   const FONT = "'Noto Sans Bengali','Hind Siliguri',Arial,sans-serif";
   const theme = ROOT_THEMES[roots.theme] || ROOT_THEMES.green;
   const g = x.createLinearGradient(0, 0, 0, 1350);
   g.addColorStop(0, "#ffffff"); g.addColorStop(1, "#e6f5ec");
   x.fillStyle = g; x.fillRect(0, 0, 1080, 1350);
   x.fillStyle = "#e11d2e"; x.beginPath(); x.arc(960, 60, 110, 0, Math.PI*2); x.fill();
-  x.fillStyle = "#0f3d2e"; x.font = "800 58px " + FONT; x.textAlign = "center";
-  x.fillText(rootsTitle(), 540, 130);
+  x.fillStyle = "#0f3d2e"; x.font = "800 58px " + FONT; x.textAlign = "center"; x.textBaseline = "alphabetic";
+  x.fillText(rootsTitle(), 540, 118);
   x.fillStyle = "#5b6f66"; x.font = "600 30px " + FONT;
-  x.fillText(t("roots_bond"), 540, 178);
-  // map: districts via Path2D
-  const S = 1.32, OX = (1080 - 460*S)/2, OY = 215;
+  x.fillText(t("roots_bond"), 540, 166);
+  // map: full district shapes, journey districts tinted, missed district red-tinted
+  const S = 1.18, OX = (1080 - 460*S)/2, OY = 195;
+  const pts = journeyPoints();
+  const journeyEns = new Set(pts.map(p=>p.en));
+  const miss = missDisplay(pts);
+  const drawLabel = (px, py, text, color, size, anchor)=>{
+    x.font = "800 " + size + "px " + FONT; x.textAlign = anchor; x.textBaseline = "middle";
+    x.lineWidth = 5; x.strokeStyle = "#ffffff"; x.strokeText(text, px, py);
+    x.fillStyle = color; x.fillText(text, px, py);
+  };
   x.save(); x.translate(OX, OY); x.scale(S, S);
   DISTRICTS.forEach(d=>{
     try{
       const p = new Path2D(d.d);
-      x.fillStyle = "#dcefe2"; x.fill(p);
+      if(d.en === roots.miss){ x.globalAlpha = 0.3; x.fillStyle = "#e11d2e"; x.fill(p); x.globalAlpha = 1; }
+      else if(journeyEns.has(d.en)){ x.globalAlpha = 0.3; x.fillStyle = theme; x.fill(p); x.globalAlpha = 1; }
+      else { x.fillStyle = "#dcefe2"; x.fill(p); }
       x.strokeStyle = "#ffffff"; x.lineWidth = 1; x.stroke(p);
     }catch(e){}
   });
-  const pts = journeyPoints();
   if(pts.length > 1){
     x.beginPath();
-    pts.forEach((p, i)=>{ if(i === 0) x.moveTo(p.xy.x, p.xy.y); else x.lineTo(p.xy.x, p.xy.y); });
+    pts.forEach((p, i)=>{ if(i === 0) x.moveTo(p.d.x, p.d.y); else x.lineTo(p.d.x, p.d.y); });
     x.strokeStyle = theme; x.lineWidth = 5; x.setLineDash([1, 9]); x.lineCap = "round"; x.stroke(); x.setLineDash([]);
+    const a = pts[pts.length-2].d, b = pts[pts.length-1].d;
+    const dx = b.x-a.x, dy = b.y-a.y, len = Math.hypot(dx, dy);
+    if(len > 34){
+      const mx = (a.x+b.x)/2, my = (a.y+b.y)/2, ang = Math.atan2(dy, dx), s = 8;
+      x.beginPath();
+      x.moveTo(mx+Math.cos(ang)*s, my+Math.sin(ang)*s);
+      x.lineTo(mx+Math.cos(ang+2.5)*s, my+Math.sin(ang+2.5)*s);
+      x.lineTo(mx+Math.cos(ang-2.5)*s, my+Math.sin(ang-2.5)*s);
+      x.closePath(); x.fillStyle = theme; x.fill();
+    }
   }
-  [roots.mom, roots.dad].filter(Boolean).forEach(en=>{
-    const xy = rootXY(en); if(!xy) return;
-    x.beginPath(); x.arc(xy.x, xy.y, 8, 0, Math.PI*2);
-    x.fillStyle = "#fff"; x.fill(); x.strokeStyle = theme; x.lineWidth = 3; x.stroke();
+  parentDisplays(pts).forEach(pd=>{
+    x.beginPath(); x.arc(pd.xy.x, pd.xy.y, 20, 0, Math.PI*2); x.strokeStyle = "#fff"; x.lineWidth = 2; x.stroke();
+    x.beginPath(); x.arc(pd.xy.x, pd.xy.y, 17, 0, Math.PI*2); x.strokeStyle = theme; x.lineWidth = 2.5; x.stroke();
+    if(!pd.onDot){ x.beginPath(); x.arc(pd.xy.x, pd.xy.y, 4.5, 0, Math.PI*2); x.fillStyle = theme; x.fill(); }
   });
   pts.forEach(p=>{
-    x.beginPath(); x.arc(p.xy.x, p.xy.y, 15, 0, Math.PI*2);
-    x.fillStyle = theme; x.fill(); x.strokeStyle = "#fff"; x.lineWidth = 3; x.stroke();
-    x.fillStyle = "#fff"; x.font = "800 17px " + FONT; x.textAlign = "center"; x.textBaseline = "middle";
-    x.fillText(String(p.i), p.xy.x, p.xy.y + 1);
+    x.beginPath(); x.arc(p.d.x, p.d.y, 13, 0, Math.PI*2);
+    x.fillStyle = theme; x.fill(); x.strokeStyle = "#fff"; x.lineWidth = 2.5; x.stroke();
+    x.fillStyle = "#fff"; x.font = "800 13px " + FONT; x.textAlign = "center"; x.textBaseline = "middle";
+    x.fillText(String(p.i), p.d.x, p.d.y + 1);
+    const side = labelSideFor(p, pts);
+    drawLabel(side === "right" ? p.d.x + 20 : p.d.x - 20, p.d.y + 1, districtNameFor(p.en), "#0f3d2e", 17, side === "right" ? "left" : "right");
   });
-  if(roots.miss){
-    const xy = rootXY(roots.miss);
-    if(xy){ x.font = "44px " + FONT; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText("❤️", xy.x, xy.y - 26); }
+  if(miss){
+    x.font = "26px " + FONT; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText("❤️", miss.xy.x, miss.xy.y - 22);
+    if(!journeyEns.has(miss.en)){
+      const side = labelSideFor({d: miss.xy}, pts);
+      drawLabel(side === "right" ? miss.xy.x + 20 : miss.xy.x - 20, miss.xy.y + 1, districtNameFor(miss.en), "#b91c1c", 17, side === "right" ? "left" : "right");
+    }
   }
   x.restore();
-  // story lines
-  x.fillStyle = "#10231b"; x.font = "600 34px " + FONT; x.textAlign = "left"; x.textBaseline = "alphabetic";
+  // story lines (all of them — the miss line must never be cut off)
+  x.fillStyle = "#10231b"; x.font = "600 28px " + FONT; x.textAlign = "left"; x.textBaseline = "alphabetic";
   const lines = [];
   rootsStoryText().split(/(?<=[।.])\s*/).forEach(s=>{ if(!s.trim()) return;
     const words = s.trim().split(" "); let ln = "";
     words.forEach(w=>{ if(x.measureText(ln + " " + w).width > 920){ lines.push(ln.trim()); ln = w; } else ln += " " + w; });
     if(ln.trim()) lines.push(ln.trim());
   });
-  let y = 1010;
-  lines.slice(0, 5).forEach(l=>{ x.fillText(l, 80, y); y += 52; });
-  x.fillStyle = "rgba(0,0,0,.28)"; x.fillRect(0, 1230, 1080, 120);
+  let y = 895;
+  lines.slice(0, 8).forEach(l=>{ x.fillText(l, 80, y); y += 42; });
+  // footer: theme band with brand + poem
+  x.fillStyle = theme; x.fillRect(0, 1240, 1080, 110);
   x.fillStyle = "#ffffff"; x.font = "800 32px " + FONT; x.textAlign = "center";
-  x.fillText("NEW BANGLADESH  •  newbangladesh.bond", 540, 1272);
-  x.fillStyle = "#86efac"; x.font = "600 26px " + FONT;
-  x.fillText(t("roots_bond"), 540, 1316);
+  x.fillText("NEW BANGLADESH  •  newbangladesh.bond", 540, 1284);
+  x.fillStyle = "rgba(255,255,255,.92)"; x.font = "600 26px " + FONT;
+  x.fillText(t("roots_poem"), 540, 1324);
+  return c;
+}
+document.getElementById("rootsDownload").onclick = ()=>{
+  const msg = document.getElementById("rootsMsg");
+  const c = drawRootsPosterCanvas();
+  if(!c){ msg.textContent = t("roots_png_fail"); return; }
   const a = document.createElement("a"); a.download = "shikorer-golpo.png"; a.href = c.toDataURL("image/png"); a.click();
+};
+document.getElementById("rootsShare").onclick = async ()=>{
+  const msg = document.getElementById("rootsMsg");
+  const ok = (txt)=>{ msg.textContent = txt; msg.style.color = "#14532d"; msg.style.fontWeight = "700"; };
+  const c = drawRootsPosterCanvas();
+  if(!c){ msg.textContent = t("roots_png_fail"); return; }
+  let shared = false;
+  try{
+    const blob = await new Promise(res=>c.toBlob(res, "image/png"));
+    if(blob){
+      const file = new File([blob], "shikorer-golpo.png", {type: "image/png"});
+      if(navigator.canShare && navigator.canShare({files: [file]})){
+        try{ await navigator.share({files: [file], title: rootsTitle(), text: rootsStoryText()}); shared = true; }
+        catch(e){ if(e && e.name === "AbortError") return; }
+      }
+    }
+  }catch(e){}
+  if(!shared){
+    const a = document.createElement("a"); a.download = "shikorer-golpo.png"; a.href = c.toDataURL("image/png"); a.click();
+    ok(t("roots_downloaded"));
+  } else ok(t("roots_shared"));
 };
 function showView(v){
   const home = document.getElementById("view-home");
