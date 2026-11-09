@@ -324,6 +324,12 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
 .poster-abroad{display:block;text-align:center;font-weight:800;color:#0f3d2e;background:#e2f2e8;border:1px solid #bfe3cd;border-radius:999px;padding:8px 14px;margin:12px auto 0;max-width:420px}
 .globe-hint{color:rgba(247,241,230,.65);font-size:13.5px;margin:8px 0 0}
 .globe-pick{text-align:left;max-width:480px;margin:16px auto 0}
+.globe-pick-chooser{margin:14px auto 0;max-width:480px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:12px}
+.globe-pick-title{color:#ffd99a;font-weight:800;font-size:14.5px;margin-bottom:10px}
+.globe-pick-btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.globe-pick-btns button{border:1.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;font:inherit;font-weight:700;font-size:14.5px;padding:9px 14px;border-radius:999px;cursor:pointer}
+.globe-pick-btns button:active{transform:scale(.96)}
+.globe-pick-btns .globe-pick-x{background:transparent;color:rgba(247,241,230,.7);border-color:transparent}
 .globe-pick label{display:block;color:#ffd99a;font-weight:800;font-size:14px;margin:12px 0 4px}
 .globe-select{width:100%;padding:13px 16px;border-radius:999px;border:1.5px solid rgba(255,255,255,.25);background:#fff;font:inherit;font-size:16px;font-weight:600;color:var(--ink)}
 .globe-dist{font-size:20px;font-weight:800;color:#ffd99a;margin:18px auto 0;line-height:1.5;max-width:520px}
@@ -594,6 +600,10 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
         <div class="globe-wrap">
           <canvas id="globeCanvas" class="globe-canvas" width="640" height="640" aria-label="ঘূর্ণায়মান পৃথিবীর গ্লোব"></canvas>
         </div>
+        <div id="globePick" class="globe-pick-chooser hidden">
+          <div class="globe-pick-title" data-i18n="globe_pick_which">এখানে কয়েকটা শহর কাছাকাছি — কোনটা?</div>
+          <div id="globePickBtns" class="globe-pick-btns"></div>
+        </div>
         <p class="globe-hint" data-i18n="globe_drag">গ্লোব টেনে ঘোরাও — দেখো পৃথিবী কত ছোট!</p>
         <div class="globe-pick">
           <label for="globeCity" data-i18n="globe_city">এখন কোন শহরে আছো?</label>
@@ -709,7 +719,7 @@ const I18N = {
     globe_h:"দুনিয়া থেকে দেশে", globe_sub:"প্রবাসে থাকো? গ্লোবের শহরে ট্যাপ করো, বা নিচে থেকে বাছো — গ্লোব ঘুরে দেখাবে বাড়ি থেকে কত দূরে আছো।",
     globe_city:"এখন কোন শহরে আছো?", globe_home:"বাড়ি কোন জেলায়?", globe_drag:"এক আঙুলে টেনে ঘোরাও, দুই আঙুলে চিমটি দিয়ে জুম করো — সব শহরের নাম গ্লোবেই আছে।",
     globe_none:"উপরে শহর বাছো — সুতোটা টেনে দেব বাড়ি পর্যন্ত।", globe_dist:"{c} থেকে {h} — {d} কিমি দূরে",
-    globe_note:"🔒 এটাও শুধু তোমার ডিভাইসেই থাকে — সার্ভারে কিছু যায় না।", globe_pick_city:"শহর বাছো…", globe_bangladesh:"বাংলাদেশ",
+    globe_note:"🔒 এটাও শুধু তোমার ডিভাইসেই থাকে — সার্ভারে কিছু যায় না।", globe_pick_city:"শহর বাছো…", globe_pick_which:"এখানে কয়েকটা শহর কাছাকাছি — কোনটা?", globe_bangladesh:"বাংলাদেশ",
     roots_theme_green:"সবুজ", roots_theme_red:"লাল", roots_theme_sky:"নীল", roots_theme_amber:"সোনালি",
     nav_battle:"ব্যাটল",
     nav_archive:"আর্কাইভ",
@@ -818,7 +828,7 @@ const I18N = {
     globe_h:"From the world to home", globe_sub:"Living abroad? Tap a city on the globe, or pick below — it will turn and show how far home is.",
     globe_city:"Which city are you in now?", globe_home:"Home district?", globe_drag:"Drag with one finger to spin, pinch with two to zoom — every city is named right on the globe.",
     globe_none:"Pick a city above — we'll draw the thread all the way home.", globe_dist:"{c} to {h} — {d} km away",
-    globe_note:"🔒 This stays only on your device too — nothing goes to a server.", globe_pick_city:"Pick a city…", globe_bangladesh:"Bangladesh",    roots_theme_green:"Green", roots_theme_red:"Red", roots_theme_sky:"Blue", roots_theme_amber:"Golden",
+    globe_note:"🔒 This stays only on your device too — nothing goes to a server.", globe_pick_city:"Pick a city…", globe_pick_which:"Several cities are close together here — which one?", globe_bangladesh:"Bangladesh",    roots_theme_green:"Green", roots_theme_red:"Red", roots_theme_sky:"Blue", roots_theme_amber:"Golden",
     nav_battle:"Battles",
     nav_archive:"Archive",
     nav_community:"Community",
@@ -2485,9 +2495,34 @@ function globeCityLabelLayout(){
   const placed = []; // {x,y,w,h} label boxes already taken
   const out = [];
   const offs = [[0, -13], [0, 21], [-16, -13], [16, -13], [-16, 21], [16, 21], [0, -30], [0, 38], [-26, 4], [26, 4], [-34, -22], [34, -22], [-34, 30], [34, 30], [0, -48], [0, 56], [-52, 4], [52, 4], [-70, -30], [70, -30], [-70, 38], [70, 38], [0, -66], [0, 74], [-70, 4], [70, 4], [-90, -40], [90, -40], [-90, 48], [90, 48], [0, -92], [0, 100], [-110, 4], [110, 4]];
+  const boxOverlap = (a, b)=>{
+    const ox = Math.max(0, Math.min(a.x + a.w / 2, b.x + b.w / 2) - Math.max(a.x - a.w / 2, b.x - b.w / 2));
+    const oy = Math.max(0, Math.min(a.y + a.h / 2, b.y + b.h / 2) - Math.max(a.y - a.h / 2, b.y - b.h / 2));
+    return ox * oy;
+  };
+  const inSphere = (box)=>{
+    if(!globe.R) return true;
+    const cs = [[box.x - box.w / 2, box.y - box.h / 2], [box.x + box.w / 2, box.y - box.h / 2], [box.x - box.w / 2, box.y + box.h / 2], [box.x + box.w / 2, box.y + box.h / 2]];
+    return cs.every(([cx, cy])=> Math.hypot(cx - globe.cx, cy - globe.cy) <= globe.R - 2);
+  };
+  // front-facing markers, for the "never cover another city's ring" rule
+  const markers = [];
   WORLD_CITIES.forEach(c=>{
     const p = globeProject(c.lat * Math.PI / 180, c.lon * Math.PI / 180, 1);
-    if(p.z <= 0.02) return;
+    if(p.z > 0.02) markers.push({en: c.en, x: p.x, y: p.y});
+  });
+  // reserve the home district's big label first, so no city name hides under it
+  const home = globeHomeLatLon();
+  const hp = globeProject(home.lat * Math.PI / 180, home.lon * Math.PI / 180, 1);
+  if(hp.z > 0.02){
+    const homeName = districtNameFor(globe.home);
+    let hw = homeName.length * 12;
+    try{ x.font = "800 22px " + GLOBE_FONT; hw = x.measureText(homeName).width; }catch(e){}
+    placed.push({x: hp.x, y: hp.y - 14 - 13, w: hw + 6, h: 26});
+  }
+  markers.forEach(m=>{
+    const c = WORLD_CITIES.find(v=>v.en === m.en);
+    const p = {x: m.x, y: m.y};
     const selected = globe.city === c.en;
     const name = lang === "bn" ? c.bn : c.en;
     const font = selected ? "800 22px " + GLOBE_FONT : "700 15px " + GLOBE_FONT;
@@ -2506,11 +2541,10 @@ function globeCityLabelLayout(){
       const lx = p.x + off[0], ly = p.y + off[1];
       const box = {x: lx, y: ly, w: w + 6, h};
       let overlap = 0;
-      placed.forEach(q=>{
-        const ox = Math.max(0, Math.min(box.x + box.w / 2, q.x + q.w / 2) - Math.max(box.x - box.w / 2, q.x - q.w / 2));
-        const oy = Math.max(0, Math.min(box.y + box.h / 2, q.y + q.h / 2) - Math.max(box.y - box.h / 2, q.y - q.h / 2));
-        overlap += ox * oy;
-      });
+      placed.forEach(q=>{ overlap += boxOverlap(box, q); });
+      // a name must not hide another city's ring, and must stay on the globe face
+      const coversMarker = markers.some(mm=> mm.en !== c.en && boxOverlap(box, {x: mm.x, y: mm.y, w: 16, h: 16}) > 0);
+      if(coversMarker || !inSphere(box)) overlap += 1e6;
       if(overlap === 0){ best = box; break; }
       if(overlap < bestOverlap){ bestOverlap = overlap; best = box; }
     }
@@ -2668,32 +2702,58 @@ function globeTurnToCity(){
   globe.target = Math.atan2(mz, mx);
   globe.lastInteract = performance.now();
 }
+function selectGlobeCity(c){
+  globe.city = c.en; globeSave(); updateGlobeUI(); globeTurnToCity(); hideGlobePick();
+  if(rootsDone() && !document.getElementById("rootsPoster").classList.contains("hidden")) showRootsPoster();
+}
+function hideGlobePick(){
+  const el = document.getElementById("globePick");
+  if(el) el.classList.add("hidden");
+}
+function showGlobePick(list){
+  const box = document.getElementById("globePick"), btns = document.getElementById("globePickBtns");
+  if(!box || !btns) return;
+  btns.innerHTML = "";
+  list.forEach(item=>{
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = globeCityLabel(item.c);
+    b.addEventListener("click", ()=> selectGlobeCity(item.c));
+    btns.appendChild(b);
+  });
+  const x = document.createElement("button");
+  x.type = "button"; x.className = "globe-pick-x"; x.textContent = "✕";
+  x.setAttribute("aria-label", "বন্ধ করো");
+  x.addEventListener("click", hideGlobePick);
+  btns.appendChild(x);
+  box.classList.remove("hidden");
+  try{ box.scrollIntoView({behavior: "smooth", block: "nearest"}); }catch(e){}
+}
 function globeTapPick(e){
   if(!globe || !globe.cv) return;
   const r = globe.cv.getBoundingClientRect();
   const sx = globe.cv.width / (r.width || 1), sy = globe.cv.height / (r.height || 1);
   const tx = (e.clientX - r.left) * sx, ty = (e.clientY - r.top) * sy;
-  // A tap means what it lands on: a near-exact ring tap wins first (labels can sit
-  // on top of a neighbour's ring in the Gulf cluster), then a tap on a name,
-  // then the nearest ring within finger range.
-  let bestMark = null, bestMarkD = 1e9;
-  let bestLabel = null, bestLabelD = 1e9;
+  // Gulf markers sit 1-10px apart at default zoom — no tap can tell Dubai from
+  // Sharjah by position alone. So a tap collects every city it could mean
+  // (ring within finger range, or the name tapped on); one candidate picks
+  // directly, several open a chooser instead of guessing a neighbour.
+  const cands = new Map();
   globeCityLabelLayout().forEach(L=>{
     const dMark = Math.hypot(L.mx - tx, L.my - ty);
-    if(dMark < bestMarkD){ bestMarkD = dMark; bestMark = L.c; }
+    if(dMark < 46){
+      const prev = cands.get(L.c.en);
+      if(!prev || dMark < prev.d) cands.set(L.c.en, {c: L.c, d: dMark});
+    }
     if(Math.abs(tx - L.lx) <= L.w / 2 + 12 && Math.abs(ty - L.ly) <= L.h / 2 + 12){
-      const dLab = Math.hypot(L.lx - tx, L.ly - ty);
-      if(dLab < bestLabelD){ bestLabelD = dLab; bestLabel = L.c; }
+      const prev = cands.get(L.c.en);
+      if(!prev) cands.set(L.c.en, {c: L.c, d: dMark});
     }
   });
-  let best = null, bd = 1e9;
-  if(bestMarkD <= 12){ best = bestMark; bd = bestMarkD; }
-  else if(bestLabel){ best = bestLabel; bd = 0; }
-  else if(bestMarkD < 46){ best = bestMark; bd = bestMarkD; }
-  if(best && bd < 46){
-    globe.city = best.en; globeSave(); updateGlobeUI(); globeTurnToCity();
-    if(rootsDone() && !document.getElementById("rootsPoster").classList.contains("hidden")) showRootsPoster();
-  }
+  const list = [...cands.values()].sort((a, b)=> a.d - b.d);
+  if(list.length === 0){ hideGlobePick(); return; }
+  if(list.length === 1){ selectGlobeCity(list[0].c); return; }
+  showGlobePick(list.slice(0, 5));
 }
 function initGlobe(){
   const cv = document.getElementById("globeCanvas");
@@ -2713,7 +2773,7 @@ function initGlobe(){
   };
   const citySel = document.getElementById("globeCity");
   if(citySel) citySel.addEventListener("change", ()=>{
-    globe.city = citySel.value; globeSave(); updateGlobeUI(); globeTurnToCity();
+    globe.city = citySel.value; globeSave(); updateGlobeUI(); globeTurnToCity(); hideGlobePick();
     if(rootsDone() && !document.getElementById("rootsPoster").classList.contains("hidden")) showRootsPoster();
   });
   const pointers = new Map();
@@ -2725,6 +2785,7 @@ function initGlobe(){
     if(cv.setPointerCapture){ try{ cv.setPointerCapture(e.pointerId); }catch(err){} }
     pointers.set(e.pointerId, {x: e.clientX, y: e.clientY});
     globe.target = null;
+    hideGlobePick();
     globe.lastInteract = performance.now(); globe.userTouched = true;
     if(pointers.size === 1){ globe.dragging = true; downX = e.clientX; downY = e.clientY; downT = performance.now(); globe.lastX = e.clientX; globe.lastY = e.clientY; cv.classList.add("dragging"); }
     if(pointers.size === 2){
