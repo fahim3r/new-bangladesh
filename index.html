@@ -323,6 +323,9 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
 .roots-mode .btn{flex:1}
 .poster-abroad{display:block;text-align:center;font-weight:800;color:#0f3d2e;background:#e2f2e8;border:1px solid #bfe3cd;border-radius:999px;padding:8px 14px;margin:12px auto 0;max-width:420px}
 .globe-hint{color:rgba(247,241,230,.65);font-size:13.5px;margin:8px 0 0}
+.globe-card-cap{color:#ffd99a;font-weight:800;font-size:16px;margin:22px 0 10px}
+.globe-card-canvas{width:100%;max-width:300px;height:auto;display:block;margin:0 auto;border-radius:18px;box-shadow:0 12px 32px rgba(0,0,0,.35)}
+.globe-card-msg{color:#ffd99a;font-weight:700;min-height:20px;margin:10px 0 0}
 .globe-pick{text-align:left;max-width:480px;margin:16px auto 0}
 .globe-pick-chooser{margin:14px auto 0;max-width:480px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:12px}
 .globe-pick-title{color:#ffd99a;font-weight:800;font-size:14.5px;margin-bottom:10px}
@@ -610,6 +613,15 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
           <select id="globeCity" class="globe-select"></select>
         </div>
         <p id="globeDist" class="globe-dist"></p>
+        <div id="globeCardSec" class="hidden">
+          <p class="globe-card-cap" data-i18n="globe_card_h">এই গ্লোবটা শেয়ার করো</p>
+          <canvas id="globeCardCanvas" class="globe-card-canvas" width="1080" height="1350"></canvas>
+          <div class="share-actions">
+            <button class="btn green icon-btn" id="globeCardDownload" type="button" aria-label="গ্লোব কার্ড ডাউনলোড করো (PNG)" title="গ্লোব কার্ড ডাউনলোড করো (PNG)"><span aria-hidden="true">⬇️</span></button>
+            <button class="btn primary icon-btn" id="globeCardShare" type="button" aria-label="গ্লোব কার্ড শেয়ার করো" title="গ্লোব কার্ড শেয়ার করো"><span aria-hidden="true">📤</span></button>
+          </div>
+          <p id="globeCardMsg" class="globe-card-msg"></p>
+        </div>
         <p class="globe-note" data-i18n="globe_note">🔒 এটাও শুধু তোমার ডিভাইসেই থাকে — সার্ভারে কিছু যায় না।</p>
       </div>
     </section>
@@ -719,7 +731,7 @@ const I18N = {
     globe_h:"দুনিয়া থেকে দেশে", globe_sub:"প্রবাসে থাকো? গ্লোবের শহরে ট্যাপ করো, বা নিচে থেকে বাছো — গ্লোব ঘুরে দেখাবে বাড়ি থেকে কত দূরে আছো।",
     globe_city:"এখন কোন শহরে আছো?", globe_home:"বাড়ি কোন জেলায়?", globe_drag:"এক আঙুলে টেনে ঘোরাও, দুই আঙুলে চিমটি দিয়ে জুম করো — সব শহরের নাম গ্লোবেই আছে।",
     globe_none:"উপরে শহর বাছো — সুতোটা টেনে দেব বাড়ি পর্যন্ত।", globe_dist:"{c} থেকে {h} — {d} কিমি দূরে",
-    globe_note:"🔒 এটাও শুধু তোমার ডিভাইসেই থাকে — সার্ভারে কিছু যায় না।", globe_pick_city:"শহর বাছো…", globe_pick_which:"এখানে কয়েকটা শহর কাছাকাছি — কোনটা?", globe_bangladesh:"বাংলাদেশ",
+    globe_note:"🔒 এটাও শুধু তোমার ডিভাইসেই থাকে — সার্ভারে কিছু যায় না।", globe_pick_city:"শহর বাছো…", globe_pick_which:"এখানে কয়েকটা শহর কাছাকাছি — কোনটা?", globe_card_h:"এই গ্লোবটা শেয়ার করো", globe_card_download:"গ্লোব কার্ড ডাউনলোড করো (PNG)", globe_card_share:"গ্লোব কার্ড শেয়ার করো", globe_card_shared:"শেয়ার হয়ে গেছে — দুনিয়াটা পাঠিয়ে দাও!", globe_card_downloaded:"কার্ড ডাউনলোড হয়েছে — গ্যালারি থেকে শেয়ার করো!", globe_bangladesh:"বাংলাদেশ",
     roots_theme_green:"সবুজ", roots_theme_red:"লাল", roots_theme_sky:"নীল", roots_theme_amber:"সোনালি",
     nav_battle:"ব্যাটল",
     nav_archive:"আর্কাইভ",
@@ -828,7 +840,7 @@ const I18N = {
     globe_h:"From the world to home", globe_sub:"Living abroad? Tap a city on the globe, or pick below — it will turn and show how far home is.",
     globe_city:"Which city are you in now?", globe_home:"Home district?", globe_drag:"Drag with one finger to spin, pinch with two to zoom — every city is named right on the globe.",
     globe_none:"Pick a city above — we'll draw the thread all the way home.", globe_dist:"{c} to {h} — {d} km away",
-    globe_note:"🔒 This stays only on your device too — nothing goes to a server.", globe_pick_city:"Pick a city…", globe_pick_which:"Several cities are close together here — which one?", globe_bangladesh:"Bangladesh",    roots_theme_green:"Green", roots_theme_red:"Red", roots_theme_sky:"Blue", roots_theme_amber:"Golden",
+    globe_note:"🔒 This stays only on your device too — nothing goes to a server.", globe_pick_city:"Pick a city…", globe_pick_which:"Several cities are close together here — which one?", globe_card_h:"Share this globe", globe_card_download:"Download globe card (PNG)", globe_card_share:"Share the globe card", globe_card_shared:"Shared — send the world on!", globe_card_downloaded:"Card downloaded — share it from your gallery!", globe_bangladesh:"Bangladesh",    roots_theme_green:"Green", roots_theme_red:"Red", roots_theme_sky:"Blue", roots_theme_amber:"Golden",
     nav_battle:"Battles",
     nav_archive:"Archive",
     nav_community:"Community",
@@ -1254,7 +1266,7 @@ function applyLang(){
   document.title = t("title");
   document.querySelectorAll("[data-i18n]").forEach(el=>{ el.textContent = t(el.dataset.i18n); });
   // icon-only buttons: keep their accessible names + tooltips translated
-  [["downloadBtn","download"],["challengeBtn","challenge"],["againBtn","again"],["rootsDownload","roots_download"],["rootsShare","roots_share"],["rootsCopy","roots_copy"],["rootsAgain","roots_again"]].forEach(([id,key])=>{ const b=document.getElementById(id); if(b){ b.setAttribute("aria-label", t(key)); b.title = t(key); } });
+  [["downloadBtn","download"],["challengeBtn","challenge"],["againBtn","again"],["rootsDownload","roots_download"],["rootsShare","roots_share"],["rootsCopy","roots_copy"],["rootsAgain","roots_again"],["globeCardDownload","globe_card_download"],["globeCardShare","globe_card_share"]].forEach(([id,key])=>{ const b=document.getElementById(id); if(b){ b.setAttribute("aria-label", t(key)); b.title = t(key); } });
   document.querySelectorAll(".sc-style-btn").forEach(b=>{ const n = t("style_"+b.dataset.style); b.setAttribute("aria-label", n); b.title = n; });
   document.getElementById("langBn").classList.toggle("active", lang==="bn");
   document.getElementById("langEn").classList.toggle("active", lang==="en");
@@ -2359,6 +2371,26 @@ function drawRootsPosterCanvas(){
     }
   }
   x.restore();
+  // abroad distance chip (same line as the on-page ✈️ chip, between map and story)
+  const abroadCity = rootsAbroadCity();
+  if(abroadCity){
+    const abroadHome = rootsHomeDistrict();
+    const abroadKm = globeHaversineKm(abroadCity, districtLatLon(abroadHome));
+    const chipTxt = "✈️ " + t("globe_dist").replace("{c}", lang === "bn" ? abroadCity.bn : abroadCity.en).replace("{h}", districtNameFor(abroadHome)).replace("{d}", fmt(abroadKm));
+    x.font = "600 30px " + FONT;
+    const chipW = x.measureText(chipTxt).width + 72, chipH = 66, chipX = (1080 - chipW) / 2, chipY = 772;
+    x.beginPath();
+    x.moveTo(chipX + 33, chipY);
+    x.arcTo(chipX + chipW, chipY, chipX + chipW, chipY + chipH, 33);
+    x.arcTo(chipX + chipW, chipY + chipH, chipX, chipY + chipH, 33);
+    x.arcTo(chipX, chipY + chipH, chipX, chipY, 33);
+    x.arcTo(chipX, chipY, chipX + chipW, chipY, 33);
+    x.closePath();
+    x.fillStyle = "#e2f2e8"; x.fill();
+    x.strokeStyle = "#bfe3cd"; x.lineWidth = 2; x.stroke();
+    x.fillStyle = "#0f3d2e"; x.textAlign = "center"; x.textBaseline = "middle";
+    x.fillText(chipTxt, 540, chipY + chipH / 2 + 1);
+  }
   // story lines (all of them — the miss line must never be cut off)
   x.fillStyle = "#10231b"; x.font = "600 28px " + FONT; x.textAlign = "left"; x.textBaseline = "alphabetic";
   const lines = [];
@@ -2689,7 +2721,97 @@ function updateGlobeUI(){
       distEl.textContent = t("globe_dist").replace("{c}", lang === "bn" ? city.bn : city.en).replace("{h}", districtNameFor(globe.home)).replace("{d}", fmt(km));
     }
   }
+  renderGlobeCard();
 }
+// Shareable globe card (Phase 2): a 1080x1350 PNG of the globe exactly as it looks
+// right now — live canvas snapshot + name + distance + brand, Roots-poster style.
+function drawGlobeCardCanvas(){
+  const city = globe && globe.city ? WORLD_CITIES.find(c=>c.en === globe.city) : null;
+  if(!city) return null;
+  const home = rootsHomeDistrict();
+  const km = globeHaversineKm(city, districtLatLon(home));
+  const c = document.createElement("canvas"); c.width = 1080; c.height = 1350;
+  const x = c.getContext("2d");
+  if(!x) return null;
+  const FONT = GLOBE_FONT;
+  const g = x.createLinearGradient(0, 0, 0, 1350);
+  g.addColorStop(0, "#0b2e22"); g.addColorStop(1, "#12332a");
+  x.fillStyle = g; x.fillRect(0, 0, 1080, 1350);
+  x.fillStyle = "rgba(225,29,46,.9)"; x.beginPath(); x.arc(960, 90, 70, 0, Math.PI * 2); x.fill();
+  x.textAlign = "center"; x.textBaseline = "alphabetic";
+  x.fillStyle = "#ffd99a"; x.font = "800 40px " + FONT;
+  x.fillText("🌍 " + t("globe_h"), 540, 110);
+  if(globe && globe.cv){
+    const gs = 780, gx = (1080 - gs) / 2, gy = 150;
+    x.save();
+    x.beginPath(); x.arc(540, gy + gs / 2, gs / 2, 0, Math.PI * 2); x.clip();
+    x.drawImage(globe.cv, gx, gy, gs, gs);
+    x.restore();
+    x.strokeStyle = "rgba(247,241,230,.25)"; x.lineWidth = 3;
+    x.beginPath(); x.arc(540, gy + gs / 2, gs / 2, 0, Math.PI * 2); x.stroke();
+  }
+  const fitFont = (txt, px)=>{
+    let fs = px;
+    x.font = "800 " + fs + "px " + FONT;
+    while(fs > 30 && x.measureText(txt).width > 980){ fs -= 2; x.font = "800 " + fs + "px " + FONT; }
+    return fs;
+  };
+  let y = 1010;
+  if(roots.name){
+    const nm = lang === "bn" ? roots.name + " এখন " + locative(city.bn) : roots.name + " now in " + city.en;
+    fitFont(nm, 44);
+    x.fillStyle = "#ffd99a";
+    x.fillText(nm, 540, y); y += 72;
+  }
+  const dist = "✈️ " + t("globe_dist").replace("{c}", lang === "bn" ? city.bn : city.en).replace("{h}", districtNameFor(home)).replace("{d}", fmt(km));
+  fitFont(dist, 46);
+  x.fillStyle = "#ffffff";
+  x.fillText(dist, 540, y);
+  x.fillStyle = "rgba(247,241,230,.85)"; x.font = "600 30px " + FONT;
+  x.fillText(t("roots_poem"), 540, y + 78);
+  x.fillStyle = "#ffd99a"; x.font = "800 30px " + FONT;
+  x.fillText("NEW BANGLADESH  •  newbangladesh.bond", 540, 1290);
+  return c;
+}
+function renderGlobeCard(){
+  const sec = document.getElementById("globeCardSec");
+  if(!sec) return;
+  const hasCity = !!(globe && globe.city);
+  sec.classList.toggle("hidden", !hasCity);
+  if(!hasCity) return;
+  const c = drawGlobeCardCanvas();
+  const pv = document.getElementById("globeCardCanvas");
+  if(c && pv){
+    const px = pv.getContext("2d");
+    if(px){ px.clearRect(0, 0, pv.width, pv.height); px.drawImage(c, 0, 0); }
+  }
+}
+document.getElementById("globeCardDownload").onclick = ()=>{
+  const c = drawGlobeCardCanvas();
+  if(!c) return;
+  const a = document.createElement("a"); a.download = "duniya-theke-deshe.png"; a.href = c.toDataURL("image/png"); a.click();
+};
+document.getElementById("globeCardShare").onclick = async ()=>{
+  const msg = document.getElementById("globeCardMsg");
+  const ok = (txt)=>{ if(msg) msg.textContent = txt; };
+  const c = drawGlobeCardCanvas();
+  if(!c) return;
+  let shared = false;
+  try{
+    const blob = await new Promise(res=>c.toBlob(res, "image/png"));
+    if(blob){
+      const file = new File([blob], "duniya-theke-deshe.png", {type: "image/png"});
+      if(navigator.canShare && navigator.canShare({files: [file]})){
+        try{ await navigator.share({files: [file], title: t("globe_h"), text: document.getElementById("globeDist").textContent}); shared = true; }
+        catch(e){ if(e && e.name === "AbortError") return; }
+      }
+    }
+  }catch(e){}
+  if(!shared){
+    const a = document.createElement("a"); a.download = "duniya-theke-deshe.png"; a.href = c.toDataURL("image/png"); a.click();
+    ok(t("globe_card_downloaded"));
+  } else ok(t("globe_card_shared"));
+};
 function globeTurnToCity(){
   const city = globe.city ? WORLD_CITIES.find(c=>c.en === globe.city) : null;
   if(!city) return;
@@ -2817,6 +2939,7 @@ function initGlobe(){
       const quick = performance.now() - downT < 500;
       globe.dragging = false; globe.lastInteract = performance.now(); cv.classList.remove("dragging");
       if(moved < 9 && quick && e){ lastTapAt = performance.now(); lastTapX = e.clientX; lastTapY = e.clientY; globeTapPick(e); }
+      else if(moved >= 9) renderGlobeCard(); // preview follows the new rotation after a drag
     }
   };
   cv.addEventListener("pointerup", endDrag);
