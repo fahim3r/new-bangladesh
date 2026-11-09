@@ -149,6 +149,28 @@ h1 .red{color:var(--red);display:inline-block;animation:wordPop .8s .35s cubic-b
 .sc-type{display:inline-block;background:var(--red);border-radius:99px;padding:8px 18px;font-weight:800;font-size:16px;color:#fff;position:relative;z-index:1;box-shadow:0 8px 20px rgba(225,29,46,.4)}
 .sc-foot{margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.18);display:flex;justify-content:space-between;gap:10px;font-size:13.5px;color:#a7f3d0;position:relative;z-index:1}
 .sc-foot b{color:#fff}
+/* ---------- share card styles ---------- */
+.sc-styles{display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.sc-styles-label{font-weight:700;font-size:14px;color:var(--muted)}
+.sc-style-btn{border:1.5px solid var(--line);background:rgba(255,255,255,.9);font:inherit;font-weight:800;font-size:14px;padding:8px 16px;border-radius:999px;cursor:pointer;color:var(--ink)}
+.sc-style-btn.active{background:var(--forest);border-color:var(--forest);color:#fff}
+.sc-mapbg{display:none;position:absolute;right:-30px;top:70px;width:300px;height:365px;opacity:.08;pointer-events:none;z-index:0}
+.sc-mapbg svg{width:100%;height:100%}
+.sharecard.style-glass .sc-mapbg{display:block}
+.sharecard.style-light{background:linear-gradient(160deg,#ffffff,#e9f8ee 60%,#d2f6de);color:#0b2e22;box-shadow:0 24px 50px rgba(15,61,46,.18);border:1.5px solid #bbf7d0}
+.sharecard.style-light .sc-brand span{color:#15803d}
+.sharecard.style-light .eyebrow{color:#15803d}
+.sharecard.style-light .sc-match b{color:#16a34a}
+.sharecard.style-light .sc-match span{color:#14532d}
+.sharecard.style-light p{color:#14532d}
+.sharecard.style-light .sc-guess{background:#fff;border-color:#16a34a;color:#0b2e22}
+.sharecard.style-light .sc-foot{border-top-color:rgba(11,46,34,.15);color:#14532d}
+.sharecard.style-light .sc-foot b{color:#0b2e22}
+.sharecard.style-glass{background:linear-gradient(160deg,#06231a,#0b3d2b 55%,#0f5138)}
+.sharecard.style-glass .sc-brand{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:12px 16px}
+.sharecard.style-glass .sc-match b{color:#fff}
+.sharecard.style-glass .sc-guess{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.30)}
+.sharecard.style-glass .sc-foot{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:14px 16px}
 @keyframes cardIn{from{transform:translateY(14px) scale(.97);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
 #copyMsg{text-align:center;color:var(--muted);font-size:14px;margin:2px 0 0;min-height:20px;padding:0;border-radius:12px;transition:.3s}
 #copyMsg.show{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;font-weight:600;padding:10px 14px}
@@ -389,7 +411,9 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
         </div>
         <div id="result" class="hidden"></div>
         <div id="share" class="share hidden">
-          <div class="sharecard" id="sharecard">
+          <div class="sc-styles"><span class="sc-styles-label" data-i18n="card_style_label">কার্ডের স্টাইল</span><button type="button" class="sc-style-btn active" data-style="flag" data-i18n="style_flag">ফ্ল্যাগ হিরো</button><button type="button" class="sc-style-btn" data-style="light" data-i18n="style_light">লাইট পোস্টার</button><button type="button" class="sc-style-btn" data-style="glass" data-i18n="style_glass">গ্লাস নাইট</button></div>
+          <div class="sharecard style-flag" id="sharecard">
+            <div class="sc-mapbg" aria-hidden="true"></div>
             <div class="sc-brand">
               <span class="mark"><img src="icon.png" alt="New Bangladesh"></span>
               <div><b>NEW BANGLADESH</b><span>newbangladesh.bond</span></div>
@@ -588,7 +612,8 @@ const I18N = {
     hero_sub:"একটি প্রশ্ন। হাজারো উত্তর। বাংলাদেশের একটাই ছবি — ভোট দাও, দেখো দেশ কী ভাবছে, আর তোমার রেজাল্ট শেয়ার করো।",
     exp:"এক্সপেরিমেন্ট #২৪৭", today:"আজ", exp_en:"এক্সপেরিমেন্ট #২৪৭",
     question:"হঠাৎ তোমার অ্যাকাউন্টে ৳১০ লাখ এলো। তুমি কী করবে?",
-    download:"কার্ড ডাউনলোড করো (PNG)", challenge:"বন্ধুকে চ্যালেঞ্জ করো — লিংক কপি", again:"আবার ভোট দাও",
+    download:"কার্ড ডাউনলোড করো (PNG)",
+    card_style_label:"কার্ডের স্টাইল", style_flag:"ফ্ল্যাগ হিরো", style_light:"লাইট পোস্টার", style_glass:"গ্লাস নাইট", challenge:"বন্ধুকে চ্যালেঞ্জ করো — লিংক কপি", again:"আবার ভোট দাও",
     stat_votes:"মোট ভোট", stat_opts:"টি উত্তর", stat_q:"টি প্রশ্ন প্রতিদিন", stat_signup:"সাইন-আপ",
     how_eyebrow:"কীভাবে কাজ করে", how_h:"১০ সেকেন্ডে, তিন ধাপে।",
     how_sub:"কোনো সাইন-আপ নেই, কোনো বিজ্ঞাপন নেই। শুধু তুমি, একটি প্রশ্ন, আর পুরো বাংলাদেশ।",
@@ -687,7 +712,8 @@ const I18N = {
     hero_sub:"One question. Thousands of answers. One picture of Bangladesh — vote, see what the country thinks, and share your result.",
     exp:"EXPERIMENT #247", today:"TODAY", exp_en:"EXPERIMENT #247",
     question:"৳10 lakh suddenly appears in your account. What would YOU do?",
-    download:"Download card (PNG)", challenge:"Challenge a friend — copy link", again:"Vote again",
+    download:"Download card (PNG)",
+    card_style_label:"Card style", style_flag:"Flag Hero", style_light:"Light Poster", style_glass:"Glass Night", challenge:"Challenge a friend — copy link", again:"Vote again",
     stat_votes:"Total votes", stat_opts:"answers", stat_q:"question a day", stat_signup:"sign-up",
     how_eyebrow:"HOW IT WORKS", how_h:"In 10 seconds, three steps.",
     how_sub:"No sign-up, no ads. Just you, one question, and the whole of Bangladesh.",
@@ -1150,7 +1176,7 @@ function applyLang(){
   fillDistrictSelect(mapDistrictSel, true);
   colorMap(); renderDistrictDetail();
   tickCountdown();
-  renderBattles(); renderLatestBattle(); renderArchive(); renderCommunity(); renderWinner();
+  renderBattles(); renderLatestBattle(); renderArchive(); renderCommunity(); renderWinner(); applyCardStyle();
   if(!document.getElementById("view-roots").classList.contains("hidden")){
     if(rootsDone()) showRootsPoster(); else renderRootsStep();
   }
@@ -1193,27 +1219,49 @@ document.getElementById("downloadBtn").onclick=()=>{
   const c=document.createElement("canvas"); c.width=1080; c.height=1350;
   const x=c.getContext("2d");
   const FONT = "'Noto Sans Bengali','Hind Siliguri',Arial,sans-serif";
-  // premium gradient background
+  // card style palettes (must match the on-page .sharecard styles)
+  const PALS = {
+    flag:  {bg:["#0b2e22","#14532d","#15803d"], halo:"rgba(225,29,46,.25)", sun:"#e11d2e", brand:"#ffffff", brandSub:"#86efac", divider:"rgba(255,255,255,.22)", eyebrow:"#86efac", pickedPre:"#d1fae5", choice:"#ffffff", pct:"#86efac", match:"#d1fae5", pillBg:"rgba(255,255,255,.14)", pillBd:"rgba(255,255,255,.35)", pillTx:"#ffffff", badge:"#e11d2e", footBar:"rgba(0,0,0,.28)", footTx:"#ffffff", footTag:"#86efac"},
+    light: {bg:["#ffffff","#e9f8ee","#d2f6de"], halo:"rgba(225,29,46,.15)", sun:"#e11d2e", brand:"#0b2e22", brandSub:"#15803d", divider:"rgba(11,46,34,.18)", eyebrow:"#15803d", pickedPre:"#14532d", choice:"#0b2e22", pct:"#16a34a", match:"#14532d", pillBg:"#ffffff", pillBd:"#16a34a", pillTx:"#0b2e22", badge:"#e11d2e", footBar:"rgba(11,46,34,.07)", footTx:"#0b2e22", footTag:"#15803d"},
+    glass: {bg:["#06231a","#0b3d2b","#0f5138"], halo:"rgba(225,29,46,.35)", sun:"#e11d2e", brand:"#ffffff", brandSub:"#86efac", divider:"rgba(255,255,255,.25)", eyebrow:"#86efac", pickedPre:"#d1fae5", choice:"#ffffff", pct:"#ffffff", match:"#d1fae5", pillBg:"rgba(255,255,255,.10)", pillBd:"rgba(255,255,255,.30)", pillTx:"#ffffff", badge:"#e11d2e", footBar:"rgba(255,255,255,.10)", footTx:"#ffffff", footTag:"#86efac"}
+  };
+  const pal = PALS[cardStyle] || PALS.flag;
+  // background
   const g=x.createLinearGradient(0,0,0,1350);
-  g.addColorStop(0,"#0b2e22"); g.addColorStop(.55,"#14532d"); g.addColorStop(1,"#15803d");
+  g.addColorStop(0,pal.bg[0]); g.addColorStop(.55,pal.bg[1]); g.addColorStop(1,pal.bg[2]);
   x.fillStyle=g; x.fillRect(0,0,1080,1350);
+  // glass: faint Bangladesh map watermark (reuses the district paths already on the page)
+  if(cardStyle === "glass"){
+    x.save();
+    x.translate(560,90); x.scale(0.85,0.85);
+    x.fillStyle="rgba(255,255,255,.07)";
+    DISTRICTS.forEach(dd=>{ try{ x.fill(new Path2D(dd.d)); }catch(e){} });
+    x.restore();
+  }
   // red sun, top right
-  x.fillStyle="rgba(225,29,46,.25)"; x.beginPath(); x.arc(920,150,210,0,Math.PI*2); x.fill();
-  x.fillStyle="#e11d2e"; x.beginPath(); x.arc(920,150,140,0,Math.PI*2); x.fill();
+  x.fillStyle=pal.halo; x.beginPath(); x.arc(920,150,210,0,Math.PI*2); x.fill();
+  x.fillStyle=pal.sun; x.beginPath(); x.arc(920,150,140,0,Math.PI*2); x.fill();
+  // glass: translucent panel behind the brand row
+  if(cardStyle === "glass"){
+    x.fillStyle="rgba(255,255,255,.07)";
+    x.beginPath(); x.roundRect(56,48,968,160,28); x.fill();
+    x.strokeStyle="rgba(255,255,255,.18)"; x.lineWidth=2;
+    x.beginPath(); x.roundRect(56,48,968,160,28); x.stroke();
+  }
   // brand: user's icon + wordmark
   if(iconImg.complete && iconImg.naturalWidth){ x.drawImage(iconImg, 72, 62, 136, 136); }
   else { x.fillStyle="#16a34a"; x.beginPath(); x.roundRect(80,70,120,120,26); x.fill(); x.fillStyle="#ffffff"; x.font="800 76px "+FONT; x.textAlign="left"; x.textBaseline="middle"; x.fillText("N",108,132); }
-  x.fillStyle="#ffffff"; x.font="800 50px "+FONT; x.fillText("NEW BANGLADESH",225,108);
-  x.fillStyle="#86efac"; x.font="600 30px "+FONT; x.fillText("newbangladesh.bond",227,158);
+  x.fillStyle=pal.brand; x.font="800 50px "+FONT; x.fillText("NEW BANGLADESH",225,108);
+  x.fillStyle=pal.brandSub; x.font="600 30px "+FONT; x.fillText("newbangladesh.bond",227,158);
   // divider
-  x.strokeStyle="rgba(255,255,255,.22)"; x.lineWidth=2;
+  x.strokeStyle=pal.divider; x.lineWidth=2;
   x.beginPath(); x.moveTo(80,235); x.lineTo(1000,235); x.stroke();
   // experiment eyebrow
-  x.fillStyle="#86efac"; x.font="700 30px "+FONT; x.fillText(t("exp"),80,295);
+  x.fillStyle=pal.eyebrow; x.font="700 30px "+FONT; x.fillText((lang === "bn" ? "এক্সপেরিমেন্ট #" : "EXPERIMENT #") + fmt(CURRENT.num),80,295);
   // choice
-  x.fillStyle="#d1fae5"; x.font="600 36px "+FONT;
+  x.fillStyle=pal.pickedPre; x.font="600 36px "+FONT;
   x.fillText(t("picked_prefix").trim(),80,375);
-  x.fillStyle="#ffffff"; x.font="800 62px "+FONT;
+  x.fillStyle=pal.choice; x.font="800 62px "+FONT;
   const words=label(picked).split(" "); let line="", y=460;
   const wrap=(text,yy)=>{
     const ws=text.split(" "); let ln="", y2=yy;
@@ -1222,9 +1270,9 @@ document.getElementById("downloadBtn").onclick=()=>{
   };
   y = wrap(label(picked), 460);
   // big match %
-  x.fillStyle="#86efac"; x.font="800 150px "+FONT;
+  x.fillStyle=pal.pct; x.font="800 150px "+FONT;
   x.fillText(fmt(my.pct)+"%",80,y+210);
-  x.fillStyle="#d1fae5"; x.font="600 34px "+FONT;
+  x.fillStyle=pal.match; x.font="600 34px "+FONT;
   x.fillText(t("match_label"),80,y+280);
   let by = y+330;
   // guess pill
@@ -1233,28 +1281,51 @@ document.getElementById("downloadBtn").onclick=()=>{
     const gt = t("guess_card").replace("{g}", guess).replace("{a}", my.pct).replace("{s}", score);
     x.font="700 32px "+FONT;
     const w = x.measureText(gt).width + 64;
-    x.fillStyle="rgba(255,255,255,.14)";
+    x.fillStyle=pal.pillBg;
     x.beginPath(); x.roundRect(80,by,w,76,38); x.fill();
-    x.strokeStyle="rgba(255,255,255,.35)"; x.lineWidth=2;
+    x.strokeStyle=pal.pillBd; x.lineWidth=2;
     x.beginPath(); x.roundRect(80,by,w,76,38); x.stroke();
-    x.fillStyle="#ffffff"; x.fillText(gt,112,by+40);
+    x.fillStyle=pal.pillTx; x.fillText(gt,112,by+40);
     by += 116;
   }
   // personality badge (red pill)
   x.font="800 40px "+FONT;
   const tw = x.measureText(typeName(picked)).width + 72;
-  x.fillStyle="#e11d2e";
+  x.fillStyle=pal.badge;
   x.beginPath(); x.roundRect(80,by,tw,84,42); x.fill();
   x.fillStyle="#ffffff"; x.fillText(typeName(picked),116,by+44);
   // footer brand bar
-  x.fillStyle="rgba(0,0,0,.28)"; x.fillRect(0,1230,1080,120);
-  x.fillStyle="#ffffff"; x.font="800 34px "+FONT; x.textAlign="center";
+  x.fillStyle=pal.footBar; x.fillRect(0,1230,1080,120);
+  x.fillStyle=pal.footTx; x.font="800 34px "+FONT; x.textAlign="center";
   x.fillText("NEW BANGLADESH  •  newbangladesh.bond",540,1272);
-  x.fillStyle="#86efac"; x.font="600 28px "+FONT;
+  x.fillStyle=pal.footTag; x.font="600 28px "+FONT;
   x.fillText(t("foot_tag"),540,1318);
   x.textAlign="left";
   const a=document.createElement("a"); a.download="new-bangladesh-card.png"; a.href=c.toDataURL("image/png"); a.click();
 };
+// ---------- share card styles (user picks: flag / light / glass) ----------
+let cardStyle = "flag";
+try{ const s = localStorage.getItem("nb_card_style"); if(s === "light" || s === "glass" || s === "flag") cardStyle = s; }catch(e){}
+function applyCardStyle(){
+  const card = document.getElementById("sharecard");
+  if(card){
+    card.classList.remove("style-flag","style-light","style-glass");
+    card.classList.add("style-" + cardStyle);
+    if(cardStyle === "glass"){
+      const bg = card.querySelector(".sc-mapbg");
+      if(bg && !bg.dataset.done){
+        bg.dataset.done = "1";
+        bg.innerHTML = '<svg viewBox="0 0 460 560" aria-hidden="true"><path fill="#ffffff" d="' + DISTRICTS.map(d=>d.d).join(" ") + '"/></svg>';
+      }
+    }
+  }
+  document.querySelectorAll(".sc-style-btn").forEach(b=>b.classList.toggle("active", b.dataset.style === cardStyle));
+}
+document.querySelectorAll(".sc-style-btn").forEach(b=>b.addEventListener("click", ()=>{
+  cardStyle = b.dataset.style;
+  try{ localStorage.setItem("nb_card_style", cardStyle); }catch(e){}
+  applyCardStyle();
+}));
 const BATTLES_FALLBACK = {"battles": [{"a": {"base": 45210, "bn": "ঢাকা", "emoji": "🏙️", "en": "Dhaka", "key": "Dhaka"}, "b": {"base": 37180, "bn": "চট্টগ্রাম", "emoji": "🌊", "en": "Chattogram", "key": "Chattogram"}, "id": "dhaka-chattogram", "num": 1, "title": {"bn": "কোন শহর সেরা?", "en": "Which city is the best?"}}, {"a": {"base": 58320, "bn": "ফুচকা", "emoji": "🍢", "en": "Fuchka", "key": "Fuchka"}, "b": {"base": 29410, "bn": "বার্গার", "emoji": "🍔", "en": "Burger", "key": "Burger"}, "id": "fuchka-burger", "num": 2, "title": {"bn": "ফুচকা নাকি বার্গার?", "en": "Fuchka or Burger?"}}, {"a": {"base": 51200, "bn": "বিরিয়ানি", "emoji": "🍛", "en": "Biryani", "key": "Biryani"}, "b": {"base": 33800, "bn": "খিচুড়ি", "emoji": "🍲", "en": "Khichuri", "key": "Khichuri"}, "id": "biryani-khichuri", "num": 3, "title": {"bn": "বিরিয়ানি নাকি খিচুড়ি?", "en": "Biryani or Khichuri?"}}, {"a": {"base": 68900, "bn": "ক্রিকেট", "emoji": "🏏", "en": "Cricket", "key": "Cricket"}, "b": {"base": 41300, "bn": "ফুটবল", "emoji": "⚽", "en": "Football", "key": "Football"}, "id": "cricket-football", "num": 4, "title": {"bn": "ক্রিকেট নাকি ফুটবল?", "en": "Cricket or Football?"}}]};
 // ---------- battles: separate page, loaded via AJAX (battles.json) ----------
 let BATTLES = null;
