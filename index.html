@@ -2039,6 +2039,16 @@ function parentDisplays(pts){
   });
   return out;
 }
+function arrowSpot(a, b, obstacles){
+  const dx = b.x-a.x, dy = b.y-a.y, len = Math.hypot(dx, dy);
+  if(len <= 34) return null;
+  const ang = Math.atan2(dy, dx);
+  for(const f of [0.5, 0.35, 0.65, 0.25, 0.75]){
+    const x = a.x + dx*f, y = a.y + dy*f;
+    if(!obstacles.some(o => Math.hypot(o.x-x, o.y-y) < 24)) return {x, y, ang};
+  }
+  return null;
+}
 function labelSideFor(p, pts){
   if(p.d.x > 330) return "left";
   const crowded = pts.some(q=>q!==p && q.d.x > p.d.x && q.d.x < p.d.x + 150 && Math.abs(q.d.y - p.d.y) < 22);
@@ -2063,6 +2073,8 @@ function renderPosterMap(){
     path.setAttribute("stroke", "#fff"); path.setAttribute("stroke-width", "0.8");
     svg.appendChild(path);
   });
+  const obstacles = [...pts.map(p=>p.d), ...parentDisplays(pts).map(pd=>pd.xy)];
+  if(miss) obstacles.push(miss.xy);
   if(pts.length > 1){
     const pl = document.createElementNS(NS, "polyline");
     pl.setAttribute("points", pts.map(p=>`${p.d.x},${p.d.y}`).join(" "));
@@ -2070,13 +2082,11 @@ function renderPosterMap(){
     pl.setAttribute("stroke-linecap", "round"); pl.setAttribute("stroke-linejoin", "round"); pl.setAttribute("stroke-dasharray", "1 7");
     svg.appendChild(pl);
     for(let k=0;k<pts.length-1;k++){
-      const a = pts[k].d, b = pts[k+1].d;
-      const dx = b.x-a.x, dy = b.y-a.y, len = Math.hypot(dx, dy);
-      if(len <= 34) continue;
-      const mx = (a.x+b.x)/2, my = (a.y+b.y)/2, ang = Math.atan2(dy, dx), s = 8;
-      const ux = Math.cos(ang), uy = Math.sin(ang), vx = -uy, vy = ux;
+      const spot = arrowSpot(pts[k].d, pts[k+1].d, obstacles);
+      if(!spot) continue;
+      const s = 8, ux = Math.cos(spot.ang), uy = Math.sin(spot.ang), vx = -uy, vy = ux;
       const tri = document.createElementNS(NS, "polygon");
-      tri.setAttribute("points", `${mx+ux*s},${my+uy*s} ${mx-ux*s*0.7+vx*s*0.7},${my-uy*s*0.7+vy*s*0.7} ${mx-ux*s*0.7-vx*s*0.7},${my-uy*s*0.7-vy*s*0.7}`);
+      tri.setAttribute("points", `${spot.x+ux*s},${spot.y+uy*s} ${spot.x-ux*s*0.7+vx*s*0.7},${spot.y-uy*s*0.7+vy*s*0.7} ${spot.x-ux*s*0.7-vx*s*0.7},${spot.y-uy*s*0.7-vy*s*0.7}`);
       tri.setAttribute("fill", theme);
       tri.setAttribute("stroke", "#fff"); tri.setAttribute("stroke-width", "1.5");
       svg.appendChild(tri);
@@ -2200,19 +2210,20 @@ function drawRootsPosterCanvas(){
       x.strokeStyle = "#ffffff"; x.lineWidth = 1; x.stroke(p);
     }catch(e){}
   });
+  const obstacles = [...pts.map(p=>p.d), ...parentDisplays(pts).map(pd=>pd.xy)];
+  if(miss) obstacles.push(miss.xy);
   if(pts.length > 1){
     x.beginPath();
     pts.forEach((p, i)=>{ if(i === 0) x.moveTo(p.d.x, p.d.y); else x.lineTo(p.d.x, p.d.y); });
     x.strokeStyle = theme; x.lineWidth = 5; x.setLineDash([1, 9]); x.lineCap = "round"; x.stroke(); x.setLineDash([]);
     for(let k=0;k<pts.length-1;k++){
-      const a = pts[k].d, b = pts[k+1].d;
-      const dx = b.x-a.x, dy = b.y-a.y, len = Math.hypot(dx, dy);
-      if(len <= 34) continue;
-      const mx = (a.x+b.x)/2, my = (a.y+b.y)/2, ang = Math.atan2(dy, dx), s = 9;
+      const spot = arrowSpot(pts[k].d, pts[k+1].d, obstacles);
+      if(!spot) continue;
+      const s = 9, ang = spot.ang;
       x.beginPath();
-      x.moveTo(mx+Math.cos(ang)*s, my+Math.sin(ang)*s);
-      x.lineTo(mx+Math.cos(ang+2.5)*s, my+Math.sin(ang+2.5)*s);
-      x.lineTo(mx+Math.cos(ang-2.5)*s, my+Math.sin(ang-2.5)*s);
+      x.moveTo(spot.x+Math.cos(ang)*s, spot.y+Math.sin(ang)*s);
+      x.lineTo(spot.x+Math.cos(ang+2.5)*s, spot.y+Math.sin(ang+2.5)*s);
+      x.lineTo(spot.x+Math.cos(ang-2.5)*s, spot.y+Math.sin(ang-2.5)*s);
       x.closePath(); x.fillStyle = theme; x.fill(); x.strokeStyle = "#fff"; x.lineWidth = 1.5; x.stroke();
     }
   }
