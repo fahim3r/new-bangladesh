@@ -156,7 +156,10 @@ h1 .red{color:var(--red);display:inline-block;animation:wordPop .8s .35s cubic-b
 .sc-style-btn.active{background:var(--forest);border-color:var(--forest);color:#fff}
 .sc-style-ic{font-size:20px;line-height:1}
 .share-actions{display:flex;gap:12px;justify-content:center;align-items:center}
-.share-actions .icon-btn{flex:0 0 auto;width:58px;height:58px;padding:0;border-radius:50%;font-size:26px;display:flex;align-items:center;justify-content:center}
+.share-actions .icon-btn{flex:0 0 auto;width:58px;height:58px;padding:0;border-radius:50%;font-size:26px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;box-shadow:0 10px 22px rgba(15,61,46,.28),inset 0 1px 0 rgba(255,255,255,.65),inset 0 -3px 8px rgba(0,0,0,.14)}
+.share-actions .icon-btn::after{content:"";position:absolute;inset:0;border-radius:50%;background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.18) 42%,rgba(255,255,255,0) 58%);pointer-events:none}
+.share-actions .icon-btn:hover{transform:translateY(-2px)}
+.share-actions .icon-btn:active{transform:scale(.95)}
 .share-actions .icon-btn span{line-height:1}
 .sc-mapbg{display:none;position:absolute;right:-30px;top:70px;width:300px;height:365px;opacity:.08;pointer-events:none;z-index:0}
 .sc-mapbg svg{width:100%;height:100%}
