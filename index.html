@@ -344,6 +344,7 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
 .globe-toggle[aria-checked="true"] .globe-toggle-knob::after{left:16px}
 .globe-abroad-empty{color:#ffd99a;font-weight:700;margin:8px 0 0}
 .globe-tally{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0 0}
+.globe-tally.hidden{display:none} /* .globe-tally sets display:flex, which would beat .hidden without this */
 .globe-tally-chip{background:rgba(255,255,255,.1);border:1px solid rgba(247,241,230,.2);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:700;color:#f7f1e6}
 .globe-note{color:rgba(247,241,230,.65);font-size:13.5px;margin:12px 0 0}
 
@@ -2707,6 +2708,19 @@ function globeDraw(now){
     }
   }));
   x.stroke();
+  // Bangladesh always stands out: a gold outline around the home country
+  const bdI = WORLD_GEO.findIndex(c=>c.en === "Bangladesh");
+  if(bdI >= 0){
+    x.strokeStyle = "#ffd99a"; x.lineWidth = 2;
+    x.beginPath();
+    proj[bdI].rings.forEach(pts=>{
+      for(let i = 0; i < pts.length; i++){
+        const a = pts[i], b = pts[(i + 1) % pts.length];
+        if(a.z > 0.02 && b.z > 0.02){ x.moveTo(a.x, a.y); x.lineTo(b.x, b.y); }
+      }
+    });
+    x.stroke();
+  }
   // country names on the face (kept for the city layout + tap picking, so names never stack)
   const countryBoxes = [];
   WORLD_GEO.forEach(ctry=>{
@@ -2729,20 +2743,22 @@ function globeDraw(now){
   const FONT = GLOBE_FONT;
   const home = globeHomeLatLon();
   const city = globe.city ? WORLD_CITIES.find(c=>c.en === globe.city) : null;
-  // community lines (toggle): one gold arc per city -> home district, thicker when more people
+  // community lines (toggle): one gold arc per city -> home district, thicker when more people.
+  // Lifted higher than the personal red thread (0.45 vs 0.32) so the two never sit on top
+  // of each other, and the count rides at the top of its own arc, clear of every label.
   if(abroadLinesOn && abroadLines.length){
     abroadLines.forEach(L=>{
       const c = WORLD_CITIES.find(v=>v.en === L.city);
       const h = CENTROIDS[L.home];
       if(!c || !h) return;
-      const {pts} = globeArcPoints(c.lat, c.lon, h[1], h[0], 0.22);
-      strokeGlobeArc(x, pts, "#ffd99a", 1.5 + Math.min(3, L.count), false, now);
-      const p = globeProject(c.lat * Math.PI / 180, c.lon * Math.PI / 180, 1);
-      if(p.z > 0.05){
+      const {pts} = globeArcPoints(c.lat, c.lon, h[1], h[0], 0.45);
+      strokeGlobeArc(x, pts, "#ffd99a", 2 + Math.min(3, L.count), false, now);
+      const mid = pts[Math.floor(pts.length / 2)];
+      if(mid && mid.p.z > 0.05){
         const txt = "×" + fmt(L.count);
-        x.font = "700 13px " + FONT; x.textAlign = "left"; x.textBaseline = "middle";
-        x.lineWidth = 3; x.strokeStyle = "rgba(4,20,15,.8)"; x.strokeText(txt, p.x + 10, p.y - 10);
-        x.fillStyle = "#ffd99a"; x.fillText(txt, p.x + 10, p.y - 10);
+        x.font = "800 14px " + FONT; x.textAlign = "center"; x.textBaseline = "middle";
+        x.lineWidth = 4; x.strokeStyle = "rgba(4,20,15,.85)"; x.strokeText(txt, mid.p.x, mid.p.y - 12);
+        x.fillStyle = "#ffd99a"; x.fillText(txt, mid.p.x, mid.p.y - 12);
       }
     });
   }
