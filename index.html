@@ -2545,7 +2545,7 @@ function globeSyncFromRoots(){
   globe.city = roots.abroad || "";
   globe.home = rootsHomeDistrict();
   updateGlobeUI();
-  submitAbroadVote();
+  syncAbroadVote();
 }
 function globeProject(lat, lon, alt){
   const dlon = lon - globe.center;
@@ -2916,7 +2916,9 @@ function renderAbroadTally(){
   }
 }
 // One anonymous count per device per (city, home district): city + country + home district
-// only — no name, no voter id. Retries on next load if the insert failed (e.g. offline).
+// + the same random voter id the votes table already uses (no name, no personal data).
+// Retries on next load if the insert failed (e.g. offline). A unique index on
+// (voter_hash, city, home_district) means a 23505 error just means "already counted".
 async function submitAbroadVote(){
   if(!sb) return;
   const city = rootsAbroadCity();
@@ -2927,18 +2929,36 @@ async function submitAbroadVote(){
   try{ sent = JSON.parse(localStorage.getItem("nb_abroad_sent") || "{}"); }catch(e){}
   if(sent[key]) return;
   try{
-    const {error} = await sb.from("abroad_votes").insert({city: city.en, country: city.co, home_district: home});
-    if(error) return;
+    const {error} = await sb.from("abroad_votes").insert({city: city.en, country: city.co, home_district: home, voter_hash: getVoterId()});
+    if(error && error.code !== "23505") return;
     sent[key] = 1;
     try{ localStorage.setItem("nb_abroad_sent", JSON.stringify(sent)); }catch(e){}
     if(abroadLinesOn) fetchAbroadLines();
   }catch(e){}
 }
-document.getElementById("abroadToggle").onclick = ()=>{
+// Repair: the on-device "already sent" mark survives even if the row is gone
+// (e.g. it was deleted from the database). If my anonymous row is missing, send it again.
+async function syncAbroadVote(){
+  if(!sb) return;
+  const city = rootsAbroadCity();
+  if(!city) return;
+  const home = rootsHomeDistrict();
+  try{
+    const {data, error} = await sb.from("abroad_votes").select("id").eq("voter_hash", getVoterId()).eq("city", city.en).eq("home_district", home).limit(1);
+    if(!error && data && data.length > 0) return; // my count is in the database
+  }catch(e){}
+  let sent = {};
+  try{ sent = JSON.parse(localStorage.getItem("nb_abroad_sent") || "{}"); }catch(e){}
+  delete sent[city.en + "|" + home];
+  try{ localStorage.setItem("nb_abroad_sent", JSON.stringify(sent)); }catch(e){}
+  submitAbroadVote();
+}
+document.getElementById("abroadToggle").onclick = async ()=>{
   abroadLinesOn = !abroadLinesOn;
   const b = document.getElementById("abroadToggle");
   if(b) b.setAttribute("aria-checked", abroadLinesOn ? "true" : "false");
   if(abroadLinesOn){
+    await syncAbroadVote(); // heal a missing count before showing the lines
     fetchAbroadLines();
     abroadTimer = setInterval(()=>{ if(!document.hidden) fetchAbroadLines(); }, 30000);
   } else {
@@ -3205,7 +3225,7 @@ function initGlobe(){
     }catch(e){}
   }
   updateGlobeUI();
-  submitAbroadVote(); // a story saved earlier sends its one anonymous count now
+  syncAbroadVote(); // a story saved earlier sends its one anonymous count now (or heals a missing one)
   if(typeof requestAnimationFrame === "function") requestAnimationFrame(globeTick);
   else globeDraw(0);
 }
