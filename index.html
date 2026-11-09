@@ -152,7 +152,10 @@ h1 .red{color:var(--red);display:inline-block;animation:wordPop .8s .35s cubic-b
 /* ---------- share card styles ---------- */
 .sc-styles{display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:14px}
 .sc-styles-label{font-weight:700;font-size:14px;color:var(--muted)}
-.sc-style-btn{border:1.5px solid var(--line);background:rgba(255,255,255,.9);font:inherit;font-weight:800;font-size:14px;padding:8px 16px;border-radius:999px;cursor:pointer;color:var(--ink)}
+.sc-style-btn{border:1.5px solid var(--line);background:rgba(255,255,255,.9);font:inherit;font-weight:800;font-size:14px;padding:8px 16px;border-radius:999px;cursor:pointer;color:var(--ink);position:relative;overflow:hidden;box-shadow:0 6px 16px rgba(15,61,46,.12),inset 0 1px 0 rgba(255,255,255,.7),inset 0 -2px 5px rgba(0,0,0,.08);transition:transform .2s,box-shadow .2s}
+.sc-style-btn::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,.14) 45%,rgba(255,255,255,0) 60%);pointer-events:none}
+.sc-style-btn:hover{transform:translateY(-2px)}
+.sc-style-btn:active{transform:scale(.95)}
 .sc-style-btn.active{background:var(--forest);border-color:var(--forest);color:#fff}
 .sc-style-ic{font-size:20px;line-height:1}
 .share-actions{display:flex;gap:12px;justify-content:center;align-items:center}
