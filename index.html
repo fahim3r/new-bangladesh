@@ -311,6 +311,23 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
 .poster-foot b{color:var(--forest)}
 .poster-actions{display:grid;gap:10px;max-width:640px;margin:16px auto 0}
 
+/* ---------- roots globe: duniya theke deshe (dotted canvas globe, no library/image) ---------- */
+.globe-card{background:linear-gradient(180deg,#0b2e22,#12332a);border-radius:26px;padding:26px;box-shadow:0 24px 60px rgba(15,61,46,.25);max-width:640px;margin:28px auto 0;text-align:center;color:#f7f1e6}
+.globe-card .eyebrow{color:#ffd99a}
+.globe-card h3{margin:6px 0 4px;font-size:25px;color:#fff}
+.globe-sub{color:rgba(247,241,230,.82);font-size:15.5px;line-height:1.6;margin:0 0 8px}
+.globe-wrap{position:relative;max-width:420px;margin:6px auto 0}
+.globe-canvas{width:100%;height:auto;display:block;touch-action:none;cursor:grab;border-radius:50%}
+.globe-canvas.dragging{cursor:grabbing}
+.globe-zoom{position:absolute;right:6px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px}
+.globe-zoom button{width:38px;height:38px;border-radius:50%;border:1px solid rgba(247,241,230,.35);background:rgba(4,20,15,.72);color:#f7f1e6;font:inherit;font-size:20px;font-weight:800;cursor:pointer}
+.globe-hint{color:rgba(247,241,230,.65);font-size:13.5px;margin:8px 0 0}
+.globe-pick{text-align:left;max-width:480px;margin:16px auto 0}
+.globe-pick label{display:block;color:#ffd99a;font-weight:800;font-size:14px;margin:12px 0 4px}
+.globe-select{width:100%;padding:13px 16px;border-radius:999px;border:1.5px solid rgba(255,255,255,.25);background:#fff;font:inherit;font-size:16px;font-weight:600;color:var(--ink)}
+.globe-dist{font-size:20px;font-weight:800;color:#ffd99a;margin:18px auto 0;line-height:1.5;max-width:520px}
+.globe-note{color:rgba(247,241,230,.65);font-size:13.5px;margin:12px 0 0}
+
 /* ---------- bottom nav: same glass pill as the top header ---------- */
 .bottomnav{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;z-index:60;display:flex;justify-content:space-evenly;gap:4px;width:min(880px,calc(100% - 32px));padding:10px 12px;border-radius:999px;background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.8);box-shadow:0 12px 32px rgba(15,61,46,.10)}
 .bottomnav a{flex:1 1 0;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 14px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:700;font-size:14px;transition:.25s;white-space:nowrap}
@@ -568,6 +585,27 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
           <p id="rootsMsg"></p>
         </div>
       </div>
+      <div id="globeSec" class="globe-card">
+        <div class="eyebrow">🌍 <span data-i18n="globe_h">দুনিয়া থেকে দেশে</span></div>
+        <h3 data-i18n="globe_h">দুনিয়া থেকে দেশে</h3>
+        <p class="globe-sub" data-i18n="globe_sub">প্রবাসে থাকো? তোমার শহর বাছো — গ্লোব ঘুরে দেখাবে বাড়ি থেকে কত দূরে আছো।</p>
+        <div class="globe-wrap">
+          <canvas id="globeCanvas" class="globe-canvas" width="640" height="640" aria-label="ঘূর্ণায়মান পৃথিবীর গ্লোব"></canvas>
+          <div class="globe-zoom">
+            <button type="button" id="globeZoomIn" aria-label="কাছে যাও">+</button>
+            <button type="button" id="globeZoomOut" aria-label="দূরে যাও">−</button>
+          </div>
+        </div>
+        <p class="globe-hint" data-i18n="globe_drag">গ্লোব টেনে ঘোরাও — দেখো পৃথিবী কত ছোট!</p>
+        <div class="globe-pick">
+          <label for="globeCity" data-i18n="globe_city">এখন কোন শহরে আছো?</label>
+          <select id="globeCity" class="globe-select"></select>
+          <label for="globeHome" data-i18n="globe_home">বাড়ি কোন জেলায়?</label>
+          <select id="globeHome" class="globe-select"></select>
+        </div>
+        <p id="globeDist" class="globe-dist"></p>
+        <p class="globe-note" data-i18n="globe_note">🔒 এটাও শুধু তোমার ডিভাইসেই থাকে — সার্ভারে কিছু যায় না।</p>
+      </div>
     </section>
   </div><!-- /view-roots -->
 
@@ -672,6 +710,10 @@ const I18N = {
     roots_copied:"গল্প কপি হয়ে গেছে — পোস্ট করে দাও!",
     roots_png_fail:"এই ব্রাউজারে PNG বানানো যাচ্ছে না।",
     roots_my:"আমার বাংলাদেশ",
+    globe_h:"দুনিয়া থেকে দেশে", globe_sub:"প্রবাসে থাকো? তোমার শহর বাছো — গ্লোব ঘুরে দেখাবে বাড়ি থেকে কত দূরে আছো।",
+    globe_city:"এখন কোন শহরে আছো?", globe_home:"বাড়ি কোন জেলায়?", globe_drag:"গ্লোব টেনে ঘোরাও — দেখো পৃথিবী কত ছোট!",
+    globe_none:"উপরে শহর বাছো — সুতোটা টেনে দেব বাড়ি পর্যন্ত।", globe_dist:"{c} থেকে {h} — {d} কিমি দূরে",
+    globe_note:"🔒 এটাও শুধু তোমার ডিভাইসেই থাকে — সার্ভারে কিছু যায় না।", globe_pick_city:"শহর বাছো…", globe_bangladesh:"বাংলাদেশ",
     roots_theme_green:"সবুজ", roots_theme_red:"লাল", roots_theme_sky:"নীল", roots_theme_amber:"সোনালি",
     nav_battle:"ব্যাটল",
     nav_archive:"আর্কাইভ",
@@ -777,7 +819,10 @@ const I18N = {
     roots_copied:"Story copied — post it!",
     roots_png_fail:"This browser can't make the PNG.",
     roots_my:"My Bangladesh",
-    roots_theme_green:"Green", roots_theme_red:"Red", roots_theme_sky:"Blue", roots_theme_amber:"Golden",
+    globe_h:"From the world to home", globe_sub:"Living abroad? Pick your city — the globe will turn and show how far home is.",
+    globe_city:"Which city are you in now?", globe_home:"Home district?", globe_drag:"Drag the globe to spin it — see how small the world is!",
+    globe_none:"Pick a city above — we'll draw the thread all the way home.", globe_dist:"{c} to {h} — {d} km away",
+    globe_note:"🔒 This stays only on your device too — nothing goes to a server.", globe_pick_city:"Pick a city…", globe_bangladesh:"Bangladesh",    roots_theme_green:"Green", roots_theme_red:"Red", roots_theme_sky:"Blue", roots_theme_amber:"Golden",
     nav_battle:"Battles",
     nav_archive:"Archive",
     nav_community:"Community",
@@ -1216,6 +1261,8 @@ function applyLang(){
   renderBattles(); renderLatestBattle(); renderArchive(); renderCommunity(); renderWinner(); applyCardStyle(); renderRefBanner();
   if(!document.getElementById("view-roots").classList.contains("hidden")){
     if(rootsDone()) showRootsPoster(); else renderRootsStep();
+    if(typeof initGlobe === "function") initGlobe();
+    if(typeof updateGlobeUI === "function") updateGlobeUI();
   }
   render();
 }
@@ -2297,6 +2344,273 @@ document.getElementById("rootsShare").onclick = async ()=>{
     ok(t("roots_downloaded"));
   } else ok(t("roots_shared"));
 };
+// ---------- roots globe: duniya theke deshe ----------
+// Dotted orthographic globe, canvas only — no library, no image, no font.
+// Land dots: 3-degree grid rasterised from Natural Earth country polygons,
+// packed as a bitmask (48 rows x 120 cols) so the whole world is ~1 KB.
+const WORLD_DOTS_B64 = "AAAAAAAAAAAAAAAAAAAAAAAABf3//wAAAAAIAAAAAAABAO///ABgAAAAAAAAAAABm8B//AAAAYB/wD4AAAAXU/A/+AAAAh7//hwAA//5jJwf8AA/gF//////d////w8fAwB/P///////A////AYMAAHv////////A+f/+BgAAAPr//////8wAAD//h8AADFP/////+BgAAD//7+AAEH//////8DAAAA////AAB///////+AAAAAP//5gAB///////+AAAAAf//0AAA/8c////8AAAAAf//gAAH3cO////xAAAAAf/+AAAHAX+///8hAAAAAP/+AAAAcAf///+SAAAAAH/8AAAD8A////+AAAAAAB/gAAAH//////+AAAAAAC8EAAAP//+///+AAAAAAAcAAAAf//fx//8AAAAAAAcyAAAf//vwffAAAAAAAAPgIAAf//vgcPAAAAAAAAA4AAAf//2AYHgAAAAAAAAIgAAf//5AIFgAAAAAAAAD8AAP//+AMFAgAAAAAAAB+AAHv/+AACEAAAAAAAAB/wAAD/8AAGMAAAAAAAAD/wAAD/4AACeAAAAAAAAD/+AAD/wAADaTAAAAAAAH//gAB/gAAAAB4AAAAAAD//gAB/wAAAEhQAAAAAAB//AAB/wAAAAAAAAAAAAB//AAB/yAAAA8gAAAAAAAf+AAD/mAAAB/gAAAAAAAf+AAB/GAAAH/wQAAAAAAf4AAB/EAAAP/4AAAAAAAfwAAA+AAAAP/8AAAAAAAfwAAA+AAAAH/8AAAAAAAfgAAAcAAAAHH4AAAAAAA+AAAAAAAAAAB4CAAAAAA8AAAAAAAAAAAABAAAAAA4AAAAAAAAAAAQCAAAAAA4AAAAAAAAAAAAMAAAAAB4AAAAAAAAAAAAAAAAAABgAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+const WORLD_CITIES = [
+  {en:"Riyadh", bn:"রিয়াদ", co:"Saudi Arabia", cobn:"সৌদি আরব", lat:24.7136, lon:46.6753},
+  {en:"Dammam", bn:"দাম্মাম", co:"Saudi Arabia", cobn:"সৌদি আরব", lat:26.4207, lon:50.0888},
+  {en:"Jeddah", bn:"জেদ্দা", co:"Saudi Arabia", cobn:"সৌদি আরব", lat:21.4858, lon:39.1925},
+  {en:"Makkah", bn:"মক্কা", co:"Saudi Arabia", cobn:"সৌদি আরব", lat:21.3891, lon:39.8579},
+  {en:"Madinah", bn:"মদিনা", co:"Saudi Arabia", cobn:"সৌদি আরব", lat:24.5247, lon:39.5692},
+  {en:"Doha", bn:"দোহা", co:"Qatar", cobn:"কাতার", lat:25.2854, lon:51.5310},
+  {en:"Dubai", bn:"দুবাই", co:"UAE", cobn:"আমিরাত", lat:25.2048, lon:55.2708},
+  {en:"Abu Dhabi", bn:"আবুধাবি", co:"UAE", cobn:"আমিরাত", lat:24.4539, lon:54.3773},
+  {en:"Sharjah", bn:"শারজাহ", co:"UAE", cobn:"আমিরাত", lat:25.3463, lon:55.4209},
+  {en:"Kuala Lumpur", bn:"কুয়ালালামপুর", co:"Malaysia", cobn:"মালয়েশিয়া", lat:3.1390, lon:101.6869},
+  {en:"Singapore", bn:"সিঙ্গাপুর", co:"Singapore", cobn:"সিঙ্গাপুর", lat:1.3521, lon:103.8198},
+  {en:"Kuwait City", bn:"কুয়েত সিটি", co:"Kuwait", cobn:"কুয়েত", lat:29.3759, lon:47.9774},
+  {en:"Muscat", bn:"মাস্কাট", co:"Oman", cobn:"ওমান", lat:23.5880, lon:58.3829},
+  {en:"Manama", bn:"মানামা", co:"Bahrain", cobn:"বাহরাইন", lat:26.2285, lon:50.5860},
+  {en:"London", bn:"লন্ডন", co:"United Kingdom", cobn:"যুক্তরাজ্য", lat:51.5074, lon:-0.1278},
+  {en:"Paris", bn:"প্যারিস", co:"France", cobn:"ফ্রান্স", lat:48.8566, lon:2.3522},
+  {en:"Rome", bn:"রোম", co:"Italy", cobn:"ইতালি", lat:41.9028, lon:12.4964},
+  {en:"Milan", bn:"মিলান", co:"Italy", cobn:"ইতালি", lat:45.4642, lon:9.1900},
+  {en:"Berlin", bn:"বার্লিন", co:"Germany", cobn:"জার্মানি", lat:52.5200, lon:13.4050},
+  {en:"Amsterdam", bn:"আমস্টারডাম", co:"Netherlands", cobn:"নেদারল্যান্ডস", lat:52.3676, lon:4.9041},
+  {en:"Madrid", bn:"মাদ্রিদ", co:"Spain", cobn:"স্পেন", lat:40.4168, lon:-3.7038},
+  {en:"New York", bn:"নিউ ইয়র্ক", co:"USA", cobn:"যুক্তরাষ্ট্র", lat:40.7128, lon:-74.0060},
+  {en:"Los Angeles", bn:"লস অ্যাঞ্জেলেস", co:"USA", cobn:"যুক্তরাষ্ট্র", lat:34.0522, lon:-118.2437},
+  {en:"Chicago", bn:"শিকাগো", co:"USA", cobn:"যুক্তরাষ্ট্র", lat:41.8781, lon:-87.6298},
+  {en:"Houston", bn:"হিউস্টন", co:"USA", cobn:"যুক্তরাষ্ট্র", lat:29.7604, lon:-95.3698},
+  {en:"San Francisco", bn:"সান ফ্রান্সিসকো", co:"USA", cobn:"যুক্তরাষ্ট্র", lat:37.7749, lon:-122.4194},
+  {en:"Toronto", bn:"টরন্টো", co:"Canada", cobn:"কানাডা", lat:43.6532, lon:-79.3832},
+  {en:"Sydney", bn:"সিডনি", co:"Australia", cobn:"অস্ট্রেলিয়া", lat:-33.8688, lon:151.2093},
+  {en:"Melbourne", bn:"মেলবোর্ন", co:"Australia", cobn:"অস্ট্রেলিয়া", lat:-37.8136, lon:144.9631},
+  {en:"Tokyo", bn:"টোকিও", co:"Japan", cobn:"জাপান", lat:35.6762, lon:139.6503},
+  {en:"Seoul", bn:"সিউল", co:"South Korea", cobn:"দক্ষিণ কোরিয়া", lat:37.5665, lon:126.9780},
+  {en:"Hong Kong", bn:"হংকং", co:"Hong Kong", cobn:"হংকং", lat:22.3193, lon:114.1694}
+];
+const WORLD_DOTS = (()=>{
+  const out = [];
+  try{
+    if(typeof atob !== "function") return out;
+    const bin = atob(WORLD_DOTS_B64);
+    for(let r = 0; r < 48; r++) for(let c = 0; c < 120; c++){
+      const i = r * 120 + c;
+      if((bin.charCodeAt(i >> 3) >> (7 - (i & 7))) & 1){
+        const lat = (84 - 3 * r) * Math.PI / 180, lon = (-180 + 3 * c) * Math.PI / 180;
+        out.push({lat, lon, cl: Math.cos(lat), sl: Math.sin(lat)});
+      }
+    }
+  }catch(e){}
+  return out;
+})();
+let globe = null;
+function globeCityLabel(c){ return lang === "bn" ? c.bn + ", " + c.cobn : c.en + ", " + c.co; }
+function globeHomeLatLon(){
+  const c = CENTROIDS[globe.home];
+  return c ? {lat: c[1], lon: c[0]} : {lat: 23.8105, lon: 90.3372};
+}
+function globeHaversineKm(a, b){
+  const R = 6371, dLa = (b.lat - a.lat) * Math.PI / 180, dLo = (b.lon - a.lon) * Math.PI / 180;
+  const h = Math.sin(dLa / 2) ** 2 + Math.cos(a.lat * Math.PI / 180) * Math.cos(b.lat * Math.PI / 180) * Math.sin(dLo / 2) ** 2;
+  return Math.round(2 * R * Math.asin(Math.min(1, Math.sqrt(h))));
+}
+function globeSave(){ try{ localStorage.setItem("nb_globe", JSON.stringify({city: globe.city, home: globe.home})); }catch(e){} }
+function globeProject(lat, lon, alt){
+  const dlon = lon - globe.center;
+  const cl = Math.cos(lat), sl = Math.sin(lat);
+  const x = cl * Math.sin(dlon);
+  const y0 = sl, z0 = cl * Math.cos(dlon);
+  const ct = Math.cos(globe.tilt), st = Math.sin(globe.tilt);
+  const y = y0 * ct - z0 * st, z = y0 * st + z0 * ct;
+  const r = globe.R * (alt || 1);
+  return {x: globe.cx + r * x, y: globe.cy - r * y, z};
+}
+function globeDraw(now){
+  const cv = globe.cv, x = globe.ctx;
+  if(!cv || !x) return;
+  const W = cv.width, H = cv.height;
+  globe.cx = W / 2; globe.cy = H / 2; globe.R = W * 0.44 * globe.zoom;
+  x.clearRect(0, 0, W, H);
+  // sphere
+  const g = x.createRadialGradient(globe.cx - globe.R * 0.3, globe.cy - globe.R * 0.35, globe.R * 0.1, globe.cx, globe.cy, globe.R);
+  g.addColorStop(0, "#17503c"); g.addColorStop(1, "#0b2e22");
+  x.beginPath(); x.arc(globe.cx, globe.cy, globe.R, 0, Math.PI * 2); x.fillStyle = g; x.fill();
+  x.strokeStyle = "rgba(247,241,230,.22)"; x.lineWidth = 1.5; x.stroke();
+  // land dots
+  for(let i = 0; i < WORLD_DOTS.length; i++){
+    const d = WORLD_DOTS[i];
+    const p = globeProject(d.lat, d.lon, 1);
+    if(p.z <= 0.02) continue;
+    const a = 0.25 + 0.75 * p.z;
+    x.beginPath(); x.arc(p.x, p.y, 1.4 + 1.8 * p.z, 0, Math.PI * 2);
+    x.fillStyle = "rgba(183,215,200," + a.toFixed(2) + ")"; x.fill();
+  }
+  const FONT = "'Noto Sans Bengali','Hind Siliguri',Arial,sans-serif";
+  const home = globeHomeLatLon();
+  const city = globe.city ? WORLD_CITIES.find(c=>c.en === globe.city) : null;
+  // arc: city -> home district, lifted great-circle thread
+  if(city){
+    const aLat = city.lat * Math.PI / 180, aLon = city.lon * Math.PI / 180;
+    const bLat = home.lat * Math.PI / 180, bLon = home.lon * Math.PI / 180;
+    const va = [Math.cos(aLat) * Math.cos(aLon), Math.sin(aLat), Math.cos(aLat) * Math.sin(aLon)];
+    const vb = [Math.cos(bLat) * Math.cos(bLon), Math.sin(bLat), Math.cos(bLat) * Math.sin(bLon)];
+    const dot = Math.max(-1, Math.min(1, va[0] * vb[0] + va[1] * vb[1] + va[2] * vb[2]));
+    const om = Math.acos(dot);
+    const N = 48;
+    x.strokeStyle = "#f42a41"; x.lineWidth = 3; x.lineCap = "round";
+    if(!reducedMotion){ x.setLineDash([7, 7]); x.lineDashOffset = -(now / 40) % 14; }
+    x.beginPath();
+    let pen = false;
+    const arcPts = [];
+    for(let k = 0; k <= N; k++){
+      const tt = k / N;
+      const s1 = Math.sin((1 - tt) * om) / Math.sin(om), s2 = Math.sin(tt * om) / Math.sin(om);
+      const vx = s1 * va[0] + s2 * vb[0], vy = s1 * va[1] + s2 * vb[1], vz = s1 * va[2] + s2 * vb[2];
+      const la = Math.asin(Math.max(-1, Math.min(1, vy))), lo = Math.atan2(vz, vx);
+      const alt = 1 + 0.32 * Math.sin(Math.PI * tt);
+      const p = globeProject(la, lo, alt);
+      arcPts.push({p, tt});
+      if(p.z > 0.02){ if(!pen){ x.moveTo(p.x, p.y); pen = true; } else x.lineTo(p.x, p.y); }
+      else pen = false;
+    }
+    x.stroke(); x.setLineDash([]);
+    // moving gold dot along the thread
+    if(!reducedMotion){
+      const mt = ((now / 2600) % 1);
+      const mp = arcPts[Math.round(mt * N)];
+      if(mp && mp.p.z > 0.02){
+        x.beginPath(); x.arc(mp.p.x, mp.p.y, 5, 0, Math.PI * 2); x.fillStyle = "#ffd99a"; x.fill();
+        x.beginPath(); x.arc(mp.p.x, mp.p.y, 8.5, 0, Math.PI * 2); x.strokeStyle = "rgba(255,217,154,.5)"; x.lineWidth = 1.5; x.stroke();
+      }
+    }
+    // city marker + label
+    const cp = globeProject(aLat, aLon, 1);
+    if(cp.z > 0.02){
+      x.beginPath(); x.arc(cp.x, cp.y, 6, 0, Math.PI * 2); x.fillStyle = "#ffd99a"; x.fill();
+      x.beginPath(); x.arc(cp.x, cp.y, 10, 0, Math.PI * 2); x.strokeStyle = "#fff"; x.lineWidth = 2; x.stroke();
+      if(cp.z > 0.15){
+        x.font = "800 22px " + FONT; x.textAlign = "center"; x.textBaseline = "bottom";
+        x.lineWidth = 4; x.strokeStyle = "rgba(4,20,15,.85)"; x.strokeText(lang === "bn" ? city.bn : city.en, cp.x, cp.y - 14);
+        x.fillStyle = "#ffd99a"; x.fillText(lang === "bn" ? city.bn : city.en, cp.x, cp.y - 14);
+      }
+    }
+  }
+  // home district marker (red, pulsing when nothing picked yet)
+  const hp = globeProject(home.lat * Math.PI / 180, home.lon * Math.PI / 180, 1);
+  if(hp.z > 0.02){
+    const pulse = reducedMotion ? 0 : Math.sin(now / 450) * 1.5;
+    x.beginPath(); x.arc(hp.x, hp.y, 6 + pulse, 0, Math.PI * 2); x.fillStyle = "#f42a41"; x.fill();
+    x.beginPath(); x.arc(hp.x, hp.y, 10 + pulse, 0, Math.PI * 2); x.strokeStyle = "#fff"; x.lineWidth = 2; x.stroke();
+    if(hp.z > 0.15){
+      const lbl = districtNameFor(globe.home);
+      x.font = "800 22px " + FONT; x.textAlign = "center"; x.textBaseline = "bottom";
+      x.lineWidth = 4; x.strokeStyle = "rgba(4,20,15,.85)"; x.strokeText(lbl, hp.x, hp.y - 14);
+      x.fillStyle = "#fff"; x.fillText(lbl, hp.x, hp.y - 14);
+    }
+  } else if(!city){
+    // home is on the far side: hint where Bangladesh is by turning the globe
+    globe.target = home.lon * Math.PI / 180;
+  }
+}
+function globeTick(now){
+  if(!globe || !globe.cv) return;
+  const dt = globe.last ? Math.min(100, now - globe.last) : 16;
+  globe.last = now;
+  if(!globe.dragging && !reducedMotion && globe.target === null && now - globe.lastInteract > 4000){
+    globe.center += dt * 0.000045; // slow auto-spin, ~2.6 deg/sec
+  }
+  if(globe.target !== null){
+    let diff = globe.target - globe.center;
+    while(diff > Math.PI) diff -= Math.PI * 2;
+    while(diff < -Math.PI) diff += Math.PI * 2;
+    const step = dt * 0.0012;
+    if(Math.abs(diff) < 0.01){ globe.center = globe.target; globe.target = null; globe.lastInteract = now; }
+    else globe.center += Math.sign(diff) * Math.min(Math.abs(diff), step);
+  }
+  if(globe.inView && !document.hidden) globeDraw(now);
+  if(typeof requestAnimationFrame === "function") requestAnimationFrame(globeTick);
+}
+function updateGlobeUI(){
+  if(!globe) return;
+  const citySel = document.getElementById("globeCity"), homeSel = document.getElementById("globeHome");
+  if(citySel){
+    const cur = globe.city;
+    citySel.innerHTML = `<option value="">${t("globe_pick_city")}</option>` + WORLD_CITIES.map(c=>`<option value="${c.en}">${globeCityLabel(c)}</option>`).join("");
+    citySel.value = cur || "";
+  }
+  if(homeSel){
+    homeSel.innerHTML = DISTRICTS.map(d=>`<option value="${d.en}">${districtName(d)}</option>`).join("");
+    homeSel.value = globe.home;
+  }
+  const distEl = document.getElementById("globeDist");
+  if(distEl){
+    const city = globe.city ? WORLD_CITIES.find(c=>c.en === globe.city) : null;
+    if(!city){ distEl.textContent = t("globe_none"); }
+    else{
+      const km = globeHaversineKm(city, globeHomeLatLon());
+      distEl.textContent = t("globe_dist").replace("{c}", lang === "bn" ? city.bn : city.en).replace("{h}", districtNameFor(globe.home)).replace("{d}", fmt(km));
+    }
+  }
+}
+function globeTurnToCity(){
+  const city = globe.city ? WORLD_CITIES.find(c=>c.en === globe.city) : null;
+  if(!city) return;
+  const home = globeHomeLatLon();
+  // midpoint of the great-circle arc, as a longitude to centre on
+  const aLat = city.lat * Math.PI / 180, aLon = city.lon * Math.PI / 180;
+  const bLat = home.lat * Math.PI / 180, bLon = home.lon * Math.PI / 180;
+  const va = [Math.cos(aLat) * Math.cos(aLon), Math.sin(aLat), Math.cos(aLat) * Math.sin(aLon)];
+  const vb = [Math.cos(bLat) * Math.cos(bLon), Math.sin(bLat), Math.cos(bLat) * Math.sin(bLon)];
+  const mx = va[0] + vb[0], my = va[1] + vb[1], mz = va[2] + vb[2];
+  globe.target = Math.atan2(mz, mx);
+  globe.lastInteract = performance.now();
+}
+function initGlobe(){
+  const cv = document.getElementById("globeCanvas");
+  if(!cv || globe) return;
+  const ctx = cv.getContext ? cv.getContext("2d") : null;
+  if(!ctx) return;
+  let saved = {};
+  try{ saved = JSON.parse(localStorage.getItem("nb_globe") || "{}"); }catch(e){}
+  globe = {
+    cv, ctx, cx: 320, cy: 320, R: 280, zoom: 1,
+    center: 90.4 * Math.PI / 180, tilt: 0.18, target: null,
+    dragging: false, lastX: 0, lastY: 0, last: 0, lastInteract: 0, inView: true,
+    city: (saved.city && WORLD_CITIES.some(c=>c.en === saved.city)) ? saved.city : "",
+    home: (saved.home && CENTROIDS[saved.home]) ? saved.home : (roots.miss || roots.birth || "Dhaka")
+  };
+  const citySel = document.getElementById("globeCity"), homeSel = document.getElementById("globeHome");
+  if(citySel) citySel.addEventListener("change", ()=>{
+    globe.city = citySel.value; globeSave(); updateGlobeUI(); globeTurnToCity();
+  });
+  if(homeSel) homeSel.addEventListener("change", ()=>{
+    globe.home = homeSel.value || "Dhaka"; globeSave(); updateGlobeUI(); globeTurnToCity();
+  });
+  cv.addEventListener("pointerdown", e=>{
+    globe.dragging = true; globe.target = null; globe.lastX = e.clientX; globe.lastY = e.clientY;
+    cv.classList.add("dragging");
+    if(cv.setPointerCapture){ try{ cv.setPointerCapture(e.pointerId); }catch(err){} }
+  });
+  cv.addEventListener("pointermove", e=>{
+    if(!globe.dragging) return;
+    const dx = e.clientX - globe.lastX, dy = e.clientY - globe.lastY;
+    globe.lastX = e.clientX; globe.lastY = e.clientY;
+    globe.center += dx * 0.005;
+    globe.tilt = Math.max(-0.5, Math.min(0.5, globe.tilt + dy * 0.003));
+    globe.lastInteract = performance.now();
+  });
+  const endDrag = ()=>{ globe.dragging = false; globe.lastInteract = performance.now(); cv.classList.remove("dragging"); };
+  cv.addEventListener("pointerup", endDrag);
+  cv.addEventListener("pointercancel", endDrag);
+  const zi = document.getElementById("globeZoomIn"), zo = document.getElementById("globeZoomOut");
+  if(zi) zi.onclick = ()=>{ globe.zoom = Math.min(1.7, globe.zoom + 0.15); };
+  if(zo) zo.onclick = ()=>{ globe.zoom = Math.max(1, globe.zoom - 0.15); };
+  if(typeof IntersectionObserver === "function"){
+    try{
+      const io = new IntersectionObserver(es=>{ es.forEach(en=>{ globe.inView = en.isIntersecting; }); }, {threshold: 0.05});
+      io.observe(cv);
+    }catch(e){}
+  }
+  updateGlobeUI();
+  if(typeof requestAnimationFrame === "function") requestAnimationFrame(globeTick);
+  else globeDraw(0);
+}
+
 function showView(v){
   const home = document.getElementById("view-home");
   const battles = document.getElementById("view-battles");
@@ -2327,6 +2641,7 @@ function showView(v){
   }
   if(v === "roots"){
     if(rootsDone()) showRootsPoster(); else { document.getElementById("rootsPoster").classList.add("hidden"); document.getElementById("rootsWizard").classList.remove("hidden"); renderRootsStep(); }
+    initGlobe();
     window.scrollTo({top:0});
   }
 }
