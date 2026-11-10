@@ -4118,10 +4118,18 @@ if("IntersectionObserver" in window){
 }
 
 (async()=>{
-  await loadArchive();
-  initAuth();
+  // LCP: render today's question from the embedded catalog first (no network
+  // wait), then refresh from the live catalog in the background and only
+  // re-render if today actually changed — so no flicker and no risk to a
+  // vote/guess already in progress.
+  ARCHIVE = ARCHIVE_FALLBACK.experiments.slice();
   setupCurrent();
+  initAuth();
   fetchArchiveLiveCounts();
+  const firstId = CURRENT && CURRENT.id;
+  await loadArchive(true);
+  const liveToday = todayExperiment();
+  if(liveToday && liveToday.id !== firstId){ setupCurrent(); fetchArchiveLiveCounts(); }
   await loadCommunity();
   fetchCommunityVotes();
   markVisitToday();
