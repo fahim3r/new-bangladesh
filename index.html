@@ -750,6 +750,7 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
       </div>
       <p id="archiveCount" class="arch-count"></p>
       <div id="archiveList" style="margin-top:20px"></div>
+      <p id="archDbg" style="color:#991b1b;text-align:center;font-size:13px;min-height:18px"></p>
       <p id="archiveMsg" style="color:var(--muted);text-align:center"></p>
     </section>
   </div><!-- /view-archive -->
@@ -2038,24 +2039,29 @@ document.getElementById("archiveSearch").addEventListener("input", e=>{
   archQuery = e.target.value;
   renderArchive();
 });
+function archDbg(s){ const el = document.getElementById("archDbg"); if(el) el.textContent = s; try{ console.log("[arch]", s); }catch(e){} }
 async function voteArchive(id, key){
   const exp = ARCHIVE.find(x=>x.id === id);
-  if(!exp || !sb) return;
+  if(!exp || !sb){ archDbg("voteArchive: NO EXP/SB exp=" + !!exp + " sb=" + !!sb); return; }
   const opt = exp.options.find(o=>o.key === key);
-  if(!opt) return;
+  if(!opt){ archDbg("voteArchive: NO OPT key=" + key); return; }
+  archDbg("voteArchive: inserting " + id + "/" + key + " label=" + opt.en);
   try{
     const {error} = await sb.from("votes").insert({experiment_id: id, option_label: opt.en, voter_hash: getVoterId(), district: myDistrict || null});
     if(error) throw error;
+    archDbg("voteArchive: INSERT OK " + id + "/" + key);
     try{ localStorage.setItem(voteKey(id), JSON.stringify({key})); }catch(e){}
-  }catch(e){ /* duplicate or offline: just refresh */ }
+  }catch(e){ archDbg("voteArchive: INSERT ERR: " + (e && (e.message || e.code || JSON.stringify(e)))); }
   if(CURRENT && id === CURRENT.id && typeof OPTIONS !== "undefined"){
     const p = OPTIONS.find(o=>o.key===key);
     if(p){ picked = p; render(); }
   }
   await fetchArchiveLiveCounts();
+  archDbg("voteArchive: done, local=" + (function(){ try{ return localStorage.getItem(voteKey(id)); }catch(e){ return "?"; } })());
 }
 document.getElementById("archiveList").addEventListener("click", async e=>{
   const voteBtn = e.target.closest(".arch-vote");
+  archDbg("archive click: target=" + (e.target && (e.target.className || e.target.tagName)) + " voteBtn=" + (voteBtn ? voteBtn.dataset.exp + "/" + voteBtn.dataset.key : "none"));
   if(voteBtn){ await voteArchive(voteBtn.dataset.exp, voteBtn.dataset.key); return; }
   if(e.target.closest("a")) return;
   const card = e.target.closest(".arch-card");
