@@ -90,6 +90,14 @@ h1 .red{color:var(--red);display:inline-block;animation:wordPop .8s .35s cubic-b
 @media(max-width:640px){.card{padding:22px 18px}}
 .card .eyebrow{font-size:11.5px}
 .q{font-size:clamp(21px,3.4vw,26px);line-height:1.4;margin:12px 0 20px;font-weight:700;color:var(--ink)}
+.q-why{font-size:15px;line-height:1.55;color:#0f3d2e;background:#eef7f0;border:1px solid #cfe8d6;border-radius:12px;padding:10px 14px;margin:0 0 16px;text-align:left}
+.q-why:empty{display:none}
+.yesterday-line{font-size:14.5px;color:#5b6b60;margin:8px 0 0;font-weight:600;text-align:center}
+.yesterday-line:empty{display:none}
+.how-why{font-size:17px;font-weight:700;color:#0f3d2e;text-align:center;margin:16px 0 0}
+.battle-story{font-size:15px;line-height:1.55;color:#0f3d2e;margin:8px 0 0}
+.cq-why-label{display:block;text-align:left;font-size:14px;font-weight:700;color:var(--muted);margin:2px 0 6px}
+.cq-why{font-size:14.5px;line-height:1.55;color:#0f3d2e;background:#fdf6e3;border:1px solid #f0dfae;border-radius:10px;padding:8px 12px;margin:0 0 12px;text-align:left}
 .opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:15px 18px;margin:0 0 10px;
   border:1.5px solid var(--line);border-radius:999px;background:rgba(255,255,255,.85);
   font:inherit;font-size:16px;font-weight:600;color:var(--ink);cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s,background .2s}
@@ -445,11 +453,13 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
     <div class="eyebrow reveal d1" data-i18n="eyebrow">নিউ বাংলাদেশ · বাংলাদেশ উত্তর দিচ্ছে</div>
     <h1 class="reveal d2"><span data-i18n="hero_l1">বাংলাদেশ</span> <span class="red" data-i18n="hero_l2">কী ভাবছে?</span></h1>
     <p class="sub reveal d3" data-i18n="hero_sub">একটি প্রশ্ন। হাজারো উত্তর। বাংলাদেশের একটাই ছবি — ভোট দাও, দেখো দেশ কী ভাবছে, আর তোমার রেজাল্ট শেয়ার করো।</p>
+    <p class="yesterday-line reveal d3" id="yesterdayLine"></p>
 
     <main class="vote reveal d4" id="vote">
       <div class="card">
         <div class="eyebrow"><span id="expLabel">এক্সপেরিমেন্ট #২৪৭</span> · <span data-i18n="today">আজ</span></div>
         <div class="q" id="questionText">হঠাৎ তোমার অ্যাকাউন্টে ৳১০ লাখ এলো। তুমি কী করবে?</div>
+        <p id="qWhy" class="q-why"></p>
         <div id="options"></div>
         <div id="guess" class="guess hidden">
           <div class="guess-tag" data-i18n="guess_tag">গেস বাংলাদেশ</div>
@@ -545,6 +555,7 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
     <div class="eyebrow" data-i18n="how_eyebrow">কীভাবে কাজ করে</div>
     <h2 data-i18n="how_h">১০ সেকেন্ডে, তিন ধাপে।</h2>
     <p class="lede" data-i18n="how_sub">কোনো সাইন-আপ নেই, কোনো বিজ্ঞাপন নেই। শুধু তুমি, একটি প্রশ্ন, আর পুরো বাংলাদেশ।</p>
+    <p class="how-why" data-i18n="how_why">তোমার একটা ভোটে বাংলাদেশের আসল ছবিটা ফুটে ওঠে।</p>
     <div class="steps">
       <div class="step"><div class="num">১</div><h3 data-i18n="s1_h">ভোট দাও</h3><p data-i18n="s1_p">আজকের প্রশ্নে তোমার উত্তরটা বেছে নাও। এক ট্যাপেই হয়ে যাবে।</p></div>
       <div class="step"><div class="num">২</div><h3 data-i18n="s2_h">রেজাল্ট দেখো</h3><p data-i18n="s2_p">তোমার সাথে কত শতাংশ বাংলাদেশ একমত, সেটা এখনই দেখে নাও।</p></div>
@@ -673,6 +684,8 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
         <input id="cqOpt1" maxlength="60" placeholder="উত্তর ২">
         <input id="cqOpt2" maxlength="60" placeholder="উত্তর ৩ (ঐচ্ছিক)">
         <input id="cqOpt3" maxlength="60" placeholder="উত্তর ৪ (ঐচ্ছিক)">
+        <label class="cq-why-label" for="cqWhy" data-i18n="cq_why_label">কেন জিজ্ঞেস করছো? (ঐচ্ছিক)</label>
+        <textarea id="cqWhy" rows="1" maxlength="120" placeholder="এক লাইনে লেখো কেন জানতে চাও…"></textarea>
         <button class="btn primary" id="cqPublish" type="button" data-i18n="cq_publish">প্রশ্ন প্রকাশ করো (১ টোকেন)</button>
         <p id="cqMsg"></p>
       </div>
@@ -704,6 +717,7 @@ const I18N = {
     eyebrow:"নিউ বাংলাদেশ · বাংলাদেশ উত্তর দিচ্ছে",
     hero_l1:"বাংলাদেশ", hero_l2:"কী ভাবছে?",
     hero_sub:"একটি প্রশ্ন। হাজারো উত্তর। বাংলাদেশের একটাই ছবি — ভোট দাও, দেখো দেশ কী ভাবছে, আর তোমার রেজাল্ট শেয়ার করো।",
+    q_why_label:"কেন এই প্রশ্ন?", yesterday_said:"গতকাল বাংলাদেশ বললো: “{o}” — {p}% মানুষের পছন্দ",
     exp:"এক্সপেরিমেন্ট #২৪৭", today:"আজ", exp_en:"এক্সপেরিমেন্ট #২৪৭",
     question:"হঠাৎ তোমার অ্যাকাউন্টে ৳১০ লাখ এলো। তুমি কী করবে?",
     download:"কার্ড ডাউনলোড করো (PNG)",
@@ -711,6 +725,7 @@ const I18N = {
     stat_votes:"মোট ভোট", stat_opts:"টি উত্তর", stat_q:"টি প্রশ্ন প্রতিদিন", stat_signup:"সাইন-আপ",
     how_eyebrow:"কীভাবে কাজ করে", how_h:"১০ সেকেন্ডে, তিন ধাপে।",
     how_sub:"কোনো সাইন-আপ নেই, কোনো বিজ্ঞাপন নেই। শুধু তুমি, একটি প্রশ্ন, আর পুরো বাংলাদেশ।",
+    how_why:"তোমার একটা ভোটে বাংলাদেশের আসল ছবিটা ফুটে ওঠে।",
     s1_h:"ভোট দাও", s1_p:"আজকের প্রশ্নে তোমার উত্তরটা বেছে নাও। এক ট্যাপেই হয়ে যাবে।",
     s2_h:"বাংলাদেশকে গেস করো", s2_p:"তোমার কী মনে হয় — কত % বাংলাদেশ তোমার মতোই বাছবে? স্লাইডারটা টেনে গেস করো।",
     s3_h:"রেজাল্ট দেখো ও শেয়ার করো", s3_p:"আসল রেজাল্ট আর তোমার গেসের স্কোর দেখো, তারপর কার্ডটা বন্ধুকে পাঠাও।",
@@ -757,6 +772,7 @@ const I18N = {
     cq_hint_have:"তোমার কাছে {n}টা টোকেন আছে — প্রশ্ন প্রকাশ করতে পারো!",
     cq_hint_need:"আরো {n} দিন আসলেই ১টা টোকেন পাবে।",
     cq_publish_h:"তোমার প্রশ্ন দাও",
+    cq_why_label:"কেন জিজ্ঞেস করছো? (ঐচ্ছিক)", cq_why_ph:"এক লাইনে লেখো কেন জানতে চাও…",
     cq_q_ph:"তোমার প্রশ্ন লেখো…", cq_opt_ph:"উত্তর {n}", cq_opt_ph_opt:"উত্তর {n} (ঐচ্ছিক)",
     cq_publish:"প্রশ্ন প্রকাশ করো (১ টোকেন)",
     cq_need_token:"প্রশ্ন প্রকাশ করতে ১টা টোকেন লাগবে — টানা ৩ দিন এসো!",
@@ -775,7 +791,7 @@ const I18N = {
     archive_eyebrow:"ভোট আর্কাইভ", archive_h:"বাংলাদেশ আগে কী বলেছে?",
     archive_sub:"আগের সব প্রশ্ন আর তার ফলাফল এখানেই থাকবে। খুঁজে দেখো — কোনো বিষয়ে বাংলাদেশ কী ভাবে।",
     archive_search_ph:"প্রশ্ন খুঁজো…", archive_all:"সব", archive_votes:"টি ভোট", archive_count:"টি প্রশ্ন",
-    archive_leader:"সবচেয়ে বেশি", archive_closed:"এই প্রশ্নের ভোট শেষ — শুধু ফলাফল দেখা যাবে।",
+    archive_leader:"বাংলাদেশের রায়", archive_closed:"এই প্রশ্নের ভোট শেষ — শুধু ফলাফল দেখা যাবে।",
     archive_today:"এটা আজকের প্রশ্ন", archive_vote_now:"এখনই ভোট দাও →",
     archive_empty:"কিছু পাওয়া যায়নি — অন্য কিছু খুঁজে দেখো।",
     archive_more:"বিস্তারিত দেখো ⌄", archive_less:"কম দেখো ⌃",
@@ -794,7 +810,8 @@ const I18N = {
     map_eyebrow:"জেলা ম্যাপ", map_h:"কোন জেলা কী ভাবছে?",
     map_sub:"টেকনাফ থেকে তেঁতুলিয়া — প্রতিটি জেলার ভোট এখন ম্যাপে। জেলায় ট্যাপ করলেই দেখতে পাবে সেখানে কে এগিয়ে।",
     map_tap:"জেলায় ট্যাপ করো", map_tap_sub:"ম্যাপের যেকোনো জেলায় ট্যাপ করলেই সেখানকার ভোট দেখতে পাবে।",
-    map_nodata:"এই জেলা থেকে এখনো ভোট আসেনি।", map_votes:"টি ভোট", map_leader:"এগিয়ে আছে",
+    map_nodata:"এই জেলা থেকে এখনো ভোট আসেনি — তুমি প্রথম হতে পারো!", map_votes:"টি ভোট", map_leader:"এগিয়ে আছে",
+    map_says:"এই জেলা আজ বলছে", map_mine_says:"তোমার জেলা আজ বলছে",
     map_your:"তোমার জেলা যোগ করো", map_add:"জেলা যোগ করো", map_added:"তোমার জেলা যোগ হয়ে গেছে — ম্যাপে লাল বর্ডার দিয়ে দেখো!",
     map_need_vote:"আগে আজকের প্রশ্নে ভোট দাও, তারপর জেলা যোগ করতে পারবে।",
     map_pick:"একটা জেলা বাছো", map_districts:"টি জেলার ভোট এসেছে", map_note:"ম্যাপে শুধু আসল লাইভ ভোট দেখানো হয় — তাই শুরুতে কিছু জেলা ফাঁকা থাকতে পারে।",
@@ -813,6 +830,7 @@ const I18N = {
     eyebrow:"NEW BANGLADESH · BANGLADESH IS ANSWERING",
     hero_l1:"What does", hero_l2:"Bangladesh think?",
     hero_sub:"One question. Thousands of answers. One picture of Bangladesh — vote, see what the country thinks, and share your result.",
+    q_why_label:"Why this question?", yesterday_said:"Yesterday Bangladesh said: “{o}” — chosen by {p}%",
     exp:"EXPERIMENT #247", today:"TODAY", exp_en:"EXPERIMENT #247",
     question:"৳10 lakh suddenly appears in your account. What would YOU do?",
     download:"Download card (PNG)",
@@ -820,6 +838,7 @@ const I18N = {
     stat_votes:"Total votes", stat_opts:"answers", stat_q:"question a day", stat_signup:"sign-up",
     how_eyebrow:"HOW IT WORKS", how_h:"In 10 seconds, three steps.",
     how_sub:"No sign-up, no ads. Just you, one question, and the whole of Bangladesh.",
+    how_why:"One vote from you brings Bangladesh's true picture into focus.",
     s1_h:"Vote", s1_p:"Pick your answer to today's question. One tap and you're done.",
     s2_h:"Guess Bangladesh", s2_p:"What do you think — what % of Bangladesh will pick the same as you? Drag the slider and guess.",
     s3_h:"See the result & share", s3_p:"See the real result and your guess score, then send the card to a friend.",
@@ -865,6 +884,7 @@ const I18N = {
     cq_hint_have:"You have {n} token(s) — you can publish a question!",
     cq_hint_need:"Visit {n} more day(s) to earn 1 token.",
     cq_publish_h:"Ask your question",
+    cq_why_label:"Why are you asking? (optional)", cq_why_ph:"One line on why you want to know…",
     cq_q_ph:"Write your question…", cq_opt_ph:"Option {n}", cq_opt_ph_opt:"Option {n} (optional)",
     cq_publish:"Publish question (1 token)",
     cq_need_token:"You need 1 token to publish — visit 3 days in a row!",
@@ -883,7 +903,7 @@ const I18N = {
     archive_eyebrow:"VOTE ARCHIVE", archive_h:"What did Bangladesh say before?",
     archive_sub:"Every past question and its result lives here. Search any topic and see what Bangladesh thinks.",
     archive_search_ph:"Search a question…", archive_all:"All", archive_votes:"votes", archive_count:"questions",
-    archive_leader:"Most picked", archive_closed:"Voting on this question is closed — results only.",
+    archive_leader:"Bangladesh's verdict", archive_closed:"Voting on this question is closed — results only.",
     archive_today:"This is today's question", archive_vote_now:"Vote now →",
     archive_empty:"Nothing found — try a different search.",
     archive_more:"See details ⌄", archive_less:"Show less ⌃",
@@ -902,7 +922,8 @@ const I18N = {
     map_eyebrow:"DISTRICT MAP", map_h:"What does each district think?",
     map_sub:"From Teknaf to Tetulia — every district's vote is now on the map. Tap a district to see who is leading there.",
     map_tap:"Tap a district", map_tap_sub:"Tap any district on the map to see its votes.",
-    map_nodata:"No votes from this district yet.", map_votes:"votes", map_leader:"Leading",
+    map_nodata:"No votes from this district yet — you could be the first!", map_votes:"votes", map_leader:"Leading",
+    map_says:"This district says today", map_mine_says:"Your district says today",
     map_your:"Add your district", map_add:"Add district", map_added:"Your district is added — see it with a red border on the map!",
     map_need_vote:"Vote on today's question first, then you can add your district.",
     map_pick:"Pick a district", map_districts:"districts have voted so far", map_note:"The map shows only real live votes — so some districts may be empty at first.",
@@ -1043,6 +1064,26 @@ function setupCurrent(){
   try{ const g = localStorage.getItem(guessKey(CURRENT.id)); guess = g === null ? null : parseInt(g, 10); }catch(e){ guess = null; }
 }
 
+// ---------- yesterday's verdict: the story keeps going, one day at a time ----------
+function yesterdayExperiment(){
+  if(!ARCHIVE || !ARCHIVE.length || !CURRENT) return null;
+  const list = [...ARCHIVE].sort((a,b)=>a.date.localeCompare(b.date));
+  const y = dhakaParts(new Date(Date.now() - 86400000)).date;
+  const dated = list.find(e=>e.date === y);
+  if(dated) return dated;
+  const i = list.findIndex(e=>e.id === CURRENT.id);
+  return i > 0 ? list[i-1] : list[list.length-1];
+}
+function renderYesterdayLine(){
+  const el = document.getElementById("yesterdayLine");
+  if(!el) return;
+  const exp = yesterdayExperiment();
+  if(!exp){ el.textContent = ""; return; }
+  const c = archiveCounts(exp);
+  const top = c.opts[0];
+  el.textContent = t("yesterday_said").replace("{o}", lang === "bn" ? top.bn : top.en).replace("{p}", fmt(top.pct));
+}
+
 // ---------- streak + countdown (Dhaka time, on-device only) ----------
 function dhakaParts(d){
   const p = new Intl.DateTimeFormat("en-CA", {timeZone:"Asia/Dhaka", year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit", hourCycle:"h23"}).formatToParts(d || new Date());
@@ -1150,6 +1191,9 @@ function guessTier(diff){
 }
 function render(){
   document.getElementById("questionText").textContent = CURRENT ? (lang === "bn" ? CURRENT.q.bn : CURRENT.q.en) : t("question");
+  const qw = document.getElementById("qWhy");
+  if(qw){ qw.textContent = (CURRENT && CURRENT.why) ? t("q_why_label") + " " + (lang === "bn" ? CURRENT.why.bn : CURRENT.why.en) : ""; }
+  renderYesterdayLine();
   const expEl = document.getElementById("expLabel");
   if(expEl && CURRENT) expEl.textContent = (lang === "bn" ? "এক্সপেরিমেন্ট #" : "EXPERIMENT #") + fmt(CURRENT.num);
   const expShare = document.getElementById("expLabelShare");
@@ -1234,7 +1278,8 @@ function renderDistrictDetail(){
   }
   const d = DISTRICTS.find(x=>x.en===selectedDistrict);
   const dv = districtVotes[selectedDistrict];
-  const mine = myDistrict === selectedDistrict ? ` <span class="you">${t("map_mine")}</span>` : "";
+  const isMine = myDistrict === selectedDistrict;
+  const mine = isMine ? ` <span class="you">${t("map_mine")}</span>` : "";
   if(!dv){
     el.innerHTML = `<h3>${districtName(d)}${mine}</h3><p class="dd-sub">${t("map_nodata")}</p>`;
     return;
@@ -1245,7 +1290,7 @@ function renderDistrictDetail(){
     const n = dv.counts[o.key]||0; const p = dv.total ? Math.round(n/dv.total*100) : 0;
     return `<div class="dd-row"><span>${label(o)}</span><b>${fmt(p)}% · ${fmt(n)}</b></div><div class="bar"><i style="width:${p}%;background:${OPTION_COLORS[o.key]}"></i></div>`;
   }).join("");
-  el.innerHTML = `<h3>${districtName(d)}${mine}</h3><p class="dd-sub">${t("map_leader")}: <b>${label(leader)}</b> · ${fmt(dv.leaderPct)}% · ${fmt(dv.total)} ${t("map_votes")}</p>${rowsHtml}`;
+  el.innerHTML = `<h3>${districtName(d)}${mine}</h3><p class="dd-sub">${isMine ? t("map_mine_says") : t("map_says")}: <b>${label(leader)}</b> · ${fmt(dv.leaderPct)}% · ${fmt(dv.total)} ${t("map_votes")}</p>${rowsHtml}`;
 }
 function fillDistrictSelect(sel, includeNone){
   const cur = sel.value;
@@ -1457,7 +1502,7 @@ document.querySelectorAll(".sc-style-btn").forEach(b=>b.addEventListener("click"
   try{ localStorage.setItem("nb_card_style", cardStyle); }catch(e){}
   applyCardStyle();
 }));
-const BATTLES_FALLBACK = {"battles": [{"a": {"base": 45210, "bn": "ঢাকা", "emoji": "🏙️", "en": "Dhaka", "key": "Dhaka"}, "b": {"base": 37180, "bn": "চট্টগ্রাম", "emoji": "🌊", "en": "Chattogram", "key": "Chattogram"}, "id": "dhaka-chattogram", "num": 1, "title": {"bn": "কোন শহর সেরা?", "en": "Which city is the best?"}}, {"a": {"base": 58320, "bn": "ফুচকা", "emoji": "🍢", "en": "Fuchka", "key": "Fuchka"}, "b": {"base": 29410, "bn": "বার্গার", "emoji": "🍔", "en": "Burger", "key": "Burger"}, "id": "fuchka-burger", "num": 2, "title": {"bn": "ফুচকা নাকি বার্গার?", "en": "Fuchka or Burger?"}}, {"a": {"base": 51200, "bn": "বিরিয়ানি", "emoji": "🍛", "en": "Biryani", "key": "Biryani"}, "b": {"base": 33800, "bn": "খিচুড়ি", "emoji": "🍲", "en": "Khichuri", "key": "Khichuri"}, "id": "biryani-khichuri", "num": 3, "title": {"bn": "বিরিয়ানি নাকি খিচুড়ি?", "en": "Biryani or Khichuri?"}}, {"a": {"base": 68900, "bn": "ক্রিকেট", "emoji": "🏏", "en": "Cricket", "key": "Cricket"}, "b": {"base": 41300, "bn": "ফুটবল", "emoji": "⚽", "en": "Football", "key": "Football"}, "id": "cricket-football", "num": 4, "title": {"bn": "ক্রিকেট নাকি ফুটবল?", "en": "Cricket or Football?"}}]};
+const BATTLES_FALLBACK = {"battles":[{"a":{"base":45210,"bn":"ঢাকা","emoji":"🏙️","en":"Dhaka","key":"Dhaka"},"b":{"base":37180,"bn":"চট্টগ্রাম","emoji":"🌊","en":"Chattogram","key":"Chattogram"},"id":"dhaka-chattogram","num":1,"story":{"bn":"দুই শহর, এক দেশ — রাজধানী নাকি বন্দরনগরী, কে এগিয়ে?","en":"Two cities, one country — the capital or the port city, who leads?"},"title":{"bn":"কোন শহর সেরা?","en":"Which city is the best?"}},{"a":{"base":58320,"bn":"ফুচকা","emoji":"🍢","en":"Fuchka","key":"Fuchka"},"b":{"base":29410,"bn":"বার্গার","emoji":"🍔","en":"Burger","key":"Burger"},"id":"fuchka-burger","num":2,"story":{"bn":"রাস্তার ধারের টক-ঝাল নাকি ফাস্টফুডের রাজা — তোমার পেট কী বলে?","en":"Street-side tangy spice or the fast-food king — what does your stomach say?"},"title":{"bn":"ফুচকা নাকি বার্গার?","en":"Fuchka or Burger?"}},{"a":{"base":51200,"bn":"বিরিয়ানি","emoji":"🍛","en":"Biryani","key":"Biryani"},"b":{"base":33800,"bn":"খিচুড়ি","emoji":"🍲","en":"Khichuri","key":"Khichuri"},"id":"biryani-khichuri","num":3,"story":{"bn":"উৎসবের রাজা নাকি বৃষ্টির দিনের সঙ্গী — কোনটা তোমার মন জয় করে?","en":"The king of festivals or the rainy day's companion — which wins your heart?"},"title":{"bn":"বিরিয়ানি নাকি খিচুড়ি?","en":"Biryani or Khichuri?"}},{"a":{"base":68900,"bn":"ক্রিকেট","emoji":"🏏","en":"Cricket","key":"Cricket"},"b":{"base":41300,"bn":"ফুটবল","emoji":"⚽","en":"Football","key":"Football"},"id":"cricket-football","num":4,"story":{"bn":"ব্যাট-বল নাকি গোল — বাংলাদেশের মাঠে কার জয়গান?","en":"Bat and ball or the goal — whose anthem echoes on Bangladesh's fields?"},"title":{"bn":"ক্রিকেট নাকি ফুটবল?","en":"Cricket or Football?"}}]};
 // ---------- battles: separate page, loaded via AJAX (battles.json) ----------
 let BATTLES = null;
 let battleLive = {}; // id -> {a:n, b:n}
@@ -1501,7 +1546,7 @@ function battleCardHtml(b){
     const isPick = pick === key;
     return `<button type="button" class="vs-side${isPick ? " picked" : ""}" data-battle="${b.id}" data-side="${key}" ${voted ? "disabled" : ""}><span class="vs-emoji">${s.emoji}</span><span class="vs-name">${sideLabel(s)}</span>${voted ? `<span class="vs-pct">${fmt(pct)}%</span>` : ""}${isPick ? ` <span class="you">${t("battle_you")}</span>` : ""}</button>`;
   };
-  return `<article class="battle-card"><div class="eyebrow">⚔️ BATTLE #${fmt(b.num)}</div><h3>${lang === "bn" ? b.title.bn : b.title.en}</h3><div class="vs-row">${side(b.a, "a", c.pctA, c.ca)}<div class="vs-mid">VS</div>${side(b.b, "b", 100 - c.pctA, c.cb)}</div><div class="vs-bar"><i style="width:${voted ? c.pctA : 50}%"></i></div><div class="vs-meta">${voted ? fmt(c.total) + " " + t("battle_votes") + " · " + t("battle_live") : t("battle_live")}</div></article>`;
+  return `<article class="battle-card"><div class="eyebrow">⚔️ BATTLE #${fmt(b.num)}</div><h3>${lang === "bn" ? b.title.bn : b.title.en}</h3>${b.story ? `<p class="battle-story">${lang === "bn" ? b.story.bn : b.story.en}</p>` : ""}<div class="vs-row">${side(b.a, "a", c.pctA, c.ca)}<div class="vs-mid">VS</div>${side(b.b, "b", 100 - c.pctA, c.cb)}</div><div class="vs-bar"><i style="width:${voted ? c.pctA : 50}%"></i></div><div class="vs-meta">${voted ? fmt(c.total) + " " + t("battle_votes") + " · " + t("battle_live") : t("battle_live")}</div></article>`;
 }
 function renderBattles(){
   const el = document.getElementById("battlesList");
@@ -1535,7 +1580,7 @@ document.getElementById("latestBattle").addEventListener("click", e=>{
   if(btn) voteBattle(btn.dataset.battle, btn.dataset.side);
 });
 // ---------- vote archive: every past question, filterable & searchable ----------
-const ARCHIVE_FALLBACK = {"experiments":[{"cat":"money","date":"2026-11-29","id":"261","num":261,"options":[{"base":36400,"bn":"ব্যাংকে","en":"In a bank","key":"bank","typeBn":"নিরাপত্তাপ্রিয়","typeEn":"The Security Seeker"},{"base":31200,"bn":"বিকাশ-নগদে","en":"In bKash / Nagad","key":"mobile","typeBn":"ডিজিটাল মানুষ","typeEn":"The Digital Saver"},{"base":19800,"bn":"বাসায় নগদ","en":"Cash at home","key":"cash","typeBn":"নগদের মানুষ","typeEn":"The Cash Keeper"},{"base":14600,"bn":"জমাই না","en":"I don't save","key":"none","typeBn":"আজকের মানুষ","typeEn":"The Live-for-Today"}],"q":{"bn":"টাকা জমাও কোথায়?","en":"Where do you keep your savings?"}},{"cat":"life","date":"2026-11-28","id":"260","num":260,"options":[{"base":44800,"bn":"যানজট","en":"Traffic jams","key":"traffic","typeBn":"জ্যামে আটকা","typeEn":"The Stuck Commuter"},{"base":27600,"bn":"পানি জমে যাওয়া","en":"Waterlogging","key":"water","typeBn":"বর্ষার মানুষ","typeEn":"The Rainy-Day Soul"},{"base":21400,"bn":"বাড়ি ভাড়া","en":"House rent","key":"rent","typeBn":"ভাড়ার চাপে","typeEn":"The Rent Payer"},{"base":18200,"bn":"বায়ুদূষণ","en":"Air pollution","key":"air","typeBn":"স্বাস্থ্যসচেতন","typeEn":"The Health Conscious"}],"q":{"bn":"ঢাকার সবচেয়ে বড় সমস্যা কোনটা?","en":"What is Dhaka's biggest problem?"}},{"cat":"career","date":"2026-11-27","id":"259","num":259,"options":[{"base":24800,"bn":"পার্টটাইম চাকরি","en":"A part-time job","key":"parttime","typeBn":"আয়ের মানুষ","typeEn":"The Earner"},{"base":41200,"bn":"স্কিল শেখা","en":"Learning a skill","key":"skill","typeBn":"শেখার মানুষ","typeEn":"The Learner"},{"base":19600,"bn":"ব্যবসা শুরু করা","en":"Starting a business","key":"business","typeBn":"উদ্যোক্তা","typeEn":"The Entrepreneur"},{"base":15400,"bn":"শুধু পড়াশোনা","en":"Just studying","key":"study","typeBn":"পড়ুয়া","typeEn":"The Studious One"}],"q":{"bn":"পড়াশোনার পাশাপাশি কী করা উচিত?","en":"What should you do alongside your studies?"}},{"cat":"sports","date":"2026-11-26","id":"258","num":258,"options":[{"base":22400,"bn":"টেস্ট","en":"Test","key":"test","typeBn":"ধৈর্যের মানুষ","typeEn":"The Patient Fan"},{"base":31200,"bn":"ওয়ানডে","en":"ODI","key":"odi","typeBn":"ভারসাম্যের মানুষ","typeEn":"The Balanced Fan"},{"base":48600,"bn":"টি-টোয়েন্টি","en":"T20","key":"t20","typeBn":"রোমাঞ্চপ্রেমী","typeEn":"The Thrill Seeker"},{"base":12800,"bn":"সবগুলোই","en":"All of them","key":"all","typeBn":"আসল ভক্ত","typeEn":"The True Fan"}],"q":{"bn":"সেরা ক্রিকেট ফরম্যাট কোনটা?","en":"Which is the best cricket format?"}},{"cat":"fun","date":"2026-11-25","id":"257","num":257,"options":[{"base":27600,"bn":"রবীন্দ্রসঙ্গীত","en":"Rabindra Sangeet","key":"rabindra","typeBn":"রবীন্দ্রপ্রেমী","typeEn":"The Rabindra Lover"},{"base":19800,"bn":"নজরুলগীতি","en":"Nazrul Geeti","key":"nazrul","typeBn":"নজরুলপ্রেমী","typeEn":"The Nazrul Lover"},{"base":35400,"bn":"ব্যান্ডের গান","en":"Band music","key":"band","typeBn":"ব্যান্ডপ্রেমী","typeEn":"The Band Lover"},{"base":23200,"bn":"লোকগান","en":"Folk music","key":"folk","typeBn":"লোকগানের মানুষ","typeEn":"The Folk Soul"}],"q":{"bn":"প্রিয় বাংলা গান কোন ধরনের?","en":"What kind of Bangla music do you love most?"}},{"cat":"life","date":"2026-11-24","id":"256","num":256,"options":[{"base":18400,"bn":"পারবো সহজে","en":"Easily","key":"easy","typeBn":"ডিটক্সের মানুষ","typeEn":"The Detoxer"},{"base":39800,"bn":"কষ্ট হবে","en":"It would be hard","key":"hard","typeBn":"মোবাইলের মানুষ","typeEn":"The Phone Person"},{"base":32600,"bn":"অসম্ভব","en":"Impossible","key":"impossible","typeBn":"মোবাইল ছাড়া অচল","typeEn":"The Always Online"},{"base":14200,"bn":"চেষ্টা করিনি","en":"Never tried","key":"never","typeBn":"কৌতূহলী","typeEn":"The Curious One"}],"q":{"bn":"মোবাইল ছাড়া একদিন থাকতে পারবে?","en":"Could you survive one day without your phone?"}},{"cat":"food","date":"2026-11-23","id":"255","num":255,"options":[{"base":44200,"bn":"দুধ চা","en":"Milk tea","key":"milk","typeBn":"দুধ চা-প্রেমী","typeEn":"The Milk Tea Lover"},{"base":28600,"bn":"লাল চা","en":"Red tea","key":"red","typeBn":"লাল চা-প্রেমী","typeEn":"The Red Tea Lover"},{"base":21400,"bn":"কফি","en":"Coffee","key":"coffee","typeBn":"কফিপ্রেমী","typeEn":"The Coffee Lover"},{"base":9800,"bn":"গ্রিন টি","en":"Green tea","key":"green","typeBn":"স্বাস্থ্যসচেতন","typeEn":"The Health Conscious"}],"q":{"bn":"চা না কফি?","en":"Tea or coffee?"}},{"cat":"money","date":"2026-11-22","id":"254","num":254,"options":[{"base":31200,"bn":"যত কম হয় তত ভালো","en":"As little as possible","key":"low","typeBn":"সহজ জীবন","typeEn":"The Simple Liver"},{"base":42800,"bn":"মাঝারি আয়োজন","en":"A moderate celebration","key":"medium","typeBn":"ভারসাম্যের মানুষ","typeEn":"The Balanced One"},{"base":22400,"bn":"জমকালো আয়োজন","en":"A grand celebration","key":"grand","typeBn":"উৎসবের মানুষ","typeEn":"The Festival Soul"},{"base":9600,"bn":"খরচের হিসাব করি না","en":"I don't count the cost","key":"nocount","typeBn":"দিলখোলা","typeEn":"The Big Heart"}],"q":{"bn":"বিয়েতে কত খরচ করা উচিত?","en":"How much should a wedding cost?"}},{"cat":"career","date":"2026-11-21","id":"253","num":253,"options":[{"base":38600,"bn":"সরকারি চাকরি","en":"Government job","key":"govt","typeBn":"নিরাপত্তাপ্রিয়","typeEn":"The Security Seeker"},{"base":27400,"bn":"বেসরকারি চাকরি","en":"Private job","key":"private","typeBn":"ক্যারিয়ার গড়া মানুষ","typeEn":"The Career Builder"},{"base":24800,"bn":"নিজের ব্যবসা","en":"My own business","key":"business","typeBn":"উদ্যোক্তা","typeEn":"The Entrepreneur"},{"base":17200,"bn":"ফ্রিল্যান্সিং","en":"Freelancing","key":"freelance","typeBn":"স্বাধীনচেতা","typeEn":"The Free Spirit"}],"q":{"bn":"চাকরি না ব্যবসা — কোনটা ভালো?","en":"Job or business — which is better?"}},{"cat":"fun","date":"2026-11-20","id":"252","num":252,"options":[{"base":31200,"bn":"ঘুম","en":"Sleep","key":"sleep","typeBn":"ঘুমকাতুরে","typeEn":"The Sleep Lover"},{"base":28900,"bn":"ঘুরতে যাওয়া","en":"Going out","key":"outing","typeBn":"ঘুরে বেড়ানো মানুষ","typeEn":"The Wanderer"},{"base":34700,"bn":"বন্ধুদের সাথে আড্ডা","en":"Hanging out with friends","key":"adda","typeBn":"আড্ডাবাজ","typeEn":"The Adda Lover"},{"base":15400,"bn":"সিনেমা-সিরিজ দেখা","en":"Watching films and series","key":"series","typeBn":"সিরিজপ্রেমী","typeEn":"The Binge Watcher"}],"q":{"bn":"ছুটির দিনে কী করতে ভালো লাগে?","en":"What do you love doing on a day off?"}},{"cat":"sports","date":"2026-11-19","id":"251","num":251,"options":[{"base":19800,"bn":"মাঠে গিয়ে","en":"At the stadium","key":"stadium","typeBn":"মাঠের মানুষ","typeEn":"The Stadium Soul"},{"base":36400,"bn":"টিভিতে","en":"On TV","key":"tv","typeBn":"টিভির সামনে","typeEn":"The Couch Fan"},{"base":41200,"bn":"মোবাইলে","en":"On my phone","key":"phone","typeBn":"মোবাইলের মানুষ","typeEn":"The Phone Fan"},{"base":8600,"bn":"খেলা দেখি না","en":"I don't watch","key":"none","typeBn":"খেলার বাইরে","typeEn":"The Non-Watcher"}],"q":{"bn":"খেলা দেখো কোথায়?","en":"Where do you watch a match?"}},{"cat":"life","date":"2026-11-18","id":"250","num":250,"options":[{"base":42100,"bn":"গ্রামে","en":"In a village","key":"village","typeBn":"গ্রামের মানুষ","typeEn":"The Village Soul"},{"base":33800,"bn":"ঢাকায়","en":"In Dhaka","key":"dhaka","typeBn":"ঢাকার মানুষ","typeEn":"The Dhaka Soul"},{"base":18900,"bn":"চট্টগ্রামে","en":"In Chattogram","key":"chattogram","typeBn":"পাহাড়-সাগরের মানুষ","typeEn":"The Hill-and-Sea Soul"},{"base":17200,"bn":"বিদেশে","en":"Abroad","key":"abroad","typeBn":"স্বপ্নবাজ","typeEn":"The Dreamer"}],"q":{"bn":"থাকতে সবচেয়ে ভালো লাগে কোথায়?","en":"Where would you most love to live?"}},{"cat":"food","date":"2026-11-17","id":"249","num":249,"options":[{"base":38900,"bn":"ভাপা পিঠা","en":"Bhapa pitha","key":"bhapa","typeBn":"ভাপাপ্রেমী","typeEn":"The Bhapa Lover"},{"base":27400,"bn":"চিতই পিঠা","en":"Chitoi pitha","key":"chitoi","typeBn":"চিতইপ্রেমী","typeEn":"The Chitoi Lover"},{"base":23100,"bn":"পাটিসাপটা","en":"Patishapta","key":"patishapta","typeBn":"মিষ্টিপ্রেমী","typeEn":"The Sweet Tooth"},{"base":14600,"bn":"তেলের পিঠা","en":"Teler pitha","key":"teler","typeBn":"ঐতিহ্যপ্রেমী","typeEn":"The Traditionalist"}],"q":{"bn":"শীতের সেরা পিঠা কোনটা?","en":"Which is the best winter pitha?"}},{"cat":"money","date":"2026-11-16","id":"248","num":248,"options":[{"base":28400,"bn":"ধার করি","en":"Borrow from someone","key":"borrow","typeBn":"সাহায্য চাওয়া মানুষ","typeEn":"The Borrower"},{"base":31200,"bn":"সেভিংস ভাঙি","en":"Dip into savings","key":"savings","typeBn":"সঞ্চয়ী","typeEn":"The Saver"},{"base":35600,"bn":"খরচ কমিয়ে চালাই","en":"Cut spending and manage","key":"cut","typeBn":"হিসেবি","typeEn":"The Careful Spender"},{"base":12800,"bn":"পরের মাসের অপেক্ষা করি","en":"Just wait for next month","key":"wait","typeBn":"ধৈর্যশীল","typeEn":"The Patient One"}],"q":{"bn":"মাসের শেষে টাকা ফুরিয়ে গেলে কী করো?","en":"What do you do when the money runs out before the month ends?"}},{"cat":"money","date":"2026-11-08","id":"247","num":247,"options":[{"base":31347,"bn":"ব্যবসা শুরু করব","en":"Start a business","key":"business","typeBn":"ঝুঁকি নেওয়ার মানুষ","typeEn":"The Risk Taker"},{"base":22273,"bn":"বিদেশ যাব","en":"Go abroad","key":"abroad","typeBn":"স্বপ্নবাজ","typeEn":"The Dreamer"},{"base":17323,"bn":"জমিয়ে / বিনিয়োগ করব","en":"Save / invest it","key":"save","typeBn":"পরিকল্পনাকারী","typeEn":"The Strategist"},{"base":11548,"bn":"দামি কিছু কিনব","en":"Buy something expensive","key":"buy","typeBn":"বাস্তববাদী","typeEn":"The Realist"}],"q":{"bn":"হঠাৎ তোমার অ্যাকাউন্টে ৳১০ লাখ এলো। তুমি কী করবে?","en":"৳10 lakh suddenly appears in your account. What would YOU do?"}},{"cat":"food","date":"2026-11-06","id":"246","num":246,"options":[{"base":39500,"bn":"ভাত-ডাল-ভাজি","en":"Rice, dal & bhaji","key":"rice","typeBn":"ভাতের মানুষ","typeEn":"The Rice Person"},{"base":33200,"bn":"পরোটা-ডিম","en":"Paratha & egg","key":"paratha","typeBn":"পরোটাপ্রেমী","typeEn":"The Paratha Lover"},{"base":16900,"bn":"রুটি-সবজি","en":"Roti & vegetables","key":"roti","typeBn":"সহজ জীবন","typeEn":"The Simple Liver"},{"base":11300,"bn":"ব্রেড-জ্যাম","en":"Bread & jam","key":"bread","typeBn":"আধুনিক","typeEn":"The Modern One"}],"q":{"bn":"সকালের নাস্তায় কী খেতে ভালোবাসো?","en":"What do you love for breakfast?"}},{"cat":"life","date":"2026-11-04","id":"245","num":245,"options":[{"base":58900,"bn":"ঈদ","en":"Eid","key":"eid","typeBn":"ঈদের মানুষ","typeEn":"The Eid Person"},{"base":27400,"bn":"পহেলা বৈশাখ","en":"Pohela Boishakh","key":"boishakh","typeBn":"ঐতিহ্যপ্রেমী","typeEn":"The Tradition Lover"},{"base":12300,"bn":"দুর্গাপূজা","en":"Durga Puja","key":"durga","typeBn":"উৎসবের মানুষ","typeEn":"The Festival Soul"},{"base":18700,"bn":"বিজয় দিবস","en":"Victory Day","key":"bijoy","typeBn":"দেশপ্রেমী","typeEn":"The Patriot"}],"q":{"bn":"বাংলাদেশের সবচেয়ে বড় উৎসব কোনটা?","en":"Which is Bangladesh's biggest festival?"}},{"cat":"fun","date":"2026-11-02","id":"244","num":244,"options":[{"base":44100,"bn":"ঘুম","en":"Sleep","key":"sleep","typeBn":"ঘুমকাতুরে","typeEn":"The Sleep Lover"},{"base":36800,"bn":"খিচুড়ি-ইলিশ","en":"Khichuri & ilish","key":"khichuri","typeBn":"খাদ্যরসিক","typeEn":"The Foodie"},{"base":21500,"bn":"বৃষ্টিতে ভেজা","en":"Getting soaked in the rain","key":"rain","typeBn":"বৃষ্টিপ্রেমী","typeEn":"The Rain Lover"},{"base":13400,"bn":"বই পড়া","en":"Reading a book","key":"book","typeBn":"বইপোকা","typeEn":"The Bookworm"}],"q":{"bn":"বৃষ্টির দিনে কী করতে ভালো লাগে?","en":"What do you love doing on a rainy day?"}},{"cat":"sports","date":"2026-10-31","id":"243","num":243,"options":[{"base":52300,"bn":"মাশরাফি","en":"Mashrafe","key":"mashrafe","typeBn":"মাশরাফির ভক্ত","typeEn":"The Mashrafe Fan"},{"base":38700,"bn":"সাকিব","en":"Shakib","key":"shakib","typeBn":"অলরাউন্ডারের ভক্ত","typeEn":"The All-rounder Fan"},{"base":15200,"bn":"তামিম","en":"Tamim","key":"tamim","typeBn":"ওপেনারের ভক্ত","typeEn":"The Opener Fan"},{"base":9800,"bn":"মুশফিক","en":"Mushfiq","key":"mushfiq","typeBn":"লড়াকুর ভক্ত","typeEn":"The Fighter Fan"}],"q":{"bn":"বাংলাদেশের সেরা ক্রিকেট অধিনায়ক কে?","en":"Who is Bangladesh's greatest cricket captain?"}},{"cat":"career","date":"2026-10-29","id":"242","num":242,"options":[{"base":38900,"bn":"আমেরিকা","en":"USA","key":"usa","typeBn":"বড় স্বপ্নবাজ","typeEn":"The Big Dreamer"},{"base":31200,"bn":"কানাডা","en":"Canada","key":"canada","typeBn":"শান্ত জীবনের খোঁজে","typeEn":"The Calm Seeker"},{"base":19800,"bn":"ইংল্যান্ড","en":"England","key":"uk","typeBn":"ঐতিহ্যের ভক্ত","typeEn":"The Classic Soul"},{"base":14600,"bn":"অস্ট্রেলিয়া","en":"Australia","key":"australia","typeBn":"অ্যাডভেঞ্চারপ্রিয়","typeEn":"The Adventurer"}],"q":{"bn":"বিদেশে পড়তে গেলে কোন দেশ?","en":"Which country would you pick to study abroad?"}},{"cat":"money","date":"2026-10-27","id":"241","num":241,"options":[{"base":41200,"bn":"মাকে দেব","en":"Give it to my mother","key":"mom","typeBn":"পরিবারের মানুষ","typeEn":"The Family First"},{"base":18450,"bn":"নিজের জন্য কিছু কিনব","en":"Buy something for myself","key":"self","typeBn":"নিজের যত্ন","typeEn":"The Self Treater"},{"base":33780,"bn":"সেভ করব","en":"Save it","key":"save","typeBn":"পরিকল্পনাকারী","typeEn":"The Strategist"},{"base":12940,"bn":"ঘুরতে যাব","en":"Go on a trip","key":"travel","typeBn":"ঘুরে বেড়ানো মানুষ","typeEn":"The Wanderer"}],"q":{"bn":"প্রথম বেতন পেলে কী করবে?","en":"What would you do with your first salary?"}}]};
+const ARCHIVE_FALLBACK = {"experiments":[{"cat":"money","date":"2026-11-29","id":"261","num":261,"options":[{"base":36400,"bn":"ব্যাংকে","en":"In a bank","key":"bank","typeBn":"নিরাপত্তাপ্রিয়","typeEn":"The Security Seeker"},{"base":31200,"bn":"বিকাশ-নগদে","en":"In bKash / Nagad","key":"mobile","typeBn":"ডিজিটাল মানুষ","typeEn":"The Digital Saver"},{"base":19800,"bn":"বাসায় নগদ","en":"Cash at home","key":"cash","typeBn":"নগদের মানুষ","typeEn":"The Cash Keeper"},{"base":14600,"bn":"জমাই না","en":"I don't save","key":"none","typeBn":"আজকের মানুষ","typeEn":"The Live-for-Today"}],"q":{"bn":"টাকা জমাও কোথায়?","en":"Where do you keep your savings?"},"why":{"bn":"কারণ টাকা জমানো মানে ভবিষ্যতের জন্য একটু আশা জমিয়ে রাখা।","en":"Because saving money means saving a little hope for the future."}},{"cat":"life","date":"2026-11-28","id":"260","num":260,"options":[{"base":44800,"bn":"যানজট","en":"Traffic jams","key":"traffic","typeBn":"জ্যামে আটকা","typeEn":"The Stuck Commuter"},{"base":27600,"bn":"পানি জমে যাওয়া","en":"Waterlogging","key":"water","typeBn":"বর্ষার মানুষ","typeEn":"The Rainy-Day Soul"},{"base":21400,"bn":"বাড়ি ভাড়া","en":"House rent","key":"rent","typeBn":"ভাড়ার চাপে","typeEn":"The Rent Payer"},{"base":18200,"bn":"বায়ুদূষণ","en":"Air pollution","key":"air","typeBn":"স্বাস্থ্যসচেতন","typeEn":"The Health Conscious"}],"q":{"bn":"ঢাকার সবচেয়ে বড় সমস্যা কোনটা?","en":"What is Dhaka's biggest problem?"},"why":{"bn":"কারণ ঢাকার সমস্যা শুধু ঢাকার না — পুরো দেশের প্রতিদিনের কষ্ট।","en":"Because Dhaka's problems aren't just Dhaka's — they're the whole country's daily struggle."}},{"cat":"career","date":"2026-11-27","id":"259","num":259,"options":[{"base":24800,"bn":"পার্টটাইম চাকরি","en":"A part-time job","key":"parttime","typeBn":"আয়ের মানুষ","typeEn":"The Earner"},{"base":41200,"bn":"স্কিল শেখা","en":"Learning a skill","key":"skill","typeBn":"শেখার মানুষ","typeEn":"The Learner"},{"base":19600,"bn":"ব্যবসা শুরু করা","en":"Starting a business","key":"business","typeBn":"উদ্যোক্তা","typeEn":"The Entrepreneur"},{"base":15400,"bn":"শুধু পড়াশোনা","en":"Just studying","key":"study","typeBn":"পড়ুয়া","typeEn":"The Studious One"}],"q":{"bn":"পড়াশোনার পাশাপাশি কী করা উচিত?","en":"What should you do alongside your studies?"},"why":{"bn":"কারণ পড়াশোনার পাশে একটা স্কিলই ভবিষ্যতের দরজা খোলে।","en":"Because one skill beside your studies opens the door to the future."}},{"cat":"sports","date":"2026-11-26","id":"258","num":258,"options":[{"base":22400,"bn":"টেস্ট","en":"Test","key":"test","typeBn":"ধৈর্যের মানুষ","typeEn":"The Patient Fan"},{"base":31200,"bn":"ওয়ানডে","en":"ODI","key":"odi","typeBn":"ভারসাম্যের মানুষ","typeEn":"The Balanced Fan"},{"base":48600,"bn":"টি-টোয়েন্টি","en":"T20","key":"t20","typeBn":"রোমাঞ্চপ্রেমী","typeEn":"The Thrill Seeker"},{"base":12800,"bn":"সবগুলোই","en":"All of them","key":"all","typeBn":"আসল ভক্ত","typeEn":"The True Fan"}],"q":{"bn":"সেরা ক্রিকেট ফরম্যাট কোনটা?","en":"Which is the best cricket format?"},"why":{"bn":"কারণ ক্রিকেট শুধু খেলা না — বাংলাদেশের আবেগ।","en":"Because cricket isn't just a game — it's Bangladesh's emotion."}},{"cat":"fun","date":"2026-11-25","id":"257","num":257,"options":[{"base":27600,"bn":"রবীন্দ্রসঙ্গীত","en":"Rabindra Sangeet","key":"rabindra","typeBn":"রবীন্দ্রপ্রেমী","typeEn":"The Rabindra Lover"},{"base":19800,"bn":"নজরুলগীতি","en":"Nazrul Geeti","key":"nazrul","typeBn":"নজরুলপ্রেমী","typeEn":"The Nazrul Lover"},{"base":35400,"bn":"ব্যান্ডের গান","en":"Band music","key":"band","typeBn":"ব্যান্ডপ্রেমী","typeEn":"The Band Lover"},{"base":23200,"bn":"লোকগান","en":"Folk music","key":"folk","typeBn":"লোকগানের মানুষ","typeEn":"The Folk Soul"}],"q":{"bn":"প্রিয় বাংলা গান কোন ধরনের?","en":"What kind of Bangla music do you love most?"},"why":{"bn":"কারণ গানেই আমাদের ভাষার প্রাণ — সুরে সুরে বাংলাদেশ।","en":"Because in music lives the soul of our language — Bangladesh in every tune."}},{"cat":"life","date":"2026-11-24","id":"256","num":256,"options":[{"base":18400,"bn":"পারবো সহজে","en":"Easily","key":"easy","typeBn":"ডিটক্সের মানুষ","typeEn":"The Detoxer"},{"base":39800,"bn":"কষ্ট হবে","en":"It would be hard","key":"hard","typeBn":"মোবাইলের মানুষ","typeEn":"The Phone Person"},{"base":32600,"bn":"অসম্ভব","en":"Impossible","key":"impossible","typeBn":"মোবাইল ছাড়া অচল","typeEn":"The Always Online"},{"base":14200,"bn":"চেষ্টা করিনি","en":"Never tried","key":"never","typeBn":"কৌতূহলী","typeEn":"The Curious One"}],"q":{"bn":"মোবাইল ছাড়া একদিন থাকতে পারবে?","en":"Could you survive one day without your phone?"},"why":{"bn":"কারণ মোবাইল ছাড়া একদিন থাকা মানে নিজেকে আবার খুঁজে পাওয়া।","en":"Because one day without a phone means finding yourself again."}},{"cat":"food","date":"2026-11-23","id":"255","num":255,"options":[{"base":44200,"bn":"দুধ চা","en":"Milk tea","key":"milk","typeBn":"দুধ চা-প্রেমী","typeEn":"The Milk Tea Lover"},{"base":28600,"bn":"লাল চা","en":"Red tea","key":"red","typeBn":"লাল চা-প্রেমী","typeEn":"The Red Tea Lover"},{"base":21400,"bn":"কফি","en":"Coffee","key":"coffee","typeBn":"কফিপ্রেমী","typeEn":"The Coffee Lover"},{"base":9800,"bn":"গ্রিন টি","en":"Green tea","key":"green","typeBn":"স্বাস্থ্যসচেতন","typeEn":"The Health Conscious"}],"q":{"bn":"চা না কফি?","en":"Tea or coffee?"},"why":{"bn":"কারণ চা-কফি শুধু পানীয় না — আড্ডার আসল সঙ্গী।","en":"Because tea and coffee aren't just drinks — they're the true companions of adda."}},{"cat":"money","date":"2026-11-22","id":"254","num":254,"options":[{"base":31200,"bn":"যত কম হয় তত ভালো","en":"As little as possible","key":"low","typeBn":"সহজ জীবন","typeEn":"The Simple Liver"},{"base":42800,"bn":"মাঝারি আয়োজন","en":"A moderate celebration","key":"medium","typeBn":"ভারসাম্যের মানুষ","typeEn":"The Balanced One"},{"base":22400,"bn":"জমকালো আয়োজন","en":"A grand celebration","key":"grand","typeBn":"উৎসবের মানুষ","typeEn":"The Festival Soul"},{"base":9600,"bn":"খরচের হিসাব করি না","en":"I don't count the cost","key":"nocount","typeBn":"দিলখোলা","typeEn":"The Big Heart"}],"q":{"bn":"বিয়েতে কত খরচ করা উচিত?","en":"How much should a wedding cost?"},"why":{"bn":"কারণ বিয়ে শুধু একদিনের অনুষ্ঠান না — দুটো পরিবারের স্বপ্ন।","en":"Because a wedding isn't just one day's event — it's the dream of two families."}},{"cat":"career","date":"2026-11-21","id":"253","num":253,"options":[{"base":38600,"bn":"সরকারি চাকরি","en":"Government job","key":"govt","typeBn":"নিরাপত্তাপ্রিয়","typeEn":"The Security Seeker"},{"base":27400,"bn":"বেসরকারি চাকরি","en":"Private job","key":"private","typeBn":"ক্যারিয়ার গড়া মানুষ","typeEn":"The Career Builder"},{"base":24800,"bn":"নিজের ব্যবসা","en":"My own business","key":"business","typeBn":"উদ্যোক্তা","typeEn":"The Entrepreneur"},{"base":17200,"bn":"ফ্রিল্যান্সিং","en":"Freelancing","key":"freelance","typeBn":"স্বাধীনচেতা","typeEn":"The Free Spirit"}],"q":{"bn":"চাকরি না ব্যবসা — কোনটা ভালো?","en":"Job or business — which is better?"},"why":{"bn":"কারণ এই একটা সিদ্ধান্তে পুরো জীবনের দিক ঠিক হয়।","en":"Because this one decision sets the direction of a whole life."}},{"cat":"fun","date":"2026-11-20","id":"252","num":252,"options":[{"base":31200,"bn":"ঘুম","en":"Sleep","key":"sleep","typeBn":"ঘুমকাতুরে","typeEn":"The Sleep Lover"},{"base":28900,"bn":"ঘুরতে যাওয়া","en":"Going out","key":"outing","typeBn":"ঘুরে বেড়ানো মানুষ","typeEn":"The Wanderer"},{"base":34700,"bn":"বন্ধুদের সাথে আড্ডা","en":"Hanging out with friends","key":"adda","typeBn":"আড্ডাবাজ","typeEn":"The Adda Lover"},{"base":15400,"bn":"সিনেমা-সিরিজ দেখা","en":"Watching films and series","key":"series","typeBn":"সিরিজপ্রেমী","typeEn":"The Binge Watcher"}],"q":{"bn":"ছুটির দিনে কী করতে ভালো লাগে?","en":"What do you love doing on a day off?"},"why":{"bn":"কারণ ছুটির দিনেই মানুষ নিজের আসল রূপে ফেরে।","en":"Because on a day off, people return to their true selves."}},{"cat":"sports","date":"2026-11-19","id":"251","num":251,"options":[{"base":19800,"bn":"মাঠে গিয়ে","en":"At the stadium","key":"stadium","typeBn":"মাঠের মানুষ","typeEn":"The Stadium Soul"},{"base":36400,"bn":"টিভিতে","en":"On TV","key":"tv","typeBn":"টিভির সামনে","typeEn":"The Couch Fan"},{"base":41200,"bn":"মোবাইলে","en":"On my phone","key":"phone","typeBn":"মোবাইলের মানুষ","typeEn":"The Phone Fan"},{"base":8600,"bn":"খেলা দেখি না","en":"I don't watch","key":"none","typeBn":"খেলার বাইরে","typeEn":"The Non-Watcher"}],"q":{"bn":"খেলা দেখো কোথায়?","en":"Where do you watch a match?"},"why":{"bn":"কারণ খেলা দেখা শুধু খেলা না — বন্ধুদের সাথে একসাথে থাকার একটা অজুহাত।","en":"Because watching a match isn't just a game — it's an excuse to be together."}},{"cat":"life","date":"2026-11-18","id":"250","num":250,"options":[{"base":42100,"bn":"গ্রামে","en":"In a village","key":"village","typeBn":"গ্রামের মানুষ","typeEn":"The Village Soul"},{"base":33800,"bn":"ঢাকায়","en":"In Dhaka","key":"dhaka","typeBn":"ঢাকার মানুষ","typeEn":"The Dhaka Soul"},{"base":18900,"bn":"চট্টগ্রামে","en":"In Chattogram","key":"chattogram","typeBn":"পাহাড়-সাগরের মানুষ","typeEn":"The Hill-and-Sea Soul"},{"base":17200,"bn":"বিদেশে","en":"Abroad","key":"abroad","typeBn":"স্বপ্নবাজ","typeEn":"The Dreamer"}],"q":{"bn":"থাকতে সবচেয়ে ভালো লাগে কোথায়?","en":"Where would you most love to live?"},"why":{"bn":"কারণ বাড়ি শুধু ঠিকানা না — যেখানে মনটা শান্তি পায়।","en":"Because home isn't just an address — it's where the heart finds peace."}},{"cat":"food","date":"2026-11-17","id":"249","num":249,"options":[{"base":38900,"bn":"ভাপা পিঠা","en":"Bhapa pitha","key":"bhapa","typeBn":"ভাপাপ্রেমী","typeEn":"The Bhapa Lover"},{"base":27400,"bn":"চিতই পিঠা","en":"Chitoi pitha","key":"chitoi","typeBn":"চিতইপ্রেমী","typeEn":"The Chitoi Lover"},{"base":23100,"bn":"পাটিসাপটা","en":"Patishapta","key":"patishapta","typeBn":"মিষ্টিপ্রেমী","typeEn":"The Sweet Tooth"},{"base":14600,"bn":"তেলের পিঠা","en":"Teler pitha","key":"teler","typeBn":"ঐতিহ্যপ্রেমী","typeEn":"The Traditionalist"}],"q":{"bn":"শীতের সেরা পিঠা কোনটা?","en":"Which is the best winter pitha?"},"why":{"bn":"কারণ শীত মানেই পিঠা — আর পিঠা মানেই মায়ের হাতের স্বাদ।","en":"Because winter means pitha — and pitha means the taste of mother's hands."}},{"cat":"money","date":"2026-11-16","id":"248","num":248,"options":[{"base":28400,"bn":"ধার করি","en":"Borrow from someone","key":"borrow","typeBn":"সাহায্য চাওয়া মানুষ","typeEn":"The Borrower"},{"base":31200,"bn":"সেভিংস ভাঙি","en":"Dip into savings","key":"savings","typeBn":"সঞ্চয়ী","typeEn":"The Saver"},{"base":35600,"bn":"খরচ কমিয়ে চালাই","en":"Cut spending and manage","key":"cut","typeBn":"হিসেবি","typeEn":"The Careful Spender"},{"base":12800,"bn":"পরের মাসের অপেক্ষা করি","en":"Just wait for next month","key":"wait","typeBn":"ধৈর্যশীল","typeEn":"The Patient One"}],"q":{"bn":"মাসের শেষে টাকা ফুরিয়ে গেলে কী করো?","en":"What do you do when the money runs out before the month ends?"},"why":{"bn":"কারণ মাসের শেষটা বলে দেয় — আমরা আসলে কীভাবে বাঁচি।","en":"Because the end of the month shows how we really live."}},{"cat":"money","date":"2026-11-08","id":"247","num":247,"options":[{"base":31347,"bn":"ব্যবসা শুরু করব","en":"Start a business","key":"business","typeBn":"ঝুঁকি নেওয়ার মানুষ","typeEn":"The Risk Taker"},{"base":22273,"bn":"বিদেশ যাব","en":"Go abroad","key":"abroad","typeBn":"স্বপ্নবাজ","typeEn":"The Dreamer"},{"base":17323,"bn":"জমিয়ে / বিনিয়োগ করব","en":"Save / invest it","key":"save","typeBn":"পরিকল্পনাকারী","typeEn":"The Strategist"},{"base":11548,"bn":"দামি কিছু কিনব","en":"Buy something expensive","key":"buy","typeBn":"বাস্তববাদী","typeEn":"The Realist"}],"q":{"bn":"হঠাৎ তোমার অ্যাকাউন্টে ৳১০ লাখ এলো। তুমি কী করবে?","en":"৳10 lakh suddenly appears in your account. What would YOU do?"},"why":{"bn":"কারণ হঠাৎ টাকা পেলেই মানুষের আসল চাওয়াটা ধরা পড়ে।","en":"Because sudden money reveals what a person truly wants."}},{"cat":"food","date":"2026-11-06","id":"246","num":246,"options":[{"base":39500,"bn":"ভাত-ডাল-ভাজি","en":"Rice, dal & bhaji","key":"rice","typeBn":"ভাতের মানুষ","typeEn":"The Rice Person"},{"base":33200,"bn":"পরোটা-ডিম","en":"Paratha & egg","key":"paratha","typeBn":"পরোটাপ্রেমী","typeEn":"The Paratha Lover"},{"base":16900,"bn":"রুটি-সবজি","en":"Roti & vegetables","key":"roti","typeBn":"সহজ জীবন","typeEn":"The Simple Liver"},{"base":11300,"bn":"ব্রেড-জ্যাম","en":"Bread & jam","key":"bread","typeBn":"আধুনিক","typeEn":"The Modern One"}],"q":{"bn":"সকালের নাস্তায় কী খেতে ভালোবাসো?","en":"What do you love for breakfast?"},"why":{"bn":"কারণ সকালের নাস্তায় পুরো দিনের স্বাদ লেগে থাকে।","en":"Because breakfast carries the taste of the whole day."}},{"cat":"life","date":"2026-11-04","id":"245","num":245,"options":[{"base":58900,"bn":"ঈদ","en":"Eid","key":"eid","typeBn":"ঈদের মানুষ","typeEn":"The Eid Person"},{"base":27400,"bn":"পহেলা বৈশাখ","en":"Pohela Boishakh","key":"boishakh","typeBn":"ঐতিহ্যপ্রেমী","typeEn":"The Tradition Lover"},{"base":12300,"bn":"দুর্গাপূজা","en":"Durga Puja","key":"durga","typeBn":"উৎসবের মানুষ","typeEn":"The Festival Soul"},{"base":18700,"bn":"বিজয় দিবস","en":"Victory Day","key":"bijoy","typeBn":"দেশপ্রেমী","typeEn":"The Patriot"}],"q":{"bn":"বাংলাদেশের সবচেয়ে বড় উৎসব কোনটা?","en":"Which is Bangladesh's biggest festival?"},"why":{"bn":"কারণ উৎসবেই বোঝা যায় — আমরা আসলে কতটা এক।","en":"Because festivals show us how much we are truly one."}},{"cat":"fun","date":"2026-11-02","id":"244","num":244,"options":[{"base":44100,"bn":"ঘুম","en":"Sleep","key":"sleep","typeBn":"ঘুমকাতুরে","typeEn":"The Sleep Lover"},{"base":36800,"bn":"খিচুড়ি-ইলিশ","en":"Khichuri & ilish","key":"khichuri","typeBn":"খাদ্যরসিক","typeEn":"The Foodie"},{"base":21500,"bn":"বৃষ্টিতে ভেজা","en":"Getting soaked in the rain","key":"rain","typeBn":"বৃষ্টিপ্রেমী","typeEn":"The Rain Lover"},{"base":13400,"bn":"বই পড়া","en":"Reading a book","key":"book","typeBn":"বইপোকা","typeEn":"The Bookworm"}],"q":{"bn":"বৃষ্টির দিনে কী করতে ভালো লাগে?","en":"What do you love doing on a rainy day?"},"why":{"bn":"কারণ বৃষ্টির দিনে বাংলাদেশ একটু থেমে যায় — আর মনটা ঘরে ফেরে।","en":"Because on a rainy day Bangladesh slows down — and the heart goes home."}},{"cat":"sports","date":"2026-10-31","id":"243","num":243,"options":[{"base":52300,"bn":"মাশরাফি","en":"Mashrafe","key":"mashrafe","typeBn":"মাশরাফির ভক্ত","typeEn":"The Mashrafe Fan"},{"base":38700,"bn":"সাকিব","en":"Shakib","key":"shakib","typeBn":"অলরাউন্ডারের ভক্ত","typeEn":"The All-rounder Fan"},{"base":15200,"bn":"তামিম","en":"Tamim","key":"tamim","typeBn":"ওপেনারের ভক্ত","typeEn":"The Opener Fan"},{"base":9800,"bn":"মুশফিক","en":"Mushfiq","key":"mushfiq","typeBn":"লড়াকুর ভক্ত","typeEn":"The Fighter Fan"}],"q":{"bn":"বাংলাদেশের সেরা ক্রিকেট অধিনায়ক কে?","en":"Who is Bangladesh's greatest cricket captain?"},"why":{"bn":"কারণ অধিনায়ক শুধু খেলোয়াড় না — পুরো দেশের আশা তার কাঁধে।","en":"Because a captain carries more than a bat — he carries a whole country's hope."}},{"cat":"career","date":"2026-10-29","id":"242","num":242,"options":[{"base":38900,"bn":"আমেরিকা","en":"USA","key":"usa","typeBn":"বড় স্বপ্নবাজ","typeEn":"The Big Dreamer"},{"base":31200,"bn":"কানাডা","en":"Canada","key":"canada","typeBn":"শান্ত জীবনের খোঁজে","typeEn":"The Calm Seeker"},{"base":19800,"bn":"ইংল্যান্ড","en":"England","key":"uk","typeBn":"ঐতিহ্যের ভক্ত","typeEn":"The Classic Soul"},{"base":14600,"bn":"অস্ট্রেলিয়া","en":"Australia","key":"australia","typeBn":"অ্যাডভেঞ্চারপ্রিয়","typeEn":"The Adventurer"}],"q":{"bn":"বিদেশে পড়তে গেলে কোন দেশ?","en":"Which country would you pick to study abroad?"},"why":{"bn":"কারণ পড়তে যাওয়া মানে শুধু ডিগ্রি না — নতুন একটা জীবন বেছে নেওয়া।","en":"Because studying abroad isn't just a degree — it's choosing a whole new life."}},{"cat":"money","date":"2026-10-27","id":"241","num":241,"options":[{"base":41200,"bn":"মাকে দেব","en":"Give it to my mother","key":"mom","typeBn":"পরিবারের মানুষ","typeEn":"The Family First"},{"base":18450,"bn":"নিজের জন্য কিছু কিনব","en":"Buy something for myself","key":"self","typeBn":"নিজের যত্ন","typeEn":"The Self Treater"},{"base":33780,"bn":"সেভ করব","en":"Save it","key":"save","typeBn":"পরিকল্পনাকারী","typeEn":"The Strategist"},{"base":12940,"bn":"ঘুরতে যাব","en":"Go on a trip","key":"travel","typeBn":"ঘুরে বেড়ানো মানুষ","typeEn":"The Wanderer"}],"q":{"bn":"প্রথম বেতন পেলে কী করবে?","en":"What would you do with your first salary?"},"why":{"bn":"কারণ প্রথম বেতন শুধু টাকা না — এটা জীবনের প্রথম বড় সিদ্ধান্ত।","en":"Because a first salary isn't just money — it's the first big decision of your life."}}]};
 let ARCHIVE = null;
 let archCat = "all", archQuery = "", archOpen = {};
 const ARCH_CATS = ["money","food","sports","life","fun","career"];
@@ -1771,7 +1816,7 @@ let cqSort = "new";
 async function loadCommunity(){
   if(!sb){ COMMUNITY = []; return COMMUNITY; }
   try{
-    const {data, error} = await sb.from("community_questions").select("id, question, options, author_hash, created_at").order("created_at", {ascending:false}).limit(100);
+    const {data, error} = await sb.from("community_questions").select("id, question, options, author_hash, created_at, why").order("created_at", {ascending:false}).limit(100);
     if(error) throw error;
     COMMUNITY = data || [];
   }catch(e){ COMMUNITY = []; }
@@ -1824,7 +1869,7 @@ function cqCardHtml(q){
   const c = cqTotals(q);
   const voted = !!v.myOpt;
   const date = fmtArchDate((q.created_at || "").slice(0,10));
-  let inner = `<div class="eyebrow">💬 ${t("community_eyebrow")} · ${date}</div><h3>${escapeHtml(q.question)}</h3>`;
+  let inner = `<div class="eyebrow">💬 ${t("community_eyebrow")} · ${date}</div><h3>${escapeHtml(q.question)}</h3>${q.why ? `<p class="cq-why">💭 ${escapeHtml(q.why)}</p>` : ""}`;
   if(!voted){
     inner += `<div class="cq-voteopts">` + (q.options || []).map(o=>`<button type="button" class="opt cq-opt" data-q="${q.id}" data-opt="${escapeHtml(o.text)}"><span class="dot"></span><span>${escapeHtml(o.text)}</span></button>`).join("") + `</div>`;
   } else {
@@ -1844,6 +1889,8 @@ function renderCommunity(){
   renderTokens();
   const qEl = document.getElementById("cqQuestion");
   if(qEl) qEl.placeholder = t("cq_q_ph");
+  const whyEl = document.getElementById("cqWhy");
+  if(whyEl) whyEl.placeholder = t("cq_why_ph");
   ["cqOpt0","cqOpt1","cqOpt2","cqOpt3"].forEach((id,i)=>{
     const el = document.getElementById(id);
     if(el) el.placeholder = (i<2 ? t("cq_opt_ph") : t("cq_opt_ph_opt")).replace("{n}", fmt(i+1));
@@ -1863,11 +1910,13 @@ async function publishCommunity(){
   if(tokens < 1){ setMsg(t("cq_need_token")); return; }
   const qEl = document.getElementById("cqQuestion");
   const qtext = (qEl.value || "").trim();
+  const whyEl = document.getElementById("cqWhy");
+  const whyText = (whyEl ? whyEl.value : "").trim().slice(0, 120);
   const texts = [0,1,2,3].map(i=>(document.getElementById("cqOpt"+i).value || "").trim());
   if(qtext.length < 3){ setMsg(t("cq_need_q")); return; }
   const filled = texts.filter(Boolean);
   if(filled.length < 2){ setMsg(t("cq_need_opts")); return; }
-  const hay = (qtext + " " + filled.join(" ")).toLowerCase();
+  const hay = (qtext + " " + whyText + " " + filled.join(" ")).toLowerCase();
   if(CQ_BAD.some(w=>hay.includes(w))){ setMsg(t("cq_bad")); return; }
   if(!sb){ setMsg(t("cq_fail")); return; }
   const keys = ["a","b","c","d"];
@@ -1875,10 +1924,10 @@ async function publishCommunity(){
   const btn = document.getElementById("cqPublish");
   if(btn) btn.disabled = true;
   try{
-    const {error} = await sb.from("community_questions").insert({question: qtext, options, author_hash: getVoterId()});
+    const {error} = await sb.from("community_questions").insert({question: qtext, options, author_hash: getVoterId(), why: whyText || null});
     if(error) throw error;
     tokens -= 1; saveTokens();
-    qEl.value = ""; [0,1,2,3].forEach(i=>{ document.getElementById("cqOpt"+i).value = ""; });
+    qEl.value = ""; if(whyEl) whyEl.value = ""; [0,1,2,3].forEach(i=>{ document.getElementById("cqOpt"+i).value = ""; });
     setMsg(t("cq_published"), true);
     await loadCommunity(); await fetchCommunityVotes();
     renderTokens();
