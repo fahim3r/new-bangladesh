@@ -72,7 +72,6 @@ header{display:flex;align-items:center;gap:14px;max-width:880px;margin:0 auto;pa
 .mark i{position:absolute;top:2px;right:3px;width:12px;height:12px;border-radius:50%;background:var(--red);border:2px solid #fff}
 @keyframes logoPop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
 .logo b{font-size:17px;line-height:1.05;display:block}
-.logo span{font-size:11px;color:var(--muted);font-weight:500}
 nav{display:flex;gap:4px;margin:0 auto}
 nav a{padding:8px 14px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:600;font-size:14.5px;transition:.25s}
 nav a:hover{color:var(--forest)}
@@ -80,7 +79,7 @@ nav a.active{background:#fff;color:var(--forest);box-shadow:0 2px 10px rgba(15,6
 .lang{display:flex;background:rgba(15,61,46,.07);border-radius:999px;padding:3px;flex-shrink:0}
 .lang button{border:0;background:transparent;padding:7px 12px;border-radius:999px;font:inherit;font-weight:700;font-size:13.5px;color:var(--muted);cursor:pointer;transition:.25s}
 .lang button.active{background:#fff;color:var(--forest);box-shadow:0 2px 8px rgba(15,61,46,.14)}
-@media(max-width:640px){nav{display:none}.logo span{display:none}}
+@media(max-width:640px){nav{display:none}header{gap:8px;padding:8px 10px}.mark{width:36px;height:36px}.logo b{font-size:16px}.lang button{padding:6px 10px}}
 
 /* ---------- hero ---------- */
 .hero{text-align:center;padding:64px 0 8px;position:relative}
@@ -105,9 +104,15 @@ h1 .red{color:var(--red);display:inline-block;animation:wordPop .8s .35s cubic-b
 .q{font-size:clamp(21px,3.4vw,26px);line-height:1.4;margin:12px 0 20px;font-weight:700;color:var(--ink)}
 .q-why{font-size:15px;line-height:1.55;color:#0f3d2e;background:#eef7f0;border:1px solid #cfe8d6;border-radius:12px;padding:10px 14px;margin:0 0 16px;text-align:left}
 .q-why:empty{display:none}
-.yesterday-line{font-size:14.5px;color:#5b6b60;margin:8px 0 0;font-weight:600;text-align:center}
-.yesterday-line:empty{display:none}
 .how-why{font-size:17px;font-weight:700;color:#0f3d2e;text-align:center;margin:16px 0 0}
+.how-loop{display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--glass);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.85);border-radius:22px;box-shadow:0 14px 34px rgba(15,61,46,.08);padding:20px 22px;margin:26px auto 0;max-width:640px;text-align:left}
+.how-loop h3{margin:0 0 6px;font-size:18px}
+.how-loop p{margin:0;color:var(--muted);font-size:15px;line-height:1.6}
+.how-loop .btn{flex-shrink:0;white-space:nowrap;text-decoration:none}
+.how-stats{display:flex;justify-content:center;gap:28px;flex-wrap:wrap;margin:24px 0 0;text-align:center}
+.how-stats b{display:block;font-size:22px;color:var(--forest)}
+.how-stats span{font-size:13.5px;color:var(--muted);font-weight:700}
+@media(max-width:640px){.how-loop{flex-direction:column;align-items:flex-start}.how-loop .btn{align-self:stretch;text-align:center}}
 .battle-story{font-size:15px;line-height:1.55;color:#0f3d2e;margin:8px 0 0}
 .cq-why-label{display:block;text-align:left;font-size:14px;font-weight:700;color:var(--muted);margin:2px 0 6px}
 .cq-why{font-size:14.5px;line-height:1.55;color:#0f3d2e;background:#fdf6e3;border:1px solid #f0dfae;border-radius:10px;padding:8px 12px;margin:0 0 12px;text-align:left}
@@ -403,12 +408,13 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
 .dev-contact{font-size:14.5px;color:var(--muted);line-height:1.9}
 .dev-contact b{color:var(--ink)}
 .dev-contact a{color:var(--forest)}
-/* auth (header sign-in / user chip) */
-.auth{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.auth-btn{border:1.5px solid var(--line);background:rgba(255,255,255,.9);color:var(--forest);font:inherit;font-weight:700;font-size:13px;padding:8px 14px;border-radius:999px;cursor:pointer;white-space:nowrap}
-.auth-user{display:flex;align-items:center;gap:7px;border:1.5px solid var(--line);background:rgba(255,255,255,.9);font:inherit;font-weight:700;font-size:13px;color:var(--forest);padding:4px 12px 4px 4px;border-radius:999px;cursor:pointer;max-width:150px}
-.auth-user img{width:28px;height:28px;border-radius:50%;object-fit:cover}
-.auth-user span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* auth (header profile icon / avatar + menu) */
+.auth{position:relative;display:flex;align-items:center;flex-shrink:0}
+.auth-profile{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--line);background:rgba(255,255,255,.9);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:19px;padding:0;overflow:hidden;flex-shrink:0}
+.auth-profile img{width:100%;height:100%;object-fit:cover}
+.auth-menu{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 34px rgba(15,61,46,.14);padding:6px;z-index:60;min-width:140px}
+.auth-menu button{display:block;width:100%;text-align:left;border:0;background:transparent;font:inherit;font-weight:700;font-size:14px;color:#991b1b;padding:9px 12px;border-radius:9px;cursor:pointer}
+.auth-menu button:hover{background:#fef2f2}
 /* admin dashboard + feedback */
 .admin-tab{margin-top:18px}
 .admin-tab h3{margin:18px 0 10px;color:var(--forest)}
@@ -474,7 +480,7 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
     <header>
       <a class="logo" href="#">
         <span class="mark"><img src="icon.png" alt="New Bangladesh"></span>
-        <span><b data-i18n="brand">নিউ বাংলাদেশ</b><span>newbangladesh.bond</span></span>
+        <b data-i18n="brand">নিউ বাংলাদেশ</b>
       </a>
       <nav>
         <a href="#" class="active" data-i18n="nav_home">হোম</a>
@@ -489,8 +495,13 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
         <button type="button" id="langEn">EN</button>
       </div>
       <div class="auth" id="authBox">
-        <button type="button" id="authSignIn" class="auth-btn" data-i18n="auth_signin">Google দিয়ে সাইন ইন</button>
-        <button type="button" id="authUser" class="auth-user hidden" title="সাইন আউট"><img id="authAvatar" alt=""><span id="authName"></span></button>
+        <button type="button" id="authProfile" class="auth-profile" aria-label="Google দিয়ে সাইন ইন" title="Google দিয়ে সাইন ইন">
+          <span id="authProfileIcon" aria-hidden="true">👤</span>
+          <img id="authAvatar" class="hidden" alt="">
+        </button>
+        <div id="authMenu" class="auth-menu hidden">
+          <button type="button" id="authSignOut" data-i18n="auth_signout">সাইন আউট</button>
+        </div>
       </div>
     </header>
   </div>
@@ -513,7 +524,6 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
     <div class="eyebrow reveal d1" data-i18n="eyebrow">নিউ বাংলাদেশ · বাংলাদেশ উত্তর দিচ্ছে</div>
     <h1 class="reveal d2"><span data-i18n="hero_l1">বাংলাদেশ</span> <span class="red" data-i18n="hero_l2">কী ভাবছে?</span></h1>
     <p class="sub reveal d3" data-i18n="hero_sub">একটি প্রশ্ন। হাজারো উত্তর। বাংলাদেশের একটাই ছবি — ভোট দাও, দেখো দেশ কী ভাবছে, আর তোমার রেজাল্ট শেয়ার করো।</p>
-    <p class="yesterday-line reveal d3" id="yesterdayLine"></p>
 
     <main class="vote reveal d4" id="vote">
       <div class="card">
@@ -614,15 +624,28 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
   <section id="how">
     <div class="eyebrow" data-i18n="how_eyebrow">কীভাবে কাজ করে</div>
     <h2 data-i18n="how_h">১০ সেকেন্ডে, তিন ধাপে।</h2>
-    <p class="lede" data-i18n="how_sub">কোনো সাইন-আপ নেই, কোনো বিজ্ঞাপন নেই। শুধু তুমি, একটি প্রশ্ন, আর পুরো বাংলাদেশ।</p>
+    <p class="lede" data-i18n="how_sub">ভোট দিতে সাইন-আপ লাগে না, কোনো বিজ্ঞাপন নেই। শুধু তুমি, একটি প্রশ্ন, আর পুরো বাংলাদেশ।</p>
     <p class="how-why" data-i18n="how_why">তোমার একটা ভোটে বাংলাদেশের আসল ছবিটা ফুটে ওঠে।</p>
     <div class="steps">
       <div class="step"><div class="num">১</div><h3 data-i18n="s1_h">ভোট দাও</h3><p data-i18n="s1_p">আজকের প্রশ্নে তোমার উত্তরটা বেছে নাও। এক ট্যাপেই হয়ে যাবে।</p></div>
-      <div class="step"><div class="num">২</div><h3 data-i18n="s2_h">রেজাল্ট দেখো</h3><p data-i18n="s2_p">তোমার সাথে কত শতাংশ বাংলাদেশ একমত, সেটা এখনই দেখে নাও।</p></div>
-      <div class="step"><div class="num">৩</div><h3 data-i18n="s3_h">শেয়ার করো</h3><p data-i18n="s3_p">তোমার নিজের রেজাল্ট কার্ড ডাউনলোড করে বন্ধুকে চ্যালেঞ্জ করো।</p></div>
+      <div class="step"><div class="num">২</div><h3 data-i18n="s2_h">বাংলাদেশকে গেস করো</h3><p data-i18n="s2_p">তোমার কী মনে হয় — কত % বাংলাদেশ তোমার মতোই বাছবে? স্লাইডারটা টেনে গেস করো।</p></div>
+      <div class="step"><div class="num">৩</div><h3 data-i18n="s3_h">রেজাল্ট দেখো ও শেয়ার করো</h3><p data-i18n="s3_p">আসল রেজাল্ট আর তোমার গেসের স্কোর দেখো, তারপর কার্ডটা বন্ধুকে পাঠাও।</p></div>
+    </div>
+    <div class="how-loop">
+      <div class="how-loop-text">
+        <h3 data-i18n="how_loop_h">🔥 প্রতিদিন ফিরে এসো</h3>
+        <p data-i18n="how_loop_p">টানা ৩ দিন আসলেই ১টা Vote Token — সেই টোকেনে তোমার নিজের প্রশ্ন কমিউনিটিতে দাও, আর বাংলাদেশ ভোট দেবে।</p>
+      </div>
+      <a class="btn primary" href="#community" data-i18n="how_loop_btn">কমিউনিটি দেখো</a>
+    </div>
+    <div class="how-stats" id="howStats">
+      <div><b id="howStatQ">—</b><span data-i18n="how_stat_q">টি প্রশ্ন</span></div>
+      <div><b id="howStatB">—</b><span data-i18n="how_stat_b">টি ব্যাটল</span></div>
+      <div><b id="howStatC">—</b><span data-i18n="how_stat_c">টি কমিউনিটি প্রশ্ন</span></div>
+      <div><b id="howStatD">—</b><span data-i18n="how_stat_d">টি জেলা</span></div>
     </div>
     <div class="pills">
-      <span class="pill"><i>✓</i><span data-i18n="pill1">কোনো সাইন-আপ নেই</span></span>
+      <span class="pill"><i>✓</i><span data-i18n="pill1">ভোট দিতে সাইন-আপ লাগে না</span></span>
       <span class="pill"><i>✓</i><span data-i18n="pill2">কোনো বিজ্ঞাপন নেই</span></span>
       <span class="pill"><i>✓</i><span data-i18n="pill3">সম্পূর্ণ ফ্রি</span></span>
     </div>
@@ -845,7 +868,6 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
 
   <footer>
     <b>নিউ বাংলাদেশ</b> · <span data-i18n="foot_tag">বাংলাদেশ উত্তর দিচ্ছে।</span><br>
-    <span data-i18n="foot_live">লাইভ ভোটিং — তোমার ভোট সবার সাথে গোনা হবে।</span><br>
     newbangladesh.bond · <a href="#developer" data-i18n="foot_dev">ডেভেলপার</a> · <a href="/privacy-policy.html" data-i18n="foot_privacy">গোপনীয়তা</a> · <a href="#feedback" data-i18n="foot_feedback">মতামত</a> · <a href="#admin" id="adminLink" class="hidden" data-i18n="foot_admin">অ্যাডমিন</a>
   </footer>
 </div>
@@ -862,20 +884,22 @@ const I18N = {
     eyebrow:"নিউ বাংলাদেশ · বাংলাদেশ উত্তর দিচ্ছে",
     hero_l1:"বাংলাদেশ", hero_l2:"কী ভাবছে?",
     hero_sub:"একটি প্রশ্ন। হাজারো উত্তর। বাংলাদেশের একটাই ছবি — ভোট দাও, দেখো দেশ কী ভাবছে, আর তোমার রেজাল্ট শেয়ার করো।",
-    q_why_label:"কেন এই প্রশ্ন?", yesterday_said:"গতকাল বাংলাদেশ বললো: “{o}” — {p}% মানুষের পছন্দ",
+    q_why_label:"কেন এই প্রশ্ন?",
     exp:"এক্সপেরিমেন্ট #২৪৭", today:"আজ", exp_en:"এক্সপেরিমেন্ট #২৪৭",
     question:"হঠাৎ তোমার অ্যাকাউন্টে ৳১০ লাখ এলো। তুমি কী করবে?",
     download:"কার্ড ডাউনলোড করো (PNG)",
     card_style_label:"কার্ডের স্টাইল", style_flag:"ফ্ল্যাগ হিরো", style_light:"লাইট পোস্টার", style_glass:"গ্লাস নাইট", challenge:"বন্ধুকে চ্যালেঞ্জ করো — লিংক কপি", again:"আবার ভোট দাও",
     stat_votes:"মোট ভোট", stat_opts:"টি উত্তর", stat_q:"টি প্রশ্ন প্রতিদিন", stat_signup:"সাইন-আপ",
     how_eyebrow:"কীভাবে কাজ করে", how_h:"১০ সেকেন্ডে, তিন ধাপে।",
-    how_sub:"কোনো সাইন-আপ নেই, কোনো বিজ্ঞাপন নেই। শুধু তুমি, একটি প্রশ্ন, আর পুরো বাংলাদেশ।",
+    how_sub:"ভোট দিতে সাইন-আপ লাগে না, কোনো বিজ্ঞাপন নেই। শুধু তুমি, একটি প্রশ্ন, আর পুরো বাংলাদেশ।",
+    how_loop_h:"🔥 প্রতিদিন ফিরে এসো", how_loop_p:"টানা ৩ দিন আসলেই ১টা Vote Token — সেই টোকেনে তোমার নিজের প্রশ্ন কমিউনিটিতে দাও, আর বাংলাদেশ ভোট দেবে।", how_loop_btn:"কমিউনিটি দেখো",
+    how_stat_q:"টি প্রশ্ন", how_stat_b:"টি ব্যাটল", how_stat_c:"টি কমিউনিটি প্রশ্ন", how_stat_d:"টি জেলা",
     how_why:"তোমার একটা ভোটে বাংলাদেশের আসল ছবিটা ফুটে ওঠে।",
     s1_h:"ভোট দাও", s1_p:"আজকের প্রশ্নে তোমার উত্তরটা বেছে নাও। এক ট্যাপেই হয়ে যাবে।",
     s2_h:"বাংলাদেশকে গেস করো", s2_p:"তোমার কী মনে হয় — কত % বাংলাদেশ তোমার মতোই বাছবে? স্লাইডারটা টেনে গেস করো।",
     s3_h:"রেজাল্ট দেখো ও শেয়ার করো", s3_p:"আসল রেজাল্ট আর তোমার গেসের স্কোর দেখো, তারপর কার্ডটা বন্ধুকে পাঠাও।",
-    pill1:"কোনো সাইন-আপ নেই", pill2:"কোনো বিজ্ঞাপন নেই", pill3:"সম্পূর্ণ ফ্রি",
-    foot_tag:"বাংলাদেশ উত্তর দিচ্ছে।", foot_live:"লাইভ ভোটিং — তোমার ভোট সবার সাথে গোনা হবে।",
+    pill1:"ভোট দিতে সাইন-আপ লাগে না", pill2:"কোনো বিজ্ঞাপন নেই", pill3:"সম্পূর্ণ ফ্রি",
+    foot_tag:"বাংলাদেশ উত্তর দিচ্ছে।",
     your_choice:"তোমার পছন্দ", spoken:"বাংলাদেশ বলেছে", match:"তোমার উত্তর {p}% বাংলাদেশের সাথে মিলেছে।",
     voted:"জন ভোট দিয়েছে।", live:" লাইভ গোনা।", copied:"চ্যালেঞ্জ লিংক কপি হয়ে গেছে — বন্ধুকে পাঠাও!",
     already:"তুমি ইতিমধ্যে ভোট দিয়েছো — এক ডিভাইস থেকে একবারই ভোট দেওয়া যায়।",
@@ -1002,20 +1026,22 @@ const I18N = {
     eyebrow:"NEW BANGLADESH · BANGLADESH IS ANSWERING",
     hero_l1:"What does", hero_l2:"Bangladesh think?",
     hero_sub:"One question. Thousands of answers. One picture of Bangladesh — vote, see what the country thinks, and share your result.",
-    q_why_label:"Why this question?", yesterday_said:"Yesterday Bangladesh said: “{o}” — chosen by {p}%",
+    q_why_label:"Why this question?",
     exp:"EXPERIMENT #247", today:"TODAY", exp_en:"EXPERIMENT #247",
     question:"৳10 lakh suddenly appears in your account. What would YOU do?",
     download:"Download card (PNG)",
     card_style_label:"Card style", style_flag:"Flag Hero", style_light:"Light Poster", style_glass:"Glass Night", challenge:"Challenge a friend — copy link", again:"Vote again",
     stat_votes:"Total votes", stat_opts:"answers", stat_q:"question a day", stat_signup:"sign-up",
     how_eyebrow:"HOW IT WORKS", how_h:"In 10 seconds, three steps.",
-    how_sub:"No sign-up, no ads. Just you, one question, and the whole of Bangladesh.",
+    how_sub:"No sign-up needed to vote, no ads. Just you, one question, and the whole of Bangladesh.",
+    how_loop_h:"🔥 Come back every day", how_loop_p:"Visit 3 days in a row and earn 1 Vote Token — spend it to publish your own question in the Community, and Bangladesh will vote on it.", how_loop_btn:"See the Community",
+    how_stat_q:"questions", how_stat_b:"battles", how_stat_c:"community questions", how_stat_d:"districts",
     how_why:"One vote from you brings Bangladesh's true picture into focus.",
     s1_h:"Vote", s1_p:"Pick your answer to today's question. One tap and you're done.",
     s2_h:"Guess Bangladesh", s2_p:"What do you think — what % of Bangladesh will pick the same as you? Drag the slider and guess.",
     s3_h:"See the result & share", s3_p:"See the real result and your guess score, then send the card to a friend.",
-    pill1:"No sign-up", pill2:"No ads", pill3:"Totally free",
-    foot_tag:"Bangladesh is answering.", foot_live:"Live voting — your vote counts with everyone.",
+    pill1:"No sign-up needed to vote", pill2:"No ads", pill3:"Totally free",
+    foot_tag:"Bangladesh is answering.",
     your_choice:"Your choice", spoken:"Bangladesh has spoken", match:"Your answer matches {p}% of Bangladesh.",
     voted:"people have voted.", live:" Live count.", copied:"Challenge link copied — send it to your friend!",
     already:"You already voted — one vote per device.",
@@ -1151,17 +1177,24 @@ const ADMIN_EMAILS = ["flexbd.site@gmail.com", "newbangladesh.bond@gmail.com"];
 let currentUser = null;
 function isAdmin(u){ return !!u && ADMIN_EMAILS.indexOf((u.email || "").toLowerCase()) !== -1; }
 function renderAuth(){
-  const inBtn = document.getElementById("authSignIn");
-  const uBtn = document.getElementById("authUser");
+  const prof = document.getElementById("authProfile");
+  const icon = document.getElementById("authProfileIcon");
   const av = document.getElementById("authAvatar");
-  const nm = document.getElementById("authName");
+  const menu = document.getElementById("authMenu");
   const adminLink = document.getElementById("adminLink");
-  if(inBtn) inBtn.classList.toggle("hidden", !!currentUser);
-  if(uBtn) uBtn.classList.toggle("hidden", !currentUser);
-  if(currentUser){
-    if(av) av.src = currentUser.avatar || "icon.png";
-    if(nm) nm.textContent = (currentUser.name || "").split(" ")[0] || currentUser.email;
-    if(uBtn) uBtn.title = t("auth_signout");
+  if(prof){
+    if(currentUser){
+      if(icon) icon.classList.add("hidden");
+      if(av){ av.classList.remove("hidden"); av.src = currentUser.avatar || "icon.png"; }
+      prof.title = currentUser.name || currentUser.email;
+      prof.setAttribute("aria-label", t("auth_signout"));
+    } else {
+      if(icon) icon.classList.remove("hidden");
+      if(av) av.classList.add("hidden");
+      prof.title = t("auth_signin");
+      prof.setAttribute("aria-label", t("auth_signin"));
+      if(menu) menu.classList.add("hidden");
+    }
   }
   if(adminLink) adminLink.classList.toggle("hidden", !isAdmin(currentUser));
   if(typeof renderCommunityAuth === "function") renderCommunityAuth();
@@ -1231,8 +1264,20 @@ async function syncFromCloud(){
   await pushStateToCloud();
   try{ render(); }catch(e){}
 }
-document.getElementById("authSignIn").addEventListener("click", signInWithGoogle);
-document.getElementById("authUser").addEventListener("click", signOut);
+document.getElementById("authProfile").addEventListener("click", ()=>{
+  if(!currentUser){ signInWithGoogle(); return; }
+  const menu = document.getElementById("authMenu");
+  if(menu) menu.classList.toggle("hidden");
+});
+document.getElementById("authSignOut").addEventListener("click", ()=>{
+  const menu = document.getElementById("authMenu");
+  if(menu) menu.classList.add("hidden");
+  signOut();
+});
+document.addEventListener("click", (e)=>{
+  const menu = document.getElementById("authMenu");
+  if(menu && !menu.classList.contains("hidden") && !e.target.closest("#authBox")) menu.classList.add("hidden");
+});
 
 let OPTIONS = [
   {key:"business", bn:"ব্যবসা শুরু করব", en:"Start a business", typeBn:"ঝুঁকি নেওয়ার মানুষ", typeEn:"The Risk Taker", base:31347},
@@ -1351,26 +1396,6 @@ function setupCurrent(){
   try{ const g = localStorage.getItem(guessKey(CURRENT.id)); guess = g === null ? null : parseInt(g, 10); }catch(e){ guess = null; }
 }
 
-// ---------- yesterday's verdict: the story keeps going, one day at a time ----------
-function yesterdayExperiment(){
-  if(!ARCHIVE || !ARCHIVE.length || !CURRENT) return null;
-  const list = [...ARCHIVE].sort((a,b)=>a.date.localeCompare(b.date));
-  const y = dhakaParts(new Date(Date.now() - 86400000)).date;
-  const dated = list.find(e=>e.date === y);
-  if(dated) return dated;
-  const i = list.findIndex(e=>e.id === CURRENT.id);
-  return i > 0 ? list[i-1] : list[list.length-1];
-}
-function renderYesterdayLine(){
-  const el = document.getElementById("yesterdayLine");
-  if(!el) return;
-  const exp = yesterdayExperiment();
-  if(!exp){ el.textContent = ""; return; }
-  const c = archiveCounts(exp);
-  const top = c.opts[0];
-  el.textContent = t("yesterday_said").replace("{o}", lang === "bn" ? top.bn : top.en).replace("{p}", fmt(top.pct));
-}
-
 // ---------- streak + countdown (Dhaka time, on-device only) ----------
 function dhakaParts(d){
   const p = new Intl.DateTimeFormat("en-CA", {timeZone:"Asia/Dhaka", year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit", hourCycle:"h23"}).formatToParts(d || new Date());
@@ -1476,11 +1501,18 @@ function guessTier(diff){
   if(diff<=20) return t("guess_ok");
   return t("guess_miss");
 }
+// ---------- how-it-works live stats ----------
+function renderHowStats(){
+  const q = document.getElementById("howStatQ"); if(q) q.textContent = fmt(ARCHIVE ? ARCHIVE.length : 0);
+  const b = document.getElementById("howStatB"); if(b) b.textContent = fmt(BATTLES ? BATTLES.length : 0);
+  const c = document.getElementById("howStatC"); if(c) c.textContent = fmt(COMMUNITY ? COMMUNITY.length : 0);
+  const d = document.getElementById("howStatD"); if(d) d.textContent = fmt(64);
+}
+
 function render(){
   document.getElementById("questionText").textContent = CURRENT ? (lang === "bn" ? CURRENT.q.bn : CURRENT.q.en) : t("question");
   const qw = document.getElementById("qWhy");
   if(qw){ qw.textContent = (CURRENT && CURRENT.why) ? t("q_why_label") + " " + (lang === "bn" ? CURRENT.why.bn : CURRENT.why.en) : ""; }
-  renderYesterdayLine();
   const expEl = document.getElementById("expLabel");
   if(expEl && CURRENT) expEl.textContent = (lang === "bn" ? "এক্সপেরিমেন্ট #" : "EXPERIMENT #") + fmt(CURRENT.num);
   const expShare = document.getElementById("expLabelShare");
@@ -1488,6 +1520,7 @@ function render(){
   animateStat(document.getElementById("statVotes"), totalVotes());
   document.getElementById("statOpts").textContent = fmt(4);
   document.getElementById("statQNum").textContent = fmt(1);
+  renderHowStats();
   document.getElementById("statSignupNum").textContent = fmt(0);
   if(!picked){ renderOptions(); guessEl.classList.add("hidden"); resultEl.classList.add("hidden"); shareEl.classList.add("hidden"); return; }
   if(awaitingGuess){
