@@ -12,7 +12,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>নিউ বাংলাদেশ (New Bangladesh) — বাংলাদেশ কী ভাবছে?</title>
-<meta name="description" content="নিউ বাংলাদেশ (New Bangladesh) — একটি প্রশ্ন। হাজারো উত্তর। বাংলাদেশের একটাই ছবি। ভোট দাও, দেখো বাংলাদেশ কী ভাবছে, আর তোমার রেজাল্ট শেয়ার করো।">
+<meta name="description" content="নিউ বাংলাদেশ (New Bangladesh) — একটি প্রশ্ন। হাজারো উত্তর।">
 <meta property="og:title" content="নিউ বাংলাদেশ (New Bangladesh) — বাংলাদেশ কী ভাবছে?">
 <meta property="og:description" content="নিউ বাংলাদেশ (New Bangladesh) — প্রতিদিন একটা প্রশ্ন, ভোট দাও, বাংলাদেশ কী ভাবছে দেখো।">
 <meta property="og:type" content="website">
@@ -28,7 +28,7 @@
 <meta name="twitter:image" content="https://newbangladesh.bond/og-image.png">
 <link rel="canonical" href="https://newbangladesh.bond/">
 <meta name="theme-color" content="#0f3d2e">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"নিউ বাংলাদেশ","alternateName":"New Bangladesh","url":"https://newbangladesh.bond/","inLanguage":"bn","description":"নিউ বাংলাদেশ (New Bangladesh) — একটি প্রশ্ন। হাজারো উত্তর। বাংলাদেশের একটাই ছবি। ভোট দাও, দেখো বাংলাদেশ কী ভাবছে, আর তোমার রেজাল্ট শেয়ার করো।","publisher":{"@type":"Organization","name":"New Bangladesh","url":"https://newbangladesh.bond/","logo":{"@type":"ImageObject","url":"https://newbangladesh.bond/logo.png"}}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"নিউ বাংলাদেশ","alternateName":"New Bangladesh","url":"https://newbangladesh.bond/","inLanguage":"bn","description":"নিউ বাংলাদেশ (New Bangladesh) — একটি প্রশ্ন। হাজারো উত্তর।","publisher":{"@type":"Organization","name":"New Bangladesh","url":"https://newbangladesh.bond/","logo":{"@type":"ImageObject","url":"https://newbangladesh.bond/logo.png"}}}</script>
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" href="/icon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -131,8 +131,8 @@ h1 .red{color:var(--red);display:inline-block;animation:wordPop .8s .35s cubic-b
   font:inherit;font-size:16px;font-weight:600;color:var(--ink);cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s,background .2s}
 .opt:hover{border-color:var(--emerald);transform:translateY(-2px);box-shadow:0 10px 22px rgba(22,163,74,.16);background:#fff}
 .opt:active{transform:translateY(0) scale(.98)}
-.opt .dot{width:12px;height:12px;border-radius:50%;background:var(--mint2);border:2px solid var(--emerald);flex-shrink:0;transition:.2s}
-.opt:hover .dot{background:var(--emerald)}
+.opt .dot,.arch-vote .dot{width:12px;height:12px;border-radius:50%;background:var(--mint2);border:2px solid var(--emerald);flex-shrink:0;transition:.2s}
+.opt:hover .dot,.arch-vote:hover .dot{background:var(--emerald)}
 .bar{height:10px;background:rgba(15,61,46,.08);border-radius:99px;overflow:hidden;margin:8px 0 4px}
 .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--emerald),#4ade80);width:0;border-radius:99px;transition:width .9s cubic-bezier(.2,.7,.3,1)}
 .bar.mine i{background:linear-gradient(90deg,#f43f5e,var(--red))}
@@ -271,8 +271,9 @@ section .lede{color:var(--muted);font-size:16.5px;line-height:1.7;max-width:560p
 .step:nth-child(2) .num{background:linear-gradient(135deg,#f43f5e,var(--red))}
 .step h3{margin:0 0 8px;font-size:18px;color:var(--forest)}
 .step p{margin:0;color:var(--muted);line-height:1.65;font-size:15px}
-.pills{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:30px}
-.pill{background:#fff;border:1px solid var(--line);border-radius:999px;padding:10px 18px;font-weight:700;font-size:14.5px;color:var(--forest);box-shadow:0 6px 16px rgba(15,61,46,.06)}
+.pills{display:flex;justify-content:center;flex-wrap:nowrap;gap:10px;margin-top:30px}
+.pill{background:#fff;border:1px solid var(--line);border-radius:999px;padding:9px 14px;font-weight:700;font-size:13px;color:var(--forest);box-shadow:0 6px 16px rgba(15,61,46,.06);white-space:nowrap}
+@media(max-width:480px){.pill{font-size:12px;padding:8px 10px}.pills{gap:6px}}
 .pill i{font-style:normal;margin-right:6px}
 
 /* ---------- footer ---------- */
@@ -466,9 +467,9 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
 .arch-top b{color:var(--forest)}
 .arch-rows{margin-top:16px}
 .arch-row{display:flex;justify-content:space-between;gap:10px;font-size:15.5px;font-weight:700;color:var(--ink)}
-.arch-vote{display:flex;justify-content:space-between;gap:10px;width:100%;border:0;background:transparent;font:inherit;font-size:15.5px;font-weight:700;color:var(--ink);cursor:pointer;padding:2px 0;text-align:left}
-.arch-vote:hover{color:var(--forest)}
-.arch-vote b{white-space:nowrap}
+.arch-vote{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:13px 16px;margin:0 0 8px;border:1.5px solid var(--line);border-radius:14px;background:rgba(255,255,255,.9);font:inherit;font-size:15.5px;font-weight:700;color:var(--ink);cursor:pointer;transition:border-color .2s,background .2s}
+.arch-vote:hover{border-color:var(--emerald);background:#fff}
+.arch-vote b{white-space:nowrap;margin-left:auto}
 .arch-count-line{font-size:13.5px;color:var(--muted);margin:-2px 0 10px}
 .arch-link{color:var(--emerald);font-weight:800;text-decoration:none}
 .arch-link:hover{text-decoration:underline}
@@ -527,7 +528,7 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
 
     <div class="eyebrow reveal d1" data-i18n="eyebrow">নিউ বাংলাদেশ · বাংলাদেশ উত্তর দিচ্ছে</div>
     <h1 class="reveal d2"><span data-i18n="hero_l1">বাংলাদেশ</span> <span class="red" data-i18n="hero_l2">কী ভাবছে?</span></h1>
-    <p class="sub reveal d3" data-i18n="hero_sub">একটি প্রশ্ন। হাজারো উত্তর। বাংলাদেশের একটাই ছবি — ভোট দাও, দেখো দেশ কী ভাবছে, আর তোমার রেজাল্ট শেয়ার করো।</p>
+    <p class="sub reveal d3" data-i18n="hero_sub">একটি প্রশ্ন। হাজারো উত্তর।</p>
 
     <main class="vote reveal d4" id="vote">
       <div class="card">
@@ -648,8 +649,8 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
       <div><b id="howStatD">—</b><span data-i18n="how_stat_d">টি জেলা</span></div>
     </div>
     <div class="pills">
-      <span class="pill"><i>✓</i><span data-i18n="pill1">ভোট দিতে সাইন-আপ লাগে না</span></span>
-      <span class="pill"><i>✓</i><span data-i18n="pill2">কোনো বিজ্ঞাপন নেই</span></span>
+      <span class="pill"><i>✓</i><span data-i18n="pill1">সাইন-আপ লাগে না</span></span>
+      <span class="pill"><i>✓</i><span data-i18n="pill2">বিজ্ঞাপন নেই</span></span>
       <span class="pill"><i>✓</i><span data-i18n="pill3">সম্পূর্ণ ফ্রি</span></span>
     </div>
   </section>
@@ -670,8 +671,6 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
     <section>
       <div class="eyebrow" data-i18n="roots_eyebrow">শিকড়ের গল্প</div>
       <h2 data-i18n="roots_h">বাংলাদেশের কোথায় কোথায় তুমি মিশে আছো?</h2>
-      <p class="lede" data-i18n="roots_sub">১ মিনিটে বানাও তোমার শিকড়ের গল্প — কয়েকটি সহজ প্রশ্নের উত্তর দাও, আর তোমার নিজের পোস্টার তৈরি হয়ে যাবে।</p>
-      <p class="map-note" data-i18n="roots_privacy">🔒 তোমার উত্তর শুধু তোমার ডিভাইসেই থাকবে — সার্ভারে কিছু যায় না, কোনো সাইন-আপ নেই।</p>
       <div id="rootsWizard" class="roots-card">
         <div class="roots-dots" id="rootsDots"></div>
         <div id="rootsStep"></div>
@@ -790,7 +789,7 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
     <section>
       <div class="eyebrow" data-i18n="dev_eyebrow">ডেভেলপার</div>
       <h2 data-i18n="dev_h">কারা বানিয়েছে নিউ বাংলাদেশ?</h2>
-      <p class="lede" data-i18n="dev_sub">এই প্ল্যাটফর্মের পেছনে আছে FlexBD — আর তার মানুষটি, এমডি ফাহিম।</p>
+      <p class="lede" data-i18n="dev_sub">এই প্ল্যাটফর্মের পেছনে আছে FlexBD।</p>
       <div class="dev-grid">
         <div class="dev-card">
           <h3>FlexBD</h3>
@@ -804,7 +803,6 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
           <div class="dev-chips"><span class="dev-chip">Web Design</span><span class="dev-chip">Web Development</span><span class="dev-chip">SEO</span><span class="dev-chip">Branding</span><span class="dev-chip">Digital Marketing</span></div>
           <div class="dev-links">
             <a href="https://flexbd.site" target="_blank" rel="noopener" data-i18n="dev_visit_flexbd">flexbd.site দেখো →</a>
-            <a class="ghost" href="tel:09696534222">📞 09696-534222</a>
           </div>
         </div>
         <div class="dev-card">
@@ -814,14 +812,11 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
           <p data-i18n="dev_fahim_about">বাংলাদেশের একজন ওয়েব ডিজাইনার ও ডেভেলপার — ব্র্যান্ড পরিচয় থেকে ফুল-স্ট্যাক ডেভেলপমেন্ট পর্যন্ত, ব্যবসার আইডিয়াকে অর্থবহ অনলাইন প্রোডাক্টে রূপ দেন।</p>
           <p class="dev-contact">
             <b>Email:</b> <a href="mailto:mfahimxyz@gmail.com">mfahimxyz@gmail.com</a><br>
-            <b data-i18n="dev_phone">ফোন:</b> <a href="tel:+8801619604222">+880 1619 604222</a><br>
             <b data-i18n="dev_location">ঠিকানা:</b> <span data-i18n="dev_location_v">তিতাস, কুমিল্লা, বাংলাদেশ</span>
           </p>
           <div class="dev-links">
             <a href="https://fahim.bond" target="_blank" rel="noopener">fahim.bond →</a>
             <a class="ghost" href="https://github.com/fahim3r" target="_blank" rel="noopener">GitHub</a>
-            <a class="ghost" href="https://www.instagram.com/fahim3r" target="_blank" rel="noopener">Instagram</a>
-            <a class="ghost" href="https://www.linkedin.com/in/fahim3t" target="_blank" rel="noopener">LinkedIn</a>
             <a class="ghost" href="https://www.facebook.com/fahim0r" target="_blank" rel="noopener">Facebook</a>
           </div>
         </div>
@@ -886,7 +881,7 @@ const I18N = {
     nav_home:"হোম", nav_vote:"আজকের প্রশ্ন", nav_how:"কীভাবে কাজ করে",
     eyebrow:"নিউ বাংলাদেশ · বাংলাদেশ উত্তর দিচ্ছে",
     hero_l1:"বাংলাদেশ", hero_l2:"কী ভাবছে?",
-    hero_sub:"একটি প্রশ্ন। হাজারো উত্তর। বাংলাদেশের একটাই ছবি — ভোট দাও, দেখো দেশ কী ভাবছে, আর তোমার রেজাল্ট শেয়ার করো।",
+    hero_sub:"একটি প্রশ্ন। হাজারো উত্তর।",
     q_why_label:"কেন এই প্রশ্ন?",
     exp:"এক্সপেরিমেন্ট #২৪৭", today:"আজ", exp_en:"এক্সপেরিমেন্ট #২৪৭",
     question:"হঠাৎ তোমার অ্যাকাউন্টে ৳১০ লাখ এলো। তুমি কী করবে?",
@@ -901,7 +896,7 @@ const I18N = {
     s1_h:"ভোট দাও", s1_p:"আজকের প্রশ্নে তোমার উত্তরটা বেছে নাও। এক ট্যাপেই হয়ে যাবে।",
     s2_h:"বাংলাদেশকে গেস করো", s2_p:"তোমার কী মনে হয় — কত % বাংলাদেশ তোমার মতোই বাছবে? স্লাইডারটা টেনে গেস করো।",
     s3_h:"রেজাল্ট দেখো ও শেয়ার করো", s3_p:"আসল রেজাল্ট আর তোমার গেসের স্কোর দেখো, তারপর কার্ডটা বন্ধুকে পাঠাও।",
-    pill1:"ভোট দিতে সাইন-আপ লাগে না", pill2:"কোনো বিজ্ঞাপন নেই", pill3:"সম্পূর্ণ ফ্রি",
+    pill1:"সাইন-আপ লাগে না", pill2:"বিজ্ঞাপন নেই", pill3:"সম্পূর্ণ ফ্রি",
     foot_tag:"বাংলাদেশ উত্তর দিচ্ছে।",
     your_choice:"তোমার পছন্দ", spoken:"বাংলাদেশ বলেছে", match:"তোমার উত্তর {p}% বাংলাদেশের সাথে মিলেছে।",
     voted:"জন ভোট দিয়েছে।", live:" লাইভ গোনা।", copied:"চ্যালেঞ্জ লিংক কপি হয়ে গেছে — বন্ধুকে পাঠাও!",
@@ -915,8 +910,6 @@ const I18N = {
     guess_score:"গেস স্কোর",
     nav_roots:"শিকড়",
     roots_eyebrow:"শিকড়ের গল্প", roots_h:"বাংলাদেশের কোথায় কোথায় তুমি মিশে আছো?",
-    roots_sub:"১ মিনিটে বানাও তোমার শিকড়ের গল্প — কয়েকটি সহজ প্রশ্নের উত্তর দাও, আর তোমার নিজের পোস্টার তৈরি হয়ে যাবে।",
-    roots_privacy:"🔒 তোমার উত্তর শুধু তোমার ডিভাইসেই থাকবে — সার্ভারে কিছু যায় না, কোনো সাইন-আপ নেই।",
     roots_bond:"জায়গার সঙ্গে মানুষের বন্ধন",
     roots_q_name:"তোমার নাম কী?", roots_q_name_sub:"না লিখলেও চলবে — তখন হবে “আমার বাংলাদেশ”।",
     roots_q_birth:"জন্ম কোথায়?", roots_q_grew:"বড় হয়েছ কোথায়?",
@@ -997,14 +990,14 @@ const I18N = {
     ref_dismiss:"বন্ধ করো",
     shared:"শেয়ার হয়ে গেছে — বন্ধুকে পাঠানো হয়েছে!",
     dev_eyebrow:"ডেভেলপার", dev_h:"কারা বানিয়েছে নিউ বাংলাদেশ?",
-    dev_sub:"এই প্ল্যাটফর্মের পেছনে আছে FlexBD — আর তার মানুষটি, এমডি ফাহিম।",
+    dev_sub:"এই প্ল্যাটফর্মের পেছনে আছে FlexBD।",
     dev_flexbd_tag:"এন্ড-টু-এন্ড ডিজিটাল সলিউশন · FA Group-এর একটি ব্র্যান্ড",
     dev_flexbd_about:"FlexBD ভবিষ্যতের জন্য তৈরি একটি ডিজিটাল এজেন্সি — ওয়েব ডিজাইন আর ডেভেলপমেন্ট থেকে ডেটা-চালিত মার্কেটিং পর্যন্ত, বাংলাদেশি ব্যবসাকে বিশ্বমঞ্চে প্রতিদ্বন্দ্বিতা করতে সাহায্য করে।",
     dev_stat_projects:"প্রজেক্ট সম্পন্ন", dev_stat_rating:"গড় রেটিং", dev_stat_reviews:"ক্লায়েন্ট রিভিউ",
     dev_visit_flexbd:"flexbd.site দেখো →",
     dev_fahim_tag:"ওয়েব ডিজাইনার ও ডেভেলপার · বাংলাদেশ",
     dev_fahim_about:"বাংলাদেশের একজন ওয়েব ডিজাইনার ও ডেভেলপার — ব্র্যান্ড পরিচয় থেকে ফুল-স্ট্যাক ডেভেলপমেন্ট পর্যন্ত, ব্যবসার আইডিয়াকে অর্থবহ অনলাইন প্রোডাক্টে রূপ দেন।",
-    dev_phone:"ফোন:", dev_location:"ঠিকানা:", dev_location_v:"তিতাস, কুমিল্লা, বাংলাদেশ",
+    dev_location:"ঠিকানা:", dev_location_v:"তিতাস, কুমিল্লা, বাংলাদেশ",
     foot_dev:"ডেভেলপার", foot_privacy:"গোপনীয়তা", foot_admin:"অ্যাডমিন",
     auth_signin:"Google দিয়ে সাইন ইন", auth_signout:"সাইন আউট",
     foot_feedback:"মতামত",
@@ -1027,7 +1020,7 @@ const I18N = {
     nav_home:"Home", nav_vote:"Today's question", nav_how:"How it works",
     eyebrow:"NEW BANGLADESH · BANGLADESH IS ANSWERING",
     hero_l1:"What does", hero_l2:"Bangladesh think?",
-    hero_sub:"One question. Thousands of answers. One picture of Bangladesh — vote, see what the country thinks, and share your result.",
+    hero_sub:"One question. Thousands of answers.",
     q_why_label:"Why this question?",
     exp:"EXPERIMENT #247", today:"TODAY", exp_en:"EXPERIMENT #247",
     question:"৳10 lakh suddenly appears in your account. What would YOU do?",
@@ -1042,7 +1035,7 @@ const I18N = {
     s1_h:"Vote", s1_p:"Pick your answer to today's question. One tap and you're done.",
     s2_h:"Guess Bangladesh", s2_p:"What do you think — what % of Bangladesh will pick the same as you? Drag the slider and guess.",
     s3_h:"See the result & share", s3_p:"See the real result and your guess score, then send the card to a friend.",
-    pill1:"No sign-up needed to vote", pill2:"No ads", pill3:"Totally free",
+    pill1:"No sign-up", pill2:"No ads", pill3:"Totally free",
     foot_tag:"Bangladesh is answering.",
     your_choice:"Your choice", spoken:"Bangladesh has spoken", match:"Your answer matches {p}% of Bangladesh.",
     voted:"people have voted.", live:" Live count.", copied:"Challenge link copied — send it to your friend!",
@@ -1056,8 +1049,6 @@ const I18N = {
     guess_score:"Guess score",
     nav_roots:"Roots",
     roots_eyebrow:"ROOTS STORY", roots_h:"Where in Bangladesh are you rooted?",
-    roots_sub:"Make your roots story in 1 minute — answer a few simple questions and your personal poster is ready.",
-    roots_privacy:"🔒 Your answers stay only on your device — nothing goes to a server, no sign-up.",
     roots_bond:"The bond between people and places",
     roots_q_name:"What is your name?", roots_q_name_sub:"Optional — without it, the poster says “My Bangladesh”.",
     roots_q_birth:"Where were you born?", roots_q_grew:"Where did you grow up?",
@@ -1137,14 +1128,14 @@ const I18N = {
     ref_dismiss:"Dismiss",
     shared:"Shared — sent to your friend!",
     dev_eyebrow:"DEVELOPER", dev_h:"Who built New Bangladesh?",
-    dev_sub:"Behind this platform is FlexBD — and the person behind it, MD Fahim.",
+    dev_sub:"Behind this platform is FlexBD.",
     dev_flexbd_tag:"End-to-end digital solutions · A brand of FA Group",
     dev_flexbd_about:"FlexBD is a forward-thinking digital agency — from web design and development to data-driven marketing, helping Bangladeshi businesses compete on a global stage.",
     dev_stat_projects:"Projects delivered", dev_stat_rating:"Average rating", dev_stat_reviews:"Client reviews",
     dev_visit_flexbd:"Visit flexbd.site →",
     dev_fahim_tag:"Web Designer & Developer · Bangladesh",
     dev_fahim_about:"A web designer & developer from Bangladesh — from brand identity to full-stack development, turning business ideas into impactful online products.",
-    dev_phone:"Phone:", dev_location:"Location:", dev_location_v:"Titas, Cumilla, Bangladesh",
+    dev_location:"Location:", dev_location_v:"Titas, Cumilla, Bangladesh",
     foot_dev:"Developer", foot_privacy:"Privacy", foot_admin:"Admin",
     auth_signin:"Sign in with Google", auth_signout:"Sign out",
     foot_feedback:"Feedback",
@@ -2007,7 +1998,7 @@ function archiveCardHtml(exp){
       inner += `<div class="vs-meta">${t("archive_voted")}</div>`;
     } else {
       const byKey = {}; c.opts.forEach(o=>{ byKey[o.key] = o; });
-      inner += `<div class="arch-rows">` + exp.options.map((o,i)=>{ const co = byKey[o.key] || {pct:0, count:0}; return `<button type="button" class="arch-vote" data-exp="${exp.id}" data-key="${o.key}"><span>${lang === "bn" ? o.bn : o.en}</span><b>${fmt(co.pct)}%</b></button><div class="bar"><i style="width:${co.pct}%;background:${ARCH_COLORS[i % 4]}"></i></div><div class="arch-count-line">${fmt(co.count)} ${t("archive_votes")}</div>`; }).join("") + `</div>`;
+      inner += `<div class="arch-rows">` + exp.options.map((o,i)=>{ const co = byKey[o.key] || {pct:0, count:0}; return `<button type="button" class="arch-vote" data-exp="${exp.id}" data-key="${o.key}"><span class="dot"></span><span>${lang === "bn" ? o.bn : o.en}</span><b>${fmt(co.pct)}%</b></button><div class="bar"><i style="width:${co.pct}%;background:${ARCH_COLORS[i % 4]}"></i></div><div class="arch-count-line">${fmt(co.count)} ${t("archive_votes")}</div>`; }).join("") + `</div>`;
       inner += `<div class="vs-meta">${t("archive_vote_hint")}</div>`;
     }
   }
