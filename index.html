@@ -62,7 +62,8 @@ body{margin:0;font-family:"Noto Sans Bengali","Hind Siliguri",system-ui,-apple-s
 .page{max-width:1120px;margin:0 auto;padding:0 20px 40px}
 
 /* ---------- floating pill header (Unseen-style) ---------- */
-.headerwrap{position:sticky;top:14px;z-index:50;padding-top:14px}
+.headerwrap{position:sticky;top:14px;z-index:50;padding-top:14px;transition:transform .35s ease}
+.headerwrap.hide{transform:translateY(-120%)}
 header{display:flex;align-items:center;gap:14px;max-width:880px;margin:0 auto;padding:10px 12px 10px 14px;border-radius:999px;
   background:var(--glass);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
   border:1px solid rgba(255,255,255,.8);box-shadow:0 12px 32px rgba(15,61,46,.10)}
@@ -1278,6 +1279,18 @@ document.addEventListener("click", (e)=>{
   const menu = document.getElementById("authMenu");
   if(menu && !menu.classList.contains("hidden") && !e.target.closest("#authBox")) menu.classList.add("hidden");
 });
+
+// ---------- header: hide on scroll down, show on scroll up ----------
+let lastScrollY = window.scrollY || 0;
+const headerWrap = document.querySelector(".headerwrap");
+window.addEventListener("scroll", ()=>{
+  const y = window.scrollY || 0;
+  if(headerWrap){
+    if(y > 90 && y > lastScrollY) headerWrap.classList.add("hide");
+    else if(y < lastScrollY) headerWrap.classList.remove("hide");
+  }
+  lastScrollY = y;
+}, {passive:true});
 
 let OPTIONS = [
   {key:"business", bn:"ব্যবসা শুরু করব", en:"Start a business", typeBn:"ঝুঁকি নেওয়ার মানুষ", typeEn:"The Risk Taker", base:31347},
