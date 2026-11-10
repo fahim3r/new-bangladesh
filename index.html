@@ -6,9 +6,11 @@
 <title>নিউ বাংলাদেশ — বাংলাদেশ কী ভাবছে?</title>
 <meta name="description" content="একটি প্রশ্ন। হাজারো উত্তর। বাংলাদেশের একটাই ছবি। ভোট দাও, দেখো বাংলাদেশ কী ভাবছে, আর তোমার রেজাল্ট শেয়ার করো।">
 <meta property="og:title" content="নিউ বাংলাদেশ — বাংলাদেশ কী ভাবছে?">
-<meta property="og:description" content="হঠাৎ তোমার অ্যাকাউন্টে ৳১০ লাখ এলো। তুমি কী করবে?">
+<meta property="og:description" content="প্রতিদিন একটা প্রশ্ন — ভোট দাও, বাংলাদেশ কী ভাবছে দেখো, আর তোমার রেজাল্ট শেয়ার করো।">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://newbangladesh.bond/">
+<meta property="og:site_name" content="নিউ বাংলাদেশ">
+<meta property="og:locale" content="bn_BD">
 <meta property="og:image" content="https://newbangladesh.bond/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -16,6 +18,9 @@
 <meta name="twitter:title" content="নিউ বাংলাদেশ — বাংলাদেশ কী ভাবছে?">
 <meta name="twitter:description" content="একটি প্রশ্ন। হাজারো উত্তর। ভোট দাও, বাংলাদেশকে গেস করো, আর তোমার রেজাল্ট শেয়ার করো।">
 <meta name="twitter:image" content="https://newbangladesh.bond/og-image.png">
+<link rel="canonical" href="https://newbangladesh.bond/">
+<meta name="theme-color" content="#0f3d2e">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"নিউ বাংলাদেশ","alternateName":"New Bangladesh","url":"https://newbangladesh.bond/","inLanguage":"bn","description":"একটি প্রশ্ন। হাজারো উত্তর। বাংলাদেশের একটাই ছবি। ভোট দাও, দেখো বাংলাদেশ কী ভাবছে, আর তোমার রেজাল্ট শেয়ার করো।","publisher":{"@type":"Organization","name":"New Bangladesh","url":"https://newbangladesh.bond/","logo":{"@type":"ImageObject","url":"https://newbangladesh.bond/logo.png"}}}</script>
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" href="/icon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -3296,6 +3301,8 @@ function showView(v){
   document.getElementById("navArchiveLink").classList.toggle("active", v === "archive");
   document.getElementById("navCommunityLink").classList.toggle("active", v === "community");
   if(v !== "roots" && abroadTimer){ clearInterval(abroadTimer); abroadTimer = null; }
+  // analytics: when the GA snippet lands, every section switch counts as a page view
+  if(typeof gtag === "function"){ try{ gtag("event", "page_view", {page_title: "New Bangladesh — " + v, page_location: location.origin + location.pathname + "#" + v}); }catch(e){} }
   if(v === "community"){
     loadCommunity().then(()=>{ renderCommunity(); fetchCommunityVotes(); });
     window.scrollTo({top:0});
