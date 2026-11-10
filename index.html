@@ -111,6 +111,10 @@ h1 .red{color:var(--red);display:inline-block;animation:wordPop .8s .35s cubic-b
 .battle-story{font-size:15px;line-height:1.55;color:#0f3d2e;margin:8px 0 0}
 .cq-why-label{display:block;text-align:left;font-size:14px;font-weight:700;color:var(--muted);margin:2px 0 6px}
 .cq-why{font-size:14.5px;line-height:1.55;color:#0f3d2e;background:#fdf6e3;border:1px solid #f0dfae;border-radius:10px;padding:8px 12px;margin:0 0 12px;text-align:left}
+.cq-meta{color:var(--muted);font-size:13px;font-weight:700;margin:2px 0 8px;text-align:left}
+.cq-pending{color:#b45309}
+.cq-show{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--forest);margin:6px 0 0;cursor:pointer}
+.cq-show-hint{color:var(--muted);font-size:13px;margin:4px 0 0}
 .opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:15px 18px;margin:0 0 10px;
   border:1.5px solid var(--line);border-radius:999px;background:rgba(255,255,255,.85);
   font:inherit;font-size:16px;font-weight:600;color:var(--ink);cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s,background .2s}
@@ -399,6 +403,28 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
 .dev-contact{font-size:14.5px;color:var(--muted);line-height:1.9}
 .dev-contact b{color:var(--ink)}
 .dev-contact a{color:var(--forest)}
+/* auth (header sign-in / user chip) */
+.auth{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.auth-btn{border:1.5px solid var(--line);background:rgba(255,255,255,.9);color:var(--forest);font:inherit;font-weight:700;font-size:13px;padding:8px 14px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.auth-user{display:flex;align-items:center;gap:7px;border:1.5px solid var(--line);background:rgba(255,255,255,.9);font:inherit;font-weight:700;font-size:13px;color:var(--forest);padding:4px 12px 4px 4px;border-radius:999px;cursor:pointer;max-width:150px}
+.auth-user img{width:28px;height:28px;border-radius:50%;object-fit:cover}
+.auth-user span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* admin dashboard + feedback */
+.admin-tab{margin-top:18px}
+.admin-tab h3{margin:18px 0 10px;color:var(--forest)}
+.admin-row{display:flex;align-items:center;gap:12px;background:var(--glass);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.85);border-radius:16px;box-shadow:0 8px 22px rgba(15,61,46,.07);padding:12px 14px;margin-bottom:10px}
+.admin-av{width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0}
+.admin-who{flex:1;min-width:0}
+.admin-who b{display:block;font-size:15px;overflow-wrap:anywhere}
+.admin-who span{display:block;font-size:13px;color:var(--muted)}
+.admin-acts{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;align-items:center}
+.admin-acts button{border:1.5px solid var(--line);background:#fff;color:var(--forest);font:inherit;font-weight:700;font-size:13px;padding:6px 10px;border-radius:999px;cursor:pointer}
+.admin-acts input{max-width:150px}
+#adminMsg,#fbMsg{min-height:20px;margin:10px 0 0;text-align:center;font-weight:700}
+#adminMsg.show,#fbMsg.show{color:#991b1b}
+#adminMsg.ok,#fbMsg.ok{color:var(--forest)}
+.dq-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cq-form select{font:inherit;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
 .cq-form{max-width:640px;margin:18px auto 0;background:var(--glass);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.85);border-radius:22px;padding:24px;box-shadow:0 14px 34px rgba(15,61,46,.08)}
 .cq-form h3{margin:0 0 14px;color:var(--forest);font-size:20px}
 .cq-form textarea,.cq-form input{width:100%;box-sizing:border-box;padding:12px 16px;border-radius:14px;border:1.5px solid var(--line);background:rgba(255,255,255,.9);font:inherit;font-size:16px;color:var(--ink);outline:none;margin-bottom:10px}
@@ -461,6 +487,10 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
       <div class="lang" role="group" aria-label="Language">
         <button type="button" id="langBn" class="active">বাং</button>
         <button type="button" id="langEn">EN</button>
+      </div>
+      <div class="auth" id="authBox">
+        <button type="button" id="authSignIn" class="auth-btn" data-i18n="auth_signin">Google দিয়ে সাইন ইন</button>
+        <button type="button" id="authUser" class="auth-user hidden" title="সাইন আউট"><img id="authAvatar" alt=""><span id="authName"></span></button>
       </div>
     </header>
   </div>
@@ -716,6 +746,8 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
         <input id="cqOpt3" maxlength="60" placeholder="উত্তর ৪ (ঐচ্ছিক)">
         <label class="cq-why-label" for="cqWhy" data-i18n="cq_why_label">কেন জিজ্ঞেস করছো? (ঐচ্ছিক)</label>
         <textarea id="cqWhy" rows="1" maxlength="120" placeholder="এক লাইনে লেখো কেন জানতে চাও…"></textarea>
+        <label class="cq-show" id="cqShowRow"><input type="checkbox" id="cqShowName"> <span data-i18n="cq_show_name">আমার নাম দেখিয়ে প্রকাশ করো</span></label>
+        <p class="cq-show-hint hidden" id="cqShowHint" data-i18n="cq_show_hint">নাম দেখাতে Google দিয়ে সাইন ইন করো — না করলে প্রশ্ন যাবে নামহীনভাবে।</p>
         <button class="btn primary" id="cqPublish" type="button" data-i18n="cq_publish">প্রশ্ন প্রকাশ করো (১ টোকেন)</button>
         <p id="cqMsg"></p>
       </div>
@@ -771,10 +803,50 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
     </section>
   </div><!-- /view-developer -->
 
+  <div id="view-feedback" class="hidden">
+    <section>
+      <div class="eyebrow" data-i18n="fb_eyebrow">মতামত</div>
+      <h2 data-i18n="fb_h">তোমার মতামত আমাদের কাছে পৌঁছে যাক।</h2>
+      <p class="lede" data-i18n="fb_sub">ভালো লাগা, পরামর্শ, বা কোনো সমস্যা — লিখে পাঠাও। এটা শুধু সাইটের অ্যাডমিন দেখবে, আর কেউ না।</p>
+      <div class="cq-form" id="fbFormBox">
+        <div class="arch-cats" id="fbType">
+          <button type="button" class="arch-chip active" data-type="feedback" data-i18n="fb_type_feedback">মতামত</button>
+          <button type="button" class="arch-chip" data-type="suggestion" data-i18n="fb_type_suggestion">পরামর্শ</button>
+          <button type="button" class="arch-chip" data-type="bug" data-i18n="fb_type_bug">সমস্যা</button>
+        </div>
+        <textarea id="fbMessage" rows="4" maxlength="500" placeholder="তোমার মতামত লেখো…"></textarea>
+        <input id="fbName" maxlength="60" placeholder="তোমার নাম (ঐচ্ছিক)">
+        <button class="btn primary" id="fbSend" type="button" data-i18n="fb_send">পাঠাও</button>
+        <p id="fbMsg"></p>
+      </div>
+    </section>
+  </div><!-- /view-feedback -->
+
+  <div id="view-admin" class="hidden">
+    <section>
+      <div class="eyebrow" data-i18n="admin_eyebrow">অ্যাডমিন</div>
+      <h2 data-i18n="admin_h">অ্যাডমিন ড্যাশবোর্ড</h2>
+      <p class="lede" id="adminGate">এই পাতাটা শুধু অ্যাডমিনের জন্য।</p>
+      <div id="adminBody" class="hidden">
+        <div class="arch-cats" id="adminTabs">
+          <button type="button" class="arch-chip active" data-tab="users" data-i18n="admin_tab_users">ব্যবহারকারী</button>
+          <button type="button" class="arch-chip" data-tab="community" data-i18n="admin_tab_community">কমিউনিটি</button>
+          <button type="button" class="arch-chip" data-tab="daily" data-i18n="admin_tab_daily">দৈনিক ভোট</button>
+          <button type="button" class="arch-chip" data-tab="feedback" data-i18n="admin_tab_feedback">মতামত</button>
+        </div>
+        <div id="adminTab-users" class="admin-tab"></div>
+        <div id="adminTab-community" class="admin-tab hidden"></div>
+        <div id="adminTab-daily" class="admin-tab hidden"></div>
+        <div id="adminTab-feedback" class="admin-tab hidden"></div>
+        <p id="adminMsg"></p>
+      </div>
+    </section>
+  </div><!-- /view-admin -->
+
   <footer>
     <b>নিউ বাংলাদেশ</b> · <span data-i18n="foot_tag">বাংলাদেশ উত্তর দিচ্ছে।</span><br>
     <span data-i18n="foot_live">লাইভ ভোটিং — তোমার ভোট সবার সাথে গোনা হবে।</span><br>
-    newbangladesh.bond · <a href="#developer" data-i18n="foot_dev">ডেভেলপার</a> · <a href="/privacy-policy.html" data-i18n="foot_privacy">গোপনীয়তা</a>
+    newbangladesh.bond · <a href="#developer" data-i18n="foot_dev">ডেভেলপার</a> · <a href="/privacy-policy.html" data-i18n="foot_privacy">গোপনীয়তা</a> · <a href="#feedback" data-i18n="foot_feedback">মতামত</a> · <a href="#admin" id="adminLink" class="hidden" data-i18n="foot_admin">অ্যাডমিন</a>
   </footer>
 </div>
 
@@ -852,6 +924,9 @@ const I18N = {
     cq_need_q:"প্রশ্নটা লেখো।", cq_need_opts:"অন্তত ২টা উত্তর দাও।",
     cq_bad:"এই প্রশ্নটি প্রকাশ করা যাবে না।",
     cq_published:"তোমার প্রশ্ন প্রকাশ হয়ে গেছে! 🎉",
+    cq_submitted:"তোমার প্রশ্ন জমা হয়েছে — অনুমোদনের পর দেখা যাবে।",
+    cq_anon:"নামহীন", cq_pending:"অনুমোদনের অপেক্ষায়",
+    cq_show_name:"আমার নাম দেখিয়ে প্রকাশ করো", cq_show_hint:"নাম দেখাতে Google দিয়ে সাইন ইন করো — না করলে প্রশ্ন যাবে নামহীনভাবে।",
     cq_fail:"প্রকাশ করা যায়নি — নেট চেক করে আবার চেষ্টা করো।",
     cq_new:"নতুন", cq_top:"জনপ্রিয়",
     cq_empty:"এখনো কোনো প্রশ্ন নেই — প্রথম প্রশ্নটা তুমিই দাও!",
@@ -904,7 +979,21 @@ const I18N = {
     dev_fahim_tag:"ওয়েব ডিজাইনার ও ডেভেলপার · বাংলাদেশ",
     dev_fahim_about:"বাংলাদেশের একজন ওয়েব ডিজাইনার ও ডেভেলপার — ব্র্যান্ড পরিচয় থেকে ফুল-স্ট্যাক ডেভেলপমেন্ট পর্যন্ত, ব্যবসার আইডিয়াকে অর্থবহ অনলাইন প্রোডাক্টে রূপ দেন।",
     dev_phone:"ফোন:", dev_location:"ঠিকানা:", dev_location_v:"তিতাস, কুমিল্লা, বাংলাদেশ",
-    foot_dev:"ডেভেলপার", foot_privacy:"গোপনীয়তা",
+    foot_dev:"ডেভেলপার", foot_privacy:"গোপনীয়তা", foot_admin:"অ্যাডমিন",
+    auth_signin:"Google দিয়ে সাইন ইন", auth_signout:"সাইন আউট",
+    foot_feedback:"মতামত",
+    fb_eyebrow:"মতামত", fb_h:"তোমার মতামত আমাদের কাছে পৌঁছে যাক।", fb_sub:"ভালো লাগা, পরামর্শ, বা কোনো সমস্যা — লিখে পাঠাও। এটা শুধু সাইটের অ্যাডমিন দেখবে, আর কেউ না।",
+    fb_type_feedback:"মতামত", fb_type_suggestion:"পরামর্শ", fb_type_bug:"সমস্যা",
+    fb_msg_ph:"তোমার মতামত লেখো…", fb_name_ph:"তোমার নাম (ঐচ্ছিক)", fb_send:"পাঠাও",
+    fb_sent:"পাঠানো হয়েছে — ধন্যবাদ!", fb_fail:"পাঠানো যায়নি, আবার চেষ্টা করো।", fb_need_msg:"আগে কিছু লেখো।",
+    admin_eyebrow:"অ্যাডমিন", admin_h:"অ্যাডমিন ড্যাশবোর্ড",
+    admin_gate_login:"এই পাতাটা শুধু অ্যাডমিনের জন্য — Google দিয়ে সাইন ইন করো।", admin_gate_no:"শুধুমাত্র অ্যাডমিন এই পাতা দেখতে পারে।",
+    admin_tab_users:"ব্যবহারকারী", admin_tab_community:"কমিউনিটি", admin_tab_daily:"দৈনিক ভোট", admin_tab_feedback:"মতামত",
+    admin_no_users:"এখনো কোনো ব্যবহারকারী সাইন ইন করেনি।", admin_no_cq:"কোনো কমিউনিটি প্রশ্ন নেই।", admin_no_fb:"এখনো কোনো মতামত আসেনি।",
+    admin_approve:"অনুমোদন", admin_reject:"বাতিল", admin_delete:"মুছে ফেলো", admin_save:"সংরক্ষণ",
+    admin_pending:"অনুমোদনের অপেক্ষায়", admin_approved:"অনুমোদিত", admin_rejected:"বাতিল",
+    admin_status_pending:"অনুমোদনের অপেক্ষায়", admin_status_approved:"অনুমোদিত", admin_status_rejected:"বাতিল",
+    admin_add_q:"নতুন প্রশ্ন যোগ করো", admin_added:"প্রশ্ন যোগ হয়েছে।", admin_saved:"সংরক্ষণ হয়েছে।", admin_deleted:"মুছে ফেলা হয়েছে।", admin_failed:"হয়নি, আবার চেষ্টা করো।", admin_need_q:"তারিখ, প্রশ্ন আর সব উত্তর ভরো।",
     title:"নিউ বাংলাদেশ (New Bangladesh) — বাংলাদেশ কী ভাবছে?"
   },
   en: {
@@ -974,6 +1063,9 @@ const I18N = {
     cq_need_q:"Write your question first.", cq_need_opts:"Give at least 2 options.",
     cq_bad:"This question can't be published.",
     cq_published:"Your question is live! 🎉",
+    cq_submitted:"Your question is submitted — it will appear after approval.",
+    cq_anon:"Anonymous", cq_pending:"Awaiting approval",
+    cq_show_name:"Publish with my name shown", cq_show_hint:"Sign in with Google to show your name — otherwise your question goes up anonymously.",
     cq_fail:"Couldn't publish — check your connection and try again.",
     cq_new:"Newest", cq_top:"Top",
     cq_empty:"No questions yet — ask the first one!",
@@ -1026,7 +1118,21 @@ const I18N = {
     dev_fahim_tag:"Web Designer & Developer · Bangladesh",
     dev_fahim_about:"A web designer & developer from Bangladesh — from brand identity to full-stack development, turning business ideas into impactful online products.",
     dev_phone:"Phone:", dev_location:"Location:", dev_location_v:"Titas, Cumilla, Bangladesh",
-    foot_dev:"Developer", foot_privacy:"Privacy",
+    foot_dev:"Developer", foot_privacy:"Privacy", foot_admin:"Admin",
+    auth_signin:"Sign in with Google", auth_signout:"Sign out",
+    foot_feedback:"Feedback",
+    fb_eyebrow:"Feedback", fb_h:"Send us your thoughts.", fb_sub:"Something you liked, a suggestion, or a problem — write it here. Only the site admin sees it, no one else.",
+    fb_type_feedback:"Feedback", fb_type_suggestion:"Suggestion", fb_type_bug:"Bug",
+    fb_msg_ph:"Write your feedback…", fb_name_ph:"Your name (optional)", fb_send:"Send",
+    fb_sent:"Sent — thank you!", fb_fail:"Could not send, try again.", fb_need_msg:"Write something first.",
+    admin_eyebrow:"Admin", admin_h:"Admin Dashboard",
+    admin_gate_login:"This page is for admins only — sign in with Google.", admin_gate_no:"Only an admin can see this page.",
+    admin_tab_users:"Users", admin_tab_community:"Community", admin_tab_daily:"Daily Vote", admin_tab_feedback:"Feedback",
+    admin_no_users:"No user has signed in yet.", admin_no_cq:"No community questions.", admin_no_fb:"No feedback yet.",
+    admin_approve:"Approve", admin_reject:"Reject", admin_delete:"Delete", admin_save:"Save",
+    admin_pending:"Pending approval", admin_approved:"Approved", admin_rejected:"Rejected",
+    admin_status_pending:"Pending approval", admin_status_approved:"Approved", admin_status_rejected:"Rejected",
+    admin_add_q:"Add a new question", admin_added:"Question added.", admin_saved:"Saved.", admin_deleted:"Deleted.", admin_failed:"Failed, try again.", admin_need_q:"Fill in the date, question and all options.",
     title:"New Bangladesh (নিউ বাংলাদেশ) — What does Bangladesh think?"
   }
 };
@@ -1039,6 +1145,77 @@ const SUPABASE_URL = "https://bocazyqiomwtnnvhzpio.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_f3Glh5QbXqaiBBNrPhfhHA_LB99iMcp";
 let EXPERIMENT_ID = "247";
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+// ---------- Google sign-in (optional) + account sync ----------
+const ADMIN_EMAILS = ["flexbd.site@gmail.com", "newbangladesh.bond@gmail.com"];
+let currentUser = null;
+function isAdmin(u){ return !!u && ADMIN_EMAILS.indexOf((u.email || "").toLowerCase()) !== -1; }
+function renderAuth(){
+  const inBtn = document.getElementById("authSignIn");
+  const uBtn = document.getElementById("authUser");
+  const av = document.getElementById("authAvatar");
+  const nm = document.getElementById("authName");
+  const adminLink = document.getElementById("adminLink");
+  if(inBtn) inBtn.classList.toggle("hidden", !!currentUser);
+  if(uBtn) uBtn.classList.toggle("hidden", !currentUser);
+  if(currentUser){
+    if(av) av.src = currentUser.avatar || "icon.png";
+    if(nm) nm.textContent = (currentUser.name || "").split(" ")[0] || currentUser.email;
+    if(uBtn) uBtn.title = t("auth_signout");
+  }
+  if(adminLink) adminLink.classList.toggle("hidden", !isAdmin(currentUser));
+  if(typeof renderCommunityAuth === "function") renderCommunityAuth();
+  if(typeof renderAdmin === "function") renderAdmin();
+}
+async function signInWithGoogle(){
+  if(!sb || !sb.auth) return;
+  try{ await sb.auth.signInWithOAuth({provider:"google", options:{redirectTo: location.origin + location.pathname}}); }catch(e){}
+}
+async function signOut(){
+  if(!sb || !sb.auth) return;
+  try{ await sb.auth.signOut(); }catch(e){}
+}
+function setUser(u){
+  const prevId = currentUser && currentUser.id;
+  currentUser = u ? {id:u.id, email:u.email || "", name:((u.user_metadata && (u.user_metadata.full_name || u.user_metadata.name)) || ""), avatar:((u.user_metadata && u.user_metadata.avatar_url) || "")} : null;
+  renderAuth();
+  if(currentUser && currentUser.id !== prevId){ upsertProfile(); syncFromCloud(); }
+}
+async function initAuth(){
+  if(!sb || !sb.auth) return;
+  try{
+    const {data} = await sb.auth.getSession();
+    setUser(data && data.session ? data.session.user : null);
+    sb.auth.onAuthStateChange(function(_e, session){ setUser(session ? session.user : null); });
+  }catch(e){}
+}
+async function upsertProfile(){
+  if(!sb || !currentUser) return;
+  try{ await sb.from("profiles").upsert({user_id: currentUser.id, email: currentUser.email, name: currentUser.name, avatar_url: currentUser.avatar, last_seen: new Date().toISOString()}, {onConflict:"user_id"}); }catch(e){}
+}
+async function pushStateToCloud(){
+  if(!sb || !currentUser) return;
+  try{ await sb.from("user_state").upsert({user_id: currentUser.id, streak: streak.count, last_visit: streak.last, tokens: tokens, tokens_awarded: tokensAwarded, updated_at: new Date().toISOString()}, {onConflict:"user_id"}); }catch(e){}
+}
+async function syncFromCloud(){
+  if(!sb || !currentUser) return;
+  try{
+    const {data, error} = await sb.from("user_state").select("streak,last_visit,tokens,tokens_awarded").eq("user_id", currentUser.id).maybeSingle();
+    if(error || !data){ await pushStateToCloud(); return; }
+    const today = dhakaParts().date;
+    const cloudLast = data.last_visit || "";
+    if((cloudLast === today || (cloudLast && dayDiff(today, cloudLast) === 1)) && (data.streak || 0) > streak.count){
+      streak.count = data.streak; streak.last = cloudLast; saveStreak();
+    }
+    if((data.tokens || 0) > tokens) tokens = data.tokens;
+    if((data.tokens_awarded || 0) > tokensAwarded) tokensAwarded = data.tokens_awarded;
+    saveTokens(); renderTokens();
+    await pushStateToCloud();
+    try{ render(); }catch(e){}
+  }catch(e){}
+}
+document.getElementById("authSignIn").addEventListener("click", signInWithGoogle);
+document.getElementById("authUser").addEventListener("click", signOut);
 
 let OPTIONS = [
   {key:"business", bn:"ব্যবসা শুরু করব", en:"Start a business", typeBn:"ঝুঁকি নেওয়ার মানুষ", typeEn:"The Risk Taker", base:31347},
@@ -1189,7 +1366,7 @@ function dayDiff(a, b){ // a - b in whole days, YYYY-MM-DD strings
 }
 let streak = {count:0, last:null};
 try{ const s = JSON.parse(localStorage.getItem("nb_streak") || "null"); if(s && typeof s.count === "number") streak = s; }catch(e){}
-function saveStreak(){ try{ localStorage.setItem("nb_streak", JSON.stringify(streak)); }catch(e){} }
+function saveStreak(){ try{ localStorage.setItem("nb_streak", JSON.stringify(streak)); }catch(e){} if(currentUser) pushStateToCloud(); }
 function markVisitToday(){ // streak counts visits now, not votes
   const today = dhakaParts().date;
   if(streak.last === today) return; // already counted today
@@ -1705,14 +1882,27 @@ async function fetchArchiveLiveCounts(){
     renderArchive();
   }catch(e){ /* archive keeps its seed counts */ }
 }
-async function loadArchive(){
-  if(ARCHIVE) return ARCHIVE;
+async function loadArchive(force){
+  if(ARCHIVE && !force) return ARCHIVE;
   try{
     const res = await fetch("questions.json", {cache:"no-store"});
     if(!res.ok) throw new Error("http " + res.status);
     const j = await res.json();
     ARCHIVE = j.experiments || [];
   }catch(e){ ARCHIVE = ARCHIVE_FALLBACK.experiments.slice(); }
+  if(sb){
+    try{
+      const {data, error} = await sb.from("daily_questions").select("num, q_date, cat, q, options, why").order("q_date", {ascending:false}).limit(100);
+      if(!error && data){
+        const byNum = {};
+        ARCHIVE.forEach(e=>{ byNum[e.num] = e; });
+        data.forEach(r=>{
+          byNum[r.num] = {id: String(r.num), num: r.num, date: r.q_date, cat: r.cat, q: r.q, options: (r.options || []).map(o=>({key:o.key, bn:o.bn, en:o.en, base:o.base||0, typeBn:o.typeBn||"ভোটদাতা", typeEn:o.typeEn||"The Voter"})), why: r.why};
+        });
+        ARCHIVE = Object.values(byNum).sort((a,b)=>b.num - a.num);
+      }
+    }catch(e){ /* questions.json stays the source */ }
+  }
   return ARCHIVE;
 }
 function archiveCounts(exp){
@@ -1796,7 +1986,7 @@ document.getElementById("archiveList").addEventListener("click", e=>{
 let tokens = 0, tokensAwarded = 0, tokenCelebrate = false;
 try{ tokens = parseInt(localStorage.getItem("nb_tokens") || "0", 10) || 0; }catch(e){}
 try{ tokensAwarded = parseInt(localStorage.getItem("nb_token_awarded") || "0", 10) || 0; }catch(e){}
-function saveTokens(){ try{ localStorage.setItem("nb_tokens", String(tokens)); localStorage.setItem("nb_token_awarded", String(tokensAwarded)); }catch(e){} }
+function saveTokens(){ try{ localStorage.setItem("nb_tokens", String(tokens)); localStorage.setItem("nb_token_awarded", String(tokensAwarded)); }catch(e){} if(currentUser) pushStateToCloud(); }
 function awardTokens(){
   const earned = Math.floor(streak.count / 3);
   if(earned <= tokensAwarded) return 0;
@@ -1909,7 +2099,7 @@ let cqSort = "new";
 async function loadCommunity(){
   if(!sb){ COMMUNITY = []; return COMMUNITY; }
   try{
-    const {data, error} = await sb.from("community_questions").select("id, question, options, author_hash, created_at, why").order("created_at", {ascending:false}).limit(100);
+    const {data, error} = await sb.from("community_questions").select("id, question, options, author_hash, author_name, author_id, status, created_at, why").order("created_at", {ascending:false}).limit(100);
     if(error) throw error;
     COMMUNITY = data || [];
   }catch(e){ COMMUNITY = []; }
@@ -1962,7 +2152,9 @@ function cqCardHtml(q){
   const c = cqTotals(q);
   const voted = !!v.myOpt;
   const date = fmtArchDate((q.created_at || "").slice(0,10));
-  let inner = `<div class="eyebrow">💬 ${t("community_eyebrow")} · ${date}</div><h3>${escapeHtml(q.question)}</h3>${q.why ? `<p class="cq-why">💭 ${escapeHtml(q.why)}</p>` : ""}`;
+  const authorLine = q.author_name ? "👤 " + escapeHtml(q.author_name) : "🕶️ " + t("cq_anon");
+  const pendingBadge = q.status === "pending" ? ` <span class="cq-pending">⏳ ${t("cq_pending")}</span>` : "";
+  let inner = `<div class="eyebrow">💬 ${t("community_eyebrow")} · ${date}</div><h3>${escapeHtml(q.question)}</h3><p class="cq-meta">${authorLine}${pendingBadge}</p>${q.why ? `<p class="cq-why">💭 ${escapeHtml(q.why)}</p>` : ""}`;
   if(!voted){
     inner += `<div class="cq-voteopts">` + (q.options || []).map(o=>`<button type="button" class="opt cq-opt" data-q="${q.id}" data-opt="${escapeHtml(o.text)}"><span class="dot"></span><span>${escapeHtml(o.text)}</span></button>`).join("") + `</div>`;
   } else {
@@ -1997,6 +2189,12 @@ function renderCommunity(){
   const pub = document.getElementById("cqPublish");
   if(pub) pub.disabled = tokens < 1;
 }
+function renderCommunityAuth(){
+  const row = document.getElementById("cqShowRow");
+  const hint = document.getElementById("cqShowHint");
+  if(row) row.classList.toggle("hidden", !currentUser);
+  if(hint) hint.classList.toggle("hidden", !!currentUser);
+}
 async function publishCommunity(){
   const msg = document.getElementById("cqMsg");
   const setMsg = (s, ok)=>{ if(msg){ msg.textContent = s; msg.className = ok ? "ok" : "show"; } };
@@ -2016,12 +2214,13 @@ async function publishCommunity(){
   const options = filled.map((text,i)=>({key:keys[i], text}));
   const btn = document.getElementById("cqPublish");
   if(btn) btn.disabled = true;
+  const showName = currentUser && document.getElementById("cqShowName") && document.getElementById("cqShowName").checked;
   try{
-    const {error} = await sb.from("community_questions").insert({question: qtext, options, author_hash: getVoterId(), why: whyText || null});
+    const {error} = await sb.from("community_questions").insert({question: qtext, options, author_hash: getVoterId(), author_name: showName ? currentUser.name : null, author_id: currentUser ? currentUser.id : null, why: whyText || null});
     if(error) throw error;
     tokens -= 1; saveTokens();
     qEl.value = ""; if(whyEl) whyEl.value = ""; [0,1,2,3].forEach(i=>{ document.getElementById("cqOpt"+i).value = ""; });
-    setMsg(t("cq_published"), true);
+    setMsg(t("cq_submitted"), true);
     await loadCommunity(); await fetchCommunityVotes();
     renderTokens();
   }catch(e){ setMsg(t("cq_fail")); if(btn) btn.disabled = tokens < 1; }
@@ -2070,10 +2269,220 @@ document.getElementById("cqList").addEventListener("click", async e=>{
     await fetchCommunityVotes();
   }
 });
+// ---------- feedback (private: only the admin reads it) ----------
+let fbType = "feedback";
+document.getElementById("fbType").addEventListener("click", e=>{
+  const chip = e.target.closest(".arch-chip");
+  if(!chip) return;
+  fbType = chip.dataset.type;
+  document.querySelectorAll("#fbType .arch-chip").forEach(c=>c.classList.toggle("active", c === chip));
+});
+async function submitFeedback(){
+  const msg = document.getElementById("fbMsg");
+  const setMsg = (s, ok)=>{ if(msg){ msg.textContent = s; msg.className = ok ? "ok" : "show"; } };
+  const text = (document.getElementById("fbMessage").value || "").trim();
+  if(text.length < 3){ setMsg(t("fb_need_msg")); return; }
+  if(!sb){ setMsg(t("fb_fail")); return; }
+  const name = (document.getElementById("fbName").value || "").trim().slice(0, 60);
+  const btn = document.getElementById("fbSend");
+  if(btn) btn.disabled = true;
+  try{
+    const {error} = await sb.from("feedback").insert({type: fbType, message: text.slice(0, 500), name: name || null, user_id: currentUser ? currentUser.id : null});
+    if(error) throw error;
+    document.getElementById("fbMessage").value = "";
+    document.getElementById("fbName").value = "";
+    setMsg(t("fb_sent"), true);
+  }catch(e){ setMsg(t("fb_fail")); }
+  if(btn) btn.disabled = false;
+}
+document.getElementById("fbSend").addEventListener("click", submitFeedback);
+
+// ---------- admin dashboard (admins only) ----------
+let adminTab = "users";
+let adminUsers = [], adminCq = [], adminDaily = [], adminFb = [];
+function adminGateText(){
+  const g = document.getElementById("adminGate");
+  if(!g) return;
+  if(!currentUser) g.textContent = t("admin_gate_login");
+  else if(!isAdmin(currentUser)) g.textContent = t("admin_gate_no");
+  else g.textContent = "";
+}
+function renderAdmin(){
+  const body = document.getElementById("adminBody");
+  if(!body) return;
+  adminGateText();
+  const ok = isAdmin(currentUser);
+  body.classList.toggle("hidden", !ok);
+  if(!ok) return;
+  document.querySelectorAll("#adminTabs .arch-chip").forEach(c=>c.classList.toggle("active", c.dataset.tab === adminTab));
+  ["users","community","daily","feedback"].forEach(tb=>{ const el = document.getElementById("adminTab-"+tb); if(el) el.classList.toggle("hidden", tb !== adminTab); });
+  if(adminTab === "users") loadAdminUsers();
+  else if(adminTab === "community") loadAdminCommunity();
+  else if(adminTab === "daily") loadAdminDaily();
+  else if(adminTab === "feedback") loadAdminFeedback();
+}
+document.getElementById("adminTabs").addEventListener("click", e=>{
+  const chip = e.target.closest(".arch-chip");
+  if(!chip) return;
+  adminTab = chip.dataset.tab;
+  renderAdmin();
+});
+function adminMsg(s, ok){
+  const m = document.getElementById("adminMsg");
+  if(m){ m.textContent = s || ""; m.className = ok ? "ok" : "show"; }
+}
+async function loadAdminUsers(){
+  const el = document.getElementById("adminTab-users");
+  if(!el || !sb) return;
+  try{
+    const {data: profs} = await sb.from("profiles").select("user_id, email, name, avatar_url, last_seen").order("last_seen", {ascending:false}).limit(200);
+    const {data: states} = await sb.from("user_state").select("user_id, streak, tokens, tokens_awarded").limit(200);
+    const smap = {}; (states || []).forEach(s=>{ smap[s.user_id] = s; });
+    adminUsers = (profs || []).map(p=>({...p, streak:(smap[p.user_id]||{}).streak || 0, tokens:(smap[p.user_id]||{}).tokens || 0, tokensAwarded:(smap[p.user_id]||{}).tokens_awarded || 0}));
+    if(!adminUsers.length){ el.innerHTML = `<p style="color:var(--muted)">${t("admin_no_users")}</p>`; return; }
+    el.innerHTML = `<h3>${t("admin_tab_users")}</h3>` + adminUsers.map(u=>`
+      <div class="admin-row">
+        <img src="${escapeHtml(u.avatar_url || "icon.png")}" alt="" class="admin-av">
+        <div class="admin-who"><b>${escapeHtml(u.name || t("cq_anon"))}</b><span>${escapeHtml(u.email || "")}</span><span>🔥 ${fmt(u.streak)} · 🪙 ${fmt(u.tokens)}</span></div>
+        <div class="admin-acts">
+          <button type="button" data-act="tok-" data-uid="${u.user_id}">−1 🪙</button>
+          <button type="button" data-act="tok+" data-uid="${u.user_id}">+1 🪙</button>
+        </div>
+      </div>`).join("");
+  }catch(e){ el.innerHTML = `<p style="color:#991b1b">${t("admin_failed")}</p>`; }
+}
+async function loadAdminCommunity(){
+  const el = document.getElementById("adminTab-community");
+  if(!el || !sb) return;
+  try{
+    const {data, error} = await sb.from("community_questions").select("id, question, options, author_name, status, created_at").order("created_at", {ascending:false}).limit(100);
+    if(error) throw error;
+    adminCq = data || [];
+    const sec = (title, rows)=> rows.length ? `<h3>${title}</h3>` + rows.map(q=>`
+      <div class="admin-row admin-q">
+        <div class="admin-who"><b>${escapeHtml(q.question)}</b><span>${escapeHtml(q.author_name || t("cq_anon"))} · ${fmtArchDate((q.created_at||"").slice(0,10))} · ${t("admin_status_" + (q.status || "approved"))}</span></div>
+        <div class="admin-acts">
+          ${q.status === "pending" ? `<button type="button" data-act="cq-ok" data-qid="${q.id}">${t("admin_approve")}</button><button type="button" data-act="cq-no" data-qid="${q.id}">${t("admin_reject")}</button>` : ""}
+          <button type="button" data-act="cq-del" data-qid="${q.id}">${t("admin_delete")}</button>
+        </div>
+      </div>`).join("") : "";
+    el.innerHTML = sec(t("admin_pending"), adminCq.filter(q=>q.status === "pending")) + sec(t("admin_approved"), adminCq.filter(q=>(q.status || "approved") === "approved")) + sec(t("admin_rejected"), adminCq.filter(q=>q.status === "rejected"));
+    if(!adminCq.length) el.innerHTML = `<p style="color:var(--muted)">${t("admin_no_cq")}</p>`;
+  }catch(e){ el.innerHTML = `<p style="color:#991b1b">${t("admin_failed")}</p>`; }
+}
+async function loadAdminDaily(){
+  const el = document.getElementById("adminTab-daily");
+  if(!el || !sb) return;
+  try{
+    const {data, error} = await sb.from("daily_questions").select("num, q_date, cat, q, options, why").order("q_date", {ascending:false}).limit(100);
+    if(error) throw error;
+    adminDaily = data || [];
+    const rows = adminDaily.map(r=>`
+      <div class="admin-row admin-q">
+        <div class="admin-who"><b>#${r.num} · ${escapeHtml((r.q && r.q.bn) || "")}</b><span>${escapeHtml(r.cat || "")} · ${fmtArchDate(r.q_date || "")}</span></div>
+        <div class="admin-acts">
+          <input type="date" value="${escapeHtml(r.q_date || "")}" data-date="${r.num}" style="max-width:150px">
+          <button type="button" data-act="dq-date" data-num="${r.num}">${t("admin_save")}</button>
+          <button type="button" data-act="dq-del" data-num="${r.num}">${t("admin_delete")}</button>
+        </div>
+      </div>`).join("");
+    el.innerHTML = `<h3>${t("admin_tab_daily")}</h3>` + rows + `
+      <h3 style="margin-top:22px">${t("admin_add_q")}</h3>
+      <div class="cq-form">
+        <input type="date" id="dqDate">
+        <select id="dqCat"><option value="money">money</option><option value="food">food</option><option value="sports">sports</option><option value="life">life</option><option value="fun">fun</option><option value="career">career</option></select>
+        <input id="dqQB" maxlength="200" placeholder="প্রশ্ন (বাংলা)">
+        <input id="dqQE" maxlength="200" placeholder="Question (English)">
+        <input id="dqWhyB" maxlength="120" placeholder="কেন এই প্রশ্ন? (বাংলা)">
+        <input id="dqWhyE" maxlength="120" placeholder="Why this question? (English)">
+        <div class="dq-opts">
+          <input id="dqO0B" maxlength="60" placeholder="উত্তর ১ (বাংলা)"><input id="dqO0E" maxlength="60" placeholder="Option 1 (English)">
+          <input id="dqO1B" maxlength="60" placeholder="উত্তর ২ (বাংলা)"><input id="dqO1E" maxlength="60" placeholder="Option 2 (English)">
+          <input id="dqO2B" maxlength="60" placeholder="উত্তর ৩ (বাংলা)"><input id="dqO2E" maxlength="60" placeholder="Option 3 (English)">
+          <input id="dqO3B" maxlength="60" placeholder="উত্তর ৪ (বাংলা)"><input id="dqO3E" maxlength="60" placeholder="Option 4 (English)">
+        </div>
+        <button class="btn primary" id="dqAdd" type="button">${t("admin_add_q")}</button>
+      </div>`;
+    const addBtn = document.getElementById("dqAdd");
+    if(addBtn) addBtn.addEventListener("click", addDailyQuestion);
+  }catch(e){ el.innerHTML = `<p style="color:#991b1b">${t("admin_failed")}</p>`; }
+}
+async function addDailyQuestion(){
+  const date = (document.getElementById("dqDate").value || "").trim();
+  const cat = document.getElementById("dqCat").value;
+  const qb = (document.getElementById("dqQB").value || "").trim();
+  const qe = (document.getElementById("dqQE").value || "").trim();
+  const whyB = (document.getElementById("dqWhyB").value || "").trim();
+  const whyE = (document.getElementById("dqWhyE").value || "").trim();
+  const keys = ["a","b","c","d"];
+  const opts = [0,1,2,3].map(i=>({key:keys[i], bn:(document.getElementById("dqO"+i+"B").value||"").trim(), en:(document.getElementById("dqO"+i+"E").value||"").trim(), base:0, typeBn:"", typeEn:""}));
+  if(!date || qb.length < 3 || qe.length < 3 || opts.some(o=>!o.bn || !o.en)){ adminMsg(t("admin_need_q")); return; }
+  const num = (adminDaily.reduce((m,r)=>Math.max(m, r.num||0), 0)) + 1;
+  try{
+    const {error} = await sb.from("daily_questions").insert({num, q_date: date, cat, q:{bn:qb, en:qe}, options: opts, why:{bn:whyB, en:whyE}});
+    if(error) throw error;
+    adminMsg(t("admin_added"), true);
+    await loadAdminDaily(); await loadArchive(true);
+  }catch(e){ adminMsg(t("admin_failed")); }
+}
+async function loadAdminFeedback(){
+  const el = document.getElementById("adminTab-feedback");
+  if(!el || !sb) return;
+  try{
+    const {data, error} = await sb.from("feedback").select("id, type, message, name, created_at").order("created_at", {ascending:false}).limit(100);
+    if(error) throw error;
+    adminFb = data || [];
+    if(!adminFb.length){ el.innerHTML = `<p style="color:var(--muted)">${t("admin_no_fb")}</p>`; return; }
+    el.innerHTML = `<h3>${t("admin_tab_feedback")}</h3>` + adminFb.map(f=>`
+      <div class="admin-row admin-q">
+        <div class="admin-who"><b>${escapeHtml(f.message)}</b><span>${t("fb_type_" + (f.type || "feedback"))} · ${escapeHtml(f.name || t("cq_anon"))} · ${fmtArchDate((f.created_at||"").slice(0,10))}</span></div>
+        <div class="admin-acts"><button type="button" data-act="fb-del" data-fid="${f.id}">${t("admin_delete")}</button></div>
+      </div>`).join("");
+  }catch(e){ el.innerHTML = `<p style="color:#991b1b">${t("admin_failed")}</p>`; }
+}
+document.getElementById("adminBody").addEventListener("click", async e=>{
+  const btn = e.target.closest("button[data-act]");
+  if(!btn || !sb) return;
+  const act = btn.dataset.act;
+  try{
+    if(act === "tok+" || act === "tok-"){
+      const uid = btn.dataset.uid;
+      const u = adminUsers.find(x=>x.user_id === uid);
+      const next = Math.max(0, (u ? u.tokens : 0) + (act === "tok+" ? 1 : -1));
+      const {error} = await sb.from("user_state").upsert({user_id: uid, streak: u ? u.streak : 0, tokens: next, tokens_awarded: u ? u.tokensAwarded : 0, updated_at: new Date().toISOString()}, {onConflict:"user_id"});
+      if(error) throw error;
+      adminMsg(t("admin_saved"), true); loadAdminUsers();
+    } else if(act === "cq-ok" || act === "cq-no"){
+      const {error} = await sb.from("community_questions").update({status: act === "cq-ok" ? "approved" : "rejected"}).eq("id", btn.dataset.qid);
+      if(error) throw error;
+      adminMsg(t("admin_saved"), true); loadAdminCommunity(); loadCommunity();
+    } else if(act === "cq-del"){
+      const {error} = await sb.from("community_questions").delete().eq("id", btn.dataset.qid);
+      if(error) throw error;
+      adminMsg(t("admin_deleted"), true); loadAdminCommunity(); loadCommunity();
+    } else if(act === "dq-date"){
+      const num = parseInt(btn.dataset.num, 10);
+      const input = document.querySelector('input[data-date="' + num + '"]');
+      const nd = input ? input.value : "";
+      if(!nd){ adminMsg(t("admin_need_q")); return; }
+      const {error} = await sb.from("daily_questions").update({q_date: nd}).eq("num", num);
+      if(error) throw error;
+      adminMsg(t("admin_saved"), true); loadAdminDaily(); await loadArchive(true);
+    } else if(act === "dq-del"){
+      const {error} = await sb.from("daily_questions").delete().eq("num", parseInt(btn.dataset.num, 10));
+      if(error) throw error;
+      adminMsg(t("admin_deleted"), true); loadAdminDaily(); await loadArchive(true);
+    } else if(act === "fb-del"){
+      const {error} = await sb.from("feedback").delete().eq("id", btn.dataset.fid);
+      if(error) throw error;
+      adminMsg(t("admin_deleted"), true); loadAdminFeedback();
+    }
+  }catch(err){ adminMsg(t("admin_failed")); }
+});
 function communityWinner(){
   if(!COMMUNITY || !COMMUNITY.length) return null;
   const ym = dhakaParts().date.slice(0,7);
-  const monthQs = COMMUNITY.filter(q=>(q.created_at||"").slice(0,7) === ym);
+  const monthQs = COMMUNITY.filter(q=>(q.created_at||"").slice(0,7) === ym && (q.status || "approved") === "approved");
   if(!monthQs.length) return null;
   let best = null, bestScore = -1;
   monthQs.forEach(q=>{
@@ -3499,12 +3908,16 @@ function showView(v){
   const archV = document.getElementById("view-archive");
   const commV = document.getElementById("view-community");
   const devV = document.getElementById("view-developer");
+  const fbV = document.getElementById("view-feedback");
+  const adminV = document.getElementById("view-admin");
   home.classList.toggle("hidden", v !== "home");
   battles.classList.toggle("hidden", v !== "battles");
   rootsV.classList.toggle("hidden", v !== "roots");
   archV.classList.toggle("hidden", v !== "archive");
   commV.classList.toggle("hidden", v !== "community");
   devV.classList.toggle("hidden", v !== "developer");
+  fbV.classList.toggle("hidden", v !== "feedback");
+  adminV.classList.toggle("hidden", v !== "admin");
   document.getElementById("navHomeLink").classList.toggle("active", v === "home");
   document.getElementById("navBattlesLink").classList.toggle("active", v === "battles");
   document.getElementById("navRootsLink").classList.toggle("active", v === "roots");
@@ -3521,6 +3934,12 @@ function showView(v){
     loadArchive().then(()=>{ renderArchive(); fetchArchiveLiveCounts(); });
     window.scrollTo({top:0});
   }
+  if(v === "feedback"){
+    const fm = document.getElementById("fbMessage"); if(fm) fm.placeholder = t("fb_msg_ph");
+    const fn = document.getElementById("fbName"); if(fn) fn.placeholder = t("fb_name_ph");
+    window.scrollTo({top:0});
+  }
+  if(v === "admin"){ renderAdmin(); window.scrollTo({top:0}); }
   if(v === "battles"){
     loadBattles().then(()=>{ renderBattles(); fetchBattleCounts(); });
     window.scrollTo({top:0});
@@ -3537,6 +3956,8 @@ window.addEventListener("hashchange", ()=>{
   else if(location.hash === "#archive") showView("archive");
   else if(location.hash === "#community") showView("community");
   else if(location.hash === "#developer") showView("developer");
+  else if(location.hash === "#feedback") showView("feedback");
+  else if(location.hash === "#admin") showView("admin");
   else if(location.hash === "#home" || location.hash === "" || location.hash.startsWith("#vote") || location.hash.startsWith("#map") || location.hash.startsWith("#how")) showView("home");
 });
 
@@ -3581,6 +4002,7 @@ if("IntersectionObserver" in window){
 
 (async()=>{
   await loadArchive();
+  initAuth();
   setupCurrent();
   fetchArchiveLiveCounts();
   await loadCommunity();
@@ -3604,6 +4026,8 @@ if("IntersectionObserver" in window){
   else if(location.hash === "#roots") showView("roots");
   else if(location.hash === "#archive") showView("archive");
   else if(location.hash === "#community") showView("community");
+  else if(location.hash === "#feedback") showView("feedback");
+  else if(location.hash === "#admin") showView("admin");
   else showView("home");
   const myVote = await fetchMyVote();
   if(myVote && (!picked || picked.key !== myVote.key)){
