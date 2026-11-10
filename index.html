@@ -2186,16 +2186,24 @@ document.getElementById("rootsNext").onclick = ()=>{
 };
 function spreadXY(xy, placed){
   let x = xy.x, y = xy.y, k = 0;
-  while(placed.some(p => Math.hypot(p.x - x, p.y - y) < 22) && k < 4){ k++; x = xy.x + 17*k; y = xy.y - 14*k; }
+  while(placed.some(p => Math.hypot(p.x - x, p.y - y) < 27) && k < 4){ k++; x = xy.x + 17*k; y = xy.y - 14*k; }
   placed.push({x, y});
   return {x, y};
 }
 function journeyPoints(){
   const order = [roots.birth, roots.grew, roots.study, roots.now];
   const placed = [];
-  const pts = order.map((en, i)=>({en, i: i+1, xy: rootXY(en)})).filter(p=>p.xy).map(p=>{ p.d = spreadXY(p.xy, placed); return p; });
+  const groups = [];
+  order.forEach((en, i)=>{
+    if(!en) return;
+    const xy = rootXY(en); if(!xy) return;
+    let g = groups.find(g=>g.en===en);
+    if(!g){ g = {en, steps:[], xy}; groups.push(g); }
+    g.steps.push(i+1);
+  });
+  const pts = groups.map(g=>{ g.d = spreadXY(g.xy, placed); return {en:g.en, i:g.steps[0], steps:g.steps, xy:g.xy, d:g.d}; });
   const city = rootsAbroadCity();
-  if(city) pts.push({en: city.en, i: 4, abroad: true, xy: null, d: null});
+  if(city) pts.push({en: city.en, i: 4, steps:[4], abroad: true, xy: null, d: null});
   return pts;
 }
 function mapPts(pts){ return pts.filter(p=>p.d); }
@@ -2230,6 +2238,112 @@ function labelSideFor(p, pts){
   const crowded = pts.some(q=>q!==p && q.d.x > p.d.x && q.d.x < p.d.x + 150 && Math.abs(q.d.y - p.d.y) < 22);
   return crowded ? "left" : "right";
 }
+const ROOT_STEP_ROLES = {1:["জন্ম", "born"], 2:["বেড়ে ওঠা", "grew up"], 3:["পড়াশোনা", "studied"], 4:["এখন থাকি", "now live"]};
+const ROOT_CIRCLED = ["①", "②", "③", "④"];
+function joinRoles(arr){
+  if(arr.length < 2) return arr[0] || "";
+  const sep = lang === "bn" ? " ও " : " and ";
+  if(arr.length === 2) return arr[0] + sep + arr[1];
+  return arr.slice(0, -1).join(lang === "bn" ? ", " : ", ") + sep + arr[arr.length - 1];
+}
+function journeyLabel(p, withRoles){
+  const name = districtNameFor(p.en);
+  if(!p.steps || p.steps.length < 2) return name;
+  const nums = p.steps.map(s=>ROOT_CIRCLED[s-1]).join("");
+  if(!withRoles) return nums + " " + name;
+  const roles = p.steps.map(s=>ROOT_STEP_ROLES[s][lang === "bn" ? 0 : 1]);
+  return nums + " " + name + " — " + joinRoles(roles);
+}
+let _measureCtx = null;
+function labelWidth(text, size){
+  try{
+    if(!_measureCtx){ const cv = document.createElement("canvas"); _measureCtx = cv.getContext("2d"); }
+    if(_measureCtx && _measureCtx.measureText){
+      _measureCtx.font = "800 " + size + "px 'Noto Sans Bengali','Hind Siliguri',Arial,sans-serif";
+      const w = _measureCtx.measureText(text).width;
+      if(w > 0) return w;
+    }
+  }catch(e){}
+  return String(text).length * size * 0.62;
+}
+function boxOverlap(a, b, pad){
+  return a.x0 - pad < b.x1 && a.x1 + pad > b.x0 && a.y0 - pad < b.y1 && a.y1 + pad > b.y0;
+}
+function circleHitsBox(cx, cy, r, b){
+  const nx = Math.max(b.x0, Math.min(cx, b.x1)), ny = Math.max(b.y0, Math.min(cy, b.y1));
+  return Math.hypot(cx - nx, cy - ny) < r;
+}
+// One layout pass shared by the on-page SVG poster and the PNG download:
+// every label gets a measured box; collisions are resolved by flipping side
+// or staggering vertically. The ❤️ sits above the miss dot only when no
+// other dot/ring is within 36px, otherwise it rides on the miss label.
+function layoutPosterLabels(mpts, miss, parents){
+  let heartAbove = false, heartBox = null;
+  if(miss){
+    // heart box centred on (miss.x, miss.y-22), the PNG's middle-baseline centre
+    heartBox = {x0: miss.xy.x - 14, x1: miss.xy.x + 14, y0: miss.xy.y - 36, y1: miss.xy.y - 8};
+    const hits = mpts.some(p=>p.d !== miss.xy && circleHitsBox(p.d.x, p.d.y, 14, heartBox))
+      || parents.some(pd=>circleHitsBox(pd.xy.x, pd.xy.y, 21, heartBox));
+    heartAbove = !hits;
+    if(!heartAbove) heartBox = null;
+  }
+  const items = [];
+  mpts.forEach(p=>{
+    const isMiss = miss && miss.en === p.en;
+    const suffix = isMiss && !heartAbove ? " ❤️" : "";
+    const text = journeyLabel(p, true) + suffix;
+    const short = p.steps && p.steps.length > 1 ? journeyLabel(p, false) + suffix : null;
+    items.push({key: "j:" + p.en, cx: p.d.x, cy: p.d.y, text, short, size: 17, color: "#0f3d2e", off: 20});
+  });
+  if(miss && !mpts.some(p=>p.en === miss.en)){
+    let text = districtNameFor(miss.en);
+    if(!heartAbove) text += " ❤️";
+    items.push({key: "m", cx: miss.xy.x, cy: miss.xy.y, text, short: null, size: 17, color: "#b91c1c", off: 20});
+  }
+  parents.forEach(pd=>{
+    if(pd.onDot) return;
+    items.push({key: "p:" + pd.en, cx: pd.xy.x, cy: pd.xy.y, text: "○ " + districtNameFor(pd.en), short: null, size: 14, color: "#14532d", off: 24});
+  });
+  const dots = mpts.map(p=>({x: p.d.x, y: p.d.y, r: 15}));
+  parents.forEach(pd=>dots.push({x: pd.xy.x, y: pd.xy.y, r: 22}));
+  const placed = [];
+  const out = {};
+  items.forEach(it=>{
+    let text = it.text, size = it.size, w = labelWidth(text, size);
+    const leftRoom = it.cx - it.off - 4, rightRoom = 456 - (it.cx + it.off);
+    if(w > leftRoom && w > rightRoom && size === 17){ size = 15; w = labelWidth(text, size); }
+    if(it.short && w > leftRoom && w > rightRoom){ text = it.short; size = it.size; w = labelWidth(text, size); }
+    const pref = labelSideFor({d: {x: it.cx, y: it.cy}}, mpts);
+    const hh = size * 0.62;
+    const tries = [];
+    [0, 22, -22, 44, -44].forEach(dy=>{
+      [pref, pref === "right" ? "left" : "right"].forEach(side=>tries.push({side, dy}));
+    });
+    let best = null, bestScore = 1e9;
+    for(const tr of tries){
+      const x0 = tr.side === "right" ? it.cx + it.off : it.cx - it.off - w;
+      const x1 = tr.side === "right" ? it.cx + it.off + w : it.cx - it.off;
+      const y0 = it.cy + tr.dy - hh, y1 = it.cy + tr.dy + hh;
+      if(x0 < 4 || x1 > 456 || y0 < 4 || y1 > 556) continue;
+      const box = {x0, x1, y0, y1};
+      let score = 0;
+      placed.forEach(pb=>{ if(boxOverlap(box, pb, 4)) score += 10; });
+      dots.forEach(d=>{
+        if(Math.hypot(d.x - it.cx, d.y - it.cy) < 1) return; // its own dot/ring
+        if(circleHitsBox(d.x, d.y, d.r, box)) score += 10;
+      });
+      if(heartBox && boxOverlap(box, heartBox, 2)) score += 10;
+      if(score < bestScore){ bestScore = score; best = {side: tr.side, dy: tr.dy, box, text, w}; if(score === 0) break; }
+    }
+    if(!best){
+      const x0 = pref === "right" ? it.cx + it.off : it.cx - it.off - w;
+      best = {side: pref, dy: 0, box: {x0, x1: pref === "right" ? it.cx + it.off + w : it.cx - it.off, y0: it.cy - hh, y1: it.cy + hh}, text, w};
+    }
+    placed.push(best.box);
+    out[it.key] = {x: best.side === "right" ? it.cx + it.off : it.cx - it.off, y: it.cy + best.dy, anchor: best.side === "right" ? "start" : "end", side: best.side, text: best.text, size, color: it.color};
+  });
+  return {labels: out, heartAbove, heartX: miss ? miss.xy.x : 0, heartY: miss ? miss.xy.y - 22 : 0};
+}
 function districtNameFor(en){ const d = DISTRICTS.find(x=>x.en===en); return d ? (lang==="bn" ? d.bn : d.en) : en; }
 function renderPosterMap(){
   const el = document.getElementById("posterMap");
@@ -2241,6 +2355,8 @@ function renderPosterMap(){
   const mpts = mapPts(pts);
   const journeyEns = new Set(pts.map(p=>p.en));
   const miss = missDisplay(pts);
+  const parents = parentDisplays(pts);
+  const layout = layoutPosterLabels(mpts, miss, parents);
   DISTRICTS.forEach(d=>{
     const path = document.createElementNS(NS, "path");
     path.setAttribute("d", d.d);
@@ -2250,7 +2366,7 @@ function renderPosterMap(){
     path.setAttribute("stroke", "#fff"); path.setAttribute("stroke-width", "0.8");
     svg.appendChild(path);
   });
-  const obstacles = [...mpts.map(p=>p.d), ...parentDisplays(pts).map(pd=>pd.xy)];
+  const obstacles = [...mpts.map(p=>p.d), ...parents.map(pd=>pd.xy)];
   if(miss) obstacles.push(miss.xy);
   if(mpts.length > 1){
     const pl = document.createElementNS(NS, "polyline");
@@ -2269,7 +2385,7 @@ function renderPosterMap(){
       svg.appendChild(tri);
     }
   }
-  parentDisplays(pts).forEach(pd=>{
+  parents.forEach(pd=>{
     const halo = document.createElementNS(NS, "circle");
     halo.setAttribute("cx", pd.xy.x); halo.setAttribute("cy", pd.xy.y); halo.setAttribute("r", "20");
     halo.setAttribute("fill", "none"); halo.setAttribute("stroke", "#fff"); halo.setAttribute("stroke-width", "2");
@@ -2284,13 +2400,13 @@ function renderPosterMap(){
       dot.setAttribute("fill", theme);
       svg.appendChild(dot);
       const plab = document.createElementNS(NS, "text");
-      const pside = labelSideFor({d: pd.xy}, mpts);
-      plab.setAttribute("x", pside === "right" ? pd.xy.x + 24 : pd.xy.x - 24);
-      plab.setAttribute("y", pd.xy.y + 5);
-      plab.setAttribute("text-anchor", pside === "right" ? "start" : "end");
-      plab.setAttribute("fill", "#14532d"); plab.setAttribute("font-size", "14"); plab.setAttribute("font-weight", "700");
+      const PL = layout.labels["p:" + pd.en];
+      plab.setAttribute("x", PL.x);
+      plab.setAttribute("y", PL.y + 5);
+      plab.setAttribute("text-anchor", PL.anchor);
+      plab.setAttribute("fill", PL.color); plab.setAttribute("font-size", PL.size); plab.setAttribute("font-weight", "700");
       plab.setAttribute("stroke", "#fff"); plab.setAttribute("stroke-width", "3"); plab.setAttribute("paint-order", "stroke");
-      plab.textContent = "○ " + districtNameFor(pd.en); svg.appendChild(plab);
+      plab.textContent = PL.text; svg.appendChild(plab);
     }
   });
   mpts.forEach(p=>{
@@ -2303,27 +2419,29 @@ function renderPosterMap(){
     n.setAttribute("fill", "#fff"); n.setAttribute("font-size", "13"); n.setAttribute("font-weight", "800");
     n.textContent = p.i; svg.appendChild(n);
     const lab = document.createElementNS(NS, "text");
-    const side = labelSideFor(p, mpts);
-    lab.setAttribute("x", side === "right" ? p.d.x + 20 : p.d.x - 20);
-    lab.setAttribute("y", p.d.y + 6);
-    lab.setAttribute("text-anchor", side === "right" ? "start" : "end");
-    lab.setAttribute("fill", "#0f3d2e"); lab.setAttribute("font-size", "17"); lab.setAttribute("font-weight", "800");
+    const L = layout.labels["j:" + p.en];
+    lab.setAttribute("x", L.x);
+    lab.setAttribute("y", L.y + 6);
+    lab.setAttribute("text-anchor", L.anchor);
+    lab.setAttribute("fill", L.color); lab.setAttribute("font-size", L.size); lab.setAttribute("font-weight", "800");
     lab.setAttribute("stroke", "#fff"); lab.setAttribute("stroke-width", "3.5"); lab.setAttribute("paint-order", "stroke");
-    lab.textContent = districtNameFor(p.en); svg.appendChild(lab);
+    lab.textContent = L.text; svg.appendChild(lab);
   });
   if(miss){
-    const h = document.createElementNS(NS, "text");
-    h.setAttribute("x", miss.xy.x); h.setAttribute("y", miss.xy.y - 22); h.setAttribute("text-anchor", "middle"); h.setAttribute("font-size", "26");
-    h.textContent = "❤️"; svg.appendChild(h);
+    if(layout.heartAbove){
+      const h = document.createElementNS(NS, "text");
+      h.setAttribute("x", layout.heartX); h.setAttribute("y", layout.heartY + 13); h.setAttribute("text-anchor", "middle"); h.setAttribute("font-size", "26");
+      h.textContent = "❤️"; svg.appendChild(h);
+    }
     if(!journeyEns.has(miss.en)){
       const lab = document.createElementNS(NS, "text");
-      const side = labelSideFor({d: miss.xy}, mpts);
-      lab.setAttribute("x", side === "right" ? miss.xy.x + 20 : miss.xy.x - 20);
-      lab.setAttribute("y", miss.xy.y + 6);
-      lab.setAttribute("text-anchor", side === "right" ? "start" : "end");
-      lab.setAttribute("fill", "#b91c1c"); lab.setAttribute("font-size", "17"); lab.setAttribute("font-weight", "800");
+      const L = layout.labels["m"];
+      lab.setAttribute("x", L.x);
+      lab.setAttribute("y", L.y + 6);
+      lab.setAttribute("text-anchor", L.anchor);
+      lab.setAttribute("fill", L.color); lab.setAttribute("font-size", L.size); lab.setAttribute("font-weight", "800");
       lab.setAttribute("stroke", "#fff"); lab.setAttribute("stroke-width", "3.5"); lab.setAttribute("paint-order", "stroke");
-      lab.textContent = districtNameFor(miss.en); svg.appendChild(lab);
+      lab.textContent = L.text; svg.appendChild(lab);
     }
   }
   el.innerHTML = ""; el.appendChild(svg);
@@ -2384,6 +2502,8 @@ function drawRootsPosterCanvas(){
   const mpts = mapPts(pts);
   const journeyEns = new Set(pts.map(p=>p.en));
   const miss = missDisplay(pts);
+  const parents = parentDisplays(pts);
+  const layout = layoutPosterLabels(mpts, miss, parents);
   const drawLabel = (px, py, text, color, size, anchor)=>{
     x.font = "800 " + size + "px " + FONT; x.textAlign = anchor; x.textBaseline = "middle";
     x.lineWidth = 5; x.strokeStyle = "#ffffff"; x.strokeText(text, px, py);
@@ -2399,7 +2519,7 @@ function drawRootsPosterCanvas(){
       x.strokeStyle = "#ffffff"; x.lineWidth = 1; x.stroke(p);
     }catch(e){}
   });
-  const obstacles = [...mpts.map(p=>p.d), ...parentDisplays(pts).map(pd=>pd.xy)];
+  const obstacles = [...mpts.map(p=>p.d), ...parents.map(pd=>pd.xy)];
   if(miss) obstacles.push(miss.xy);
   if(mpts.length > 1){
     x.beginPath();
@@ -2416,13 +2536,13 @@ function drawRootsPosterCanvas(){
       x.closePath(); x.fillStyle = theme; x.fill(); x.strokeStyle = "#fff"; x.lineWidth = 1.5; x.stroke();
     }
   }
-  parentDisplays(pts).forEach(pd=>{
+  parents.forEach(pd=>{
     x.beginPath(); x.arc(pd.xy.x, pd.xy.y, 20, 0, Math.PI*2); x.strokeStyle = "#fff"; x.lineWidth = 2; x.stroke();
     x.beginPath(); x.arc(pd.xy.x, pd.xy.y, 17, 0, Math.PI*2); x.strokeStyle = theme; x.lineWidth = 2.5; x.stroke();
     if(!pd.onDot){
       x.beginPath(); x.arc(pd.xy.x, pd.xy.y, 4.5, 0, Math.PI*2); x.fillStyle = theme; x.fill();
-      const pside = labelSideFor({d: pd.xy}, mpts);
-      drawLabel(pside === "right" ? pd.xy.x + 24 : pd.xy.x - 24, pd.xy.y + 1, "○ " + districtNameFor(pd.en), "#14532d", 14, pside === "right" ? "left" : "right");
+      const PL = layout.labels["p:" + pd.en];
+      drawLabel(PL.x, PL.y + 1, PL.text, PL.color, PL.size, PL.anchor === "start" ? "left" : "right");
     }
   });
   mpts.forEach(p=>{
@@ -2430,14 +2550,14 @@ function drawRootsPosterCanvas(){
     x.fillStyle = theme; x.fill(); x.strokeStyle = "#fff"; x.lineWidth = 2.5; x.stroke();
     x.fillStyle = "#fff"; x.font = "800 13px " + FONT; x.textAlign = "center"; x.textBaseline = "middle";
     x.fillText(String(p.i), p.d.x, p.d.y + 1);
-    const side = labelSideFor(p, mpts);
-    drawLabel(side === "right" ? p.d.x + 20 : p.d.x - 20, p.d.y + 1, districtNameFor(p.en), "#0f3d2e", 17, side === "right" ? "left" : "right");
+    const L = layout.labels["j:" + p.en];
+    drawLabel(L.x, L.y + 1, L.text, L.color, L.size, L.anchor === "start" ? "left" : "right");
   });
   if(miss){
-    x.font = "26px " + FONT; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText("❤️", miss.xy.x, miss.xy.y - 22);
+    if(layout.heartAbove){ x.font = "26px " + FONT; x.textAlign = "center"; x.textBaseline = "middle"; x.fillText("❤️", layout.heartX, layout.heartY); }
     if(!journeyEns.has(miss.en)){
-      const side = labelSideFor({d: miss.xy}, mpts);
-      drawLabel(side === "right" ? miss.xy.x + 20 : miss.xy.x - 20, miss.xy.y + 1, districtNameFor(miss.en), "#b91c1c", 17, side === "right" ? "left" : "right");
+      const L = layout.labels["m"];
+      drawLabel(L.x, L.y + 1, L.text, L.color, L.size, L.anchor === "start" ? "left" : "right");
     }
   }
   x.restore();
