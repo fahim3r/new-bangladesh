@@ -207,6 +207,9 @@ h1 .red{color:var(--red);display:inline-block;animation:wordPop .8s .35s cubic-b
 #rootsPoster .share-actions .navlike{width:auto;height:auto;padding:10px 18px;border-radius:999px;font-size:15px;font-weight:700;background:var(--glass);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.85);box-shadow:0 10px 22px rgba(15,61,46,.10);color:var(--forest);display:inline-flex;align-items:center;gap:7px}
 #rootsPoster .share-actions .navlike span:first-child{font-size:18px;line-height:1}
 .ref-banner{margin:0 0 14px;padding:12px 14px;border-radius:16px;background:linear-gradient(135deg,#fef3c7,#fde68a);border:1.5px solid #f59e0b;color:#78350f;font-weight:700;font-size:15px;display:flex;gap:10px;align-items:center;justify-content:space-between}
+.toast{position:fixed;top:78px;left:50%;transform:translate(-50%,-8px);z-index:999;max-width:min(430px,calc(100vw - 32px));display:flex;align-items:center;gap:10px;padding:13px 18px;background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.85);border-radius:16px;box-shadow:0 14px 34px rgba(15,61,46,.18);font-weight:700;font-size:14.5px;color:var(--forest);text-align:left;opacity:0;pointer-events:none;transition:opacity .35s,transform .35s}
+.toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast .toast-ic{font-size:20px;flex-shrink:0}
 .ref-banner button{flex:0 0 auto;border:0;background:rgba(255,255,255,.7);border-radius:50%;width:28px;height:28px;font-size:15px;cursor:pointer;font-weight:800;color:#78350f}
 .sc-mapbg{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:340px;height:414px;opacity:.08;pointer-events:none;z-index:0}
 .sc-mapbg svg{width:100%;height:100%}
@@ -510,6 +513,7 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
       </div>
     </header>
   </div>
+  <div id="loginToast" class="toast" role="status" aria-live="polite"><span class="toast-ic">🎁</span><span data-i18n="login_bonus_toast">আপনি নিউ বাংলাদেশে লগইন হয়েছেন! বোনাস হিসেবে ২টি Vote Token পেয়েছেন।</span></div>
 
   <div id="view-home">
   <div id="refBanner" class="ref-banner hidden" role="status"><span id="refBannerText"></span><button type="button" id="refBannerX" aria-label="বন্ধ করো">✕</button></div>
@@ -987,6 +991,7 @@ const I18N = {
     ref_banner:"🔥 বন্ধুর চ্যালেঞ্জ! তোমার বন্ধু “{o}” বেছে নিয়েছে — এই প্রশ্নে ভোট দিলে দুজনেই পাবে ১ টা করে Vote Token 🎁",
     ref_banner_nopick:"🔥 বন্ধুর চ্যালেঞ্জ! এই প্রশ্নে ভোট দিলে তুমি আর তোমার বন্ধু দুজনেই পাবে ১ টা করে Vote Token 🎁",
     ref_bonus_you:"🎁 রেফারেল বোনাস! তুমি ১ টা Vote Token পেয়েছো!",
+    login_bonus_toast:"আপনি নিউ বাংলাদেশে লগইন হয়েছেন! বোনাস হিসেবে ২টি Vote Token পেয়েছেন।",
     ref_dismiss:"বন্ধ করো",
     shared:"শেয়ার হয়ে গেছে — বন্ধুকে পাঠানো হয়েছে!",
     dev_eyebrow:"ডেভেলপার", dev_h:"কারা বানিয়েছে নিউ বাংলাদেশ?",
@@ -1125,6 +1130,7 @@ const I18N = {
     ref_banner:"🔥 Friend's challenge! Your friend picked “{o}” — vote on this question and you both get 1 Vote Token each 🎁",
     ref_banner_nopick:"🔥 Friend's challenge! Vote on this question and you both get 1 Vote Token each 🎁",
     ref_bonus_you:"🎁 Referral bonus! You earned 1 Vote Token!",
+    login_bonus_toast:"You've logged in to New Bangladesh! You've received 2 Vote Tokens as a bonus.",
     ref_dismiss:"Dismiss",
     shared:"Shared — sent to your friend!",
     dev_eyebrow:"DEVELOPER", dev_h:"Who built New Bangladesh?",
@@ -1204,7 +1210,39 @@ function setUser(u){
   const prevId = currentUser && currentUser.id;
   currentUser = u ? {id:u.id, email:u.email || "", name:((u.user_metadata && (u.user_metadata.full_name || u.user_metadata.name)) || ""), avatar:((u.user_metadata && u.user_metadata.avatar_url) || "")} : null;
   renderAuth();
-  if(currentUser && currentUser.id !== prevId){ upsertProfile(); syncFromCloud(); }
+  if(currentUser && currentUser.id !== prevId){ onSignedIn(); }
+}
+async function onSignedIn(){
+  await maybeGrantLoginBonus();
+  upsertProfile();
+  syncFromCloud();
+}
+// New Google user? +2 Vote Tokens once, with a glass toast. A user is new when
+// no profiles row exists yet — the check runs BEFORE upsertProfile creates it.
+// The localStorage flag is claimed right after the check so a second auth event
+// firing at the same time cannot grant twice; a failed check leaves it unset
+// so the next login can retry.
+async function maybeGrantLoginBonus(){
+  if(!sb || !currentUser) return;
+  const flag = "nb_login_bonus_" + currentUser.id;
+  try{ if(localStorage.getItem(flag)) return; }catch(e){}
+  try{
+    const {data} = await sb.from("profiles").select("user_id").eq("user_id", currentUser.id).maybeSingle();
+    if(data) return; // returning user: profile already exists, no bonus
+    try{ if(localStorage.getItem(flag)) return; localStorage.setItem(flag, "1"); }catch(e){}
+    if(currentUser) await refreshCloudState();
+    tokens += 2; saveTokens(); renderTokens();
+    showLoginToast();
+  }catch(e){}
+}
+let loginToastTimer = null;
+function showLoginToast(){
+  const el = document.getElementById("loginToast");
+  if(!el) return;
+  el.onclick = ()=>{ el.classList.remove("show"); if(loginToastTimer){ clearTimeout(loginToastTimer); loginToastTimer = null; } };
+  el.classList.add("show");
+  if(loginToastTimer) clearTimeout(loginToastTimer);
+  loginToastTimer = setTimeout(()=>{ el.classList.remove("show"); }, 5000);
 }
 async function initAuth(){
   if(!sb || !sb.auth) return;
