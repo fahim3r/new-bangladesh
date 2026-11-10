@@ -1144,7 +1144,7 @@ function fmt(n){ return lang === "bn" ? n.toLocaleString("bn-BD") : n.toLocaleSt
 const SUPABASE_URL = "https://bocazyqiomwtnnvhzpio.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_f3Glh5QbXqaiBBNrPhfhHA_LB99iMcp";
 let EXPERIMENT_ID = "247";
-const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {global:{fetch:(u, o)=>fetch(u, Object.assign({}, o, {cache:"no-store"}))}}) : null;
 
 // ---------- Google sign-in (optional) + account sync ----------
 const ADMIN_EMAILS = ["flexbd.site@gmail.com", "newbangladesh.bond@gmail.com"];
@@ -1195,24 +1195,41 @@ async function upsertProfile(){
 }
 async function pushStateToCloud(){
   if(!sb || !currentUser) return;
-  try{ await sb.from("user_state").upsert({user_id: currentUser.id, streak: streak.count, last_visit: streak.last, tokens: tokens, tokens_awarded: tokensAwarded, updated_at: new Date().toISOString()}, {onConflict:"user_id"}); }catch(e){}
+  try{
+    const {error} = await sb.from("user_state").upsert({user_id: currentUser.id, streak: streak.count, last_visit: streak.last, tokens: tokens, tokens_awarded: tokensAwarded, updated_at: new Date().toISOString()}, {onConflict:"user_id"});
+    if(!error){ tokensBase = tokens; saveTokensBase(); }
+  }catch(e){}
 }
-async function syncFromCloud(){
-  if(!sb || !currentUser) return;
+// tokensBase: the server token balance this device last agreed with. Token changes
+// on either side (local earns/spends, admin grants) are deltas from this base,
+// so a merge never loses a grant or an earn.
+let tokensBase = 0;
+try{ tokensBase = parseInt(localStorage.getItem("nb_tokens_base") || "0", 10) || 0; }catch(e){}
+function saveTokensBase(){ try{ localStorage.setItem("nb_tokens_base", String(tokensBase)); }catch(e){} }
+async function refreshCloudState(){
+  if(!sb || !currentUser) return false;
   try{
     const {data, error} = await sb.from("user_state").select("streak,last_visit,tokens,tokens_awarded").eq("user_id", currentUser.id).maybeSingle();
-    if(error || !data){ await pushStateToCloud(); return; }
+    if(error || !data) return false;
     const today = dhakaParts().date;
     const cloudLast = data.last_visit || "";
     if((cloudLast === today || (cloudLast && dayDiff(today, cloudLast) === 1)) && (data.streak || 0) > streak.count){
       streak.count = data.streak; streak.last = cloudLast; saveStreak();
     }
-    if((data.tokens || 0) > tokens) tokens = data.tokens;
+    const serverTokens = data.tokens || 0;
+    tokens = Math.max(0, serverTokens + (tokens - tokensBase));
     if((data.tokens_awarded || 0) > tokensAwarded) tokensAwarded = data.tokens_awarded;
-    saveTokens(); renderTokens();
-    await pushStateToCloud();
-    try{ render(); }catch(e){}
-  }catch(e){}
+    tokensBase = serverTokens;
+    saveTokens(); saveTokensBase(); renderTokens();
+    return true;
+  }catch(e){ return false; }
+}
+async function syncFromCloud(){
+  if(!sb || !currentUser) return;
+  const ok = await refreshCloudState();
+  if(!ok){ await pushStateToCloud(); return; }
+  await pushStateToCloud();
+  try{ render(); }catch(e){}
 }
 document.getElementById("authSignIn").addEventListener("click", signInWithGoogle);
 document.getElementById("authUser").addEventListener("click", signOut);
@@ -2063,6 +2080,7 @@ function renderRefBanner(){
 async function claimReferralBonus(){
   const ref = pendingRef();
   if(!ref || !sb) return false;
+  if(currentUser) await refreshCloudState();
   try{
     const {error} = await sb.from("referrals").insert({referrer_hash: ref, referee_hash: getVoterId(), experiment_id: EXPERIMENT_ID});
     if(error) throw error;
@@ -2077,6 +2095,7 @@ async function claimReferralBonus(){
 }
 async function creditReferralBonus(){
   if(!sb) return 0;
+  if(currentUser) await refreshCloudState();
   try{
     const {data, error} = await sb.from("referrals").select("id").eq("referrer_hash", getVoterId());
     if(error) throw error;
@@ -2198,6 +2217,7 @@ function renderCommunityAuth(){
 async function publishCommunity(){
   const msg = document.getElementById("cqMsg");
   const setMsg = (s, ok)=>{ if(msg){ msg.textContent = s; msg.className = ok ? "ok" : "show"; } };
+  if(currentUser) await refreshCloudState();
   if(tokens < 1){ setMsg(t("cq_need_token")); return; }
   const qEl = document.getElementById("cqQuestion");
   const qtext = (qEl.value || "").trim();
@@ -2451,15 +2471,16 @@ document.getElementById("adminBody").addEventListener("click", async e=>{
       const next = Math.max(0, (u ? u.tokens : 0) + (act === "tok+" ? 1 : -1));
       const {error} = await sb.from("user_state").upsert({user_id: uid, streak: u ? u.streak : 0, tokens: next, tokens_awarded: u ? u.tokensAwarded : 0, updated_at: new Date().toISOString()}, {onConflict:"user_id"});
       if(error) throw error;
+      if(uid === (currentUser && currentUser.id)){ tokens = next; tokensBase = next; if(u) u.tokens = next; saveTokens(); saveTokensBase(); renderTokens(); }
       adminMsg(t("admin_saved"), true); loadAdminUsers();
     } else if(act === "cq-ok" || act === "cq-no"){
       const {error} = await sb.from("community_questions").update({status: act === "cq-ok" ? "approved" : "rejected"}).eq("id", btn.dataset.qid);
       if(error) throw error;
-      adminMsg(t("admin_saved"), true); loadAdminCommunity(); loadCommunity();
+      adminMsg(t("admin_saved"), true); loadAdminCommunity(); loadCommunity().then(()=>{ renderCommunity(); renderWinner(); });
     } else if(act === "cq-del"){
       const {error} = await sb.from("community_questions").delete().eq("id", btn.dataset.qid);
       if(error) throw error;
-      adminMsg(t("admin_deleted"), true); loadAdminCommunity(); loadCommunity();
+      adminMsg(t("admin_deleted"), true); loadAdminCommunity(); loadCommunity().then(()=>{ renderCommunity(); renderWinner(); });
     } else if(act === "dq-date"){
       const num = parseInt(btn.dataset.num, 10);
       const input = document.querySelector('input[data-date="' + num + '"]');
