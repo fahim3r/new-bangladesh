@@ -114,7 +114,7 @@ h1 .red{color:var(--red);display:inline-block;animation:wordPop .8s .35s cubic-b
 .how-stats b{display:block;font-size:22px;color:var(--forest)}
 .how-stats span{font-size:13.5px;color:var(--muted);font-weight:700}
 @media(max-width:640px){.how-loop{flex-direction:column;align-items:flex-start}.how-loop .btn{align-self:stretch;text-align:center}}
-.battle-story{font-size:15px;line-height:1.55;color:#0f3d2e;margin:8px 0 0}
+.battle-story{font-size:15px;line-height:1.55;color:#0f3d2e;margin:8px 0 0;min-height:47px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .cq-why-label{display:block;text-align:left;font-size:14px;font-weight:700;color:var(--muted);margin:2px 0 6px}
 .cq-why{font-size:14.5px;line-height:1.55;color:#0f3d2e;background:#fdf6e3;border:1px solid #f0dfae;border-radius:10px;padding:8px 12px;margin:0 0 12px;text-align:left}
 .cq-meta{color:var(--muted);font-size:13px;font-weight:700;margin:2px 0 8px;text-align:left}
@@ -200,6 +200,8 @@ h1 .red{color:var(--red);display:inline-block;animation:wordPop .8s .35s cubic-b
 .share-actions .icon-btn.primary{background:linear-gradient(180deg,var(--emerald),var(--forest))}
 .share-actions .icon-btn:active{transform:scale(.95)}
 .share-actions .icon-btn span{line-height:1}
+.share-actions .icon-btn svg{stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+#rootsPoster .share-actions .navlike svg{stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
 /* roots poster actions: glass pills like the bottom nav buttons */
 #rootsPoster .share-actions{flex-wrap:wrap}
 #rootsPoster .share-actions .navlike{width:auto;height:auto;padding:10px 18px;border-radius:999px;font-size:15px;font-weight:700;background:var(--glass);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.85);box-shadow:0 10px 22px rgba(15,61,46,.10);color:var(--forest);display:inline-flex;align-items:center;gap:7px}
@@ -303,14 +305,12 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
 .battle-card{background:var(--glass);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.85);border-radius:22px;padding:24px;box-shadow:0 14px 34px rgba(15,61,46,.08);max-width:640px;margin:0 auto 18px;text-align:center}
 .battle-card h3{margin:10px 0 18px;font-size:22px;color:var(--forest)}
 .vs-row{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch}
-.vs-side{border:1.5px solid var(--line);border-radius:18px;background:rgba(255,255,255,.9);padding:16px 10px;font:inherit;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--ink)}
+.vs-side{border:1.5px solid var(--line);border-radius:18px;background:rgba(255,255,255,.9);padding:16px 10px;font:inherit;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--ink);min-height:148px}
 .vs-side:hover{transform:translateY(-2px);border-color:var(--emerald);box-shadow:0 10px 22px rgba(22,163,74,.16)}
 .vs-side .vs-emoji{font-size:34px}
 .vs-side .vs-name{font-weight:800;font-size:17px}
 .vs-side .vs-pct{font-weight:800;font-size:15px;color:var(--forest)}
 .vs-side.picked{border-color:var(--red);background:#fff1f2;box-shadow:0 10px 22px rgba(225,29,46,.18)}
-.vs-side:disabled{cursor:default}
-.vs-side:disabled:hover{transform:none;box-shadow:none}
 .vs-mid{align-self:center;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px;color:#fff;background:linear-gradient(135deg,#f43f5e,var(--red));box-shadow:0 8px 18px rgba(225,29,46,.35);flex-shrink:0}
 .vs-bar{height:12px;border-radius:99px;overflow:hidden;background:linear-gradient(90deg,#f59e0b 0 50%,#0ea5e9 50% 100%);margin:16px 0 8px;position:relative}
 .vs-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--emerald),#4ade80);width:50%}
@@ -563,9 +563,9 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
             <div class="sc-foot"><span data-i18n="foot_tag">বাংলাদেশ উত্তর দিচ্ছে।</span><b>newbangladesh.bond</b></div>
           </div>
           <div class="share-actions">
-            <button class="btn green icon-btn" id="downloadBtn" type="button" aria-label="কার্ড ডাউনলোড করো (PNG)" title="কার্ড ডাউনলোড করো (PNG)"><span aria-hidden="true">⬇️</span></button>
-            <button class="btn primary icon-btn" id="challengeBtn" type="button" aria-label="বন্ধুকে চ্যালেঞ্জ করো — লিংক কপি" title="বন্ধুকে চ্যালেঞ্জ করো — লিংক কপি"><span aria-hidden="true">🔗</span></button>
-            <button class="btn ghost icon-btn" id="againBtn" type="button" aria-label="আবার ভোট দাও" title="আবার ভোট দাও"><span aria-hidden="true">🔄</span></button>
+            <button class="btn green icon-btn" id="downloadBtn" type="button" aria-label="কার্ড ডাউনলোড করো (PNG)" title="কার্ড ডাউনলোড করো (PNG)"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>
+            <button class="btn primary icon-btn" id="challengeBtn" type="button" aria-label="বন্ধুকে চ্যালেঞ্জ করো — লিংক কপি" title="বন্ধুকে চ্যালেঞ্জ করো — লিংক কপি"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
+            <button class="btn ghost icon-btn" id="againBtn" type="button" aria-label="আবার ভোট দাও" title="আবার ভোট দাও"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
           </div>
           <p id="copyMsg"></p>
         </div>
@@ -695,10 +695,10 @@ footer a{color:var(--forest);text-decoration:none;font-weight:600}
         </div>
         <div class="poster-actions">
           <div class="share-actions">
-            <button class="btn ghost navlike" id="rootsDownload" type="button"><span aria-hidden="true">⬇️</span><span data-i18n="roots_dl">ডাউনলোড</span></button>
-            <button class="btn ghost navlike" id="rootsShare" type="button"><span aria-hidden="true">📤</span><span data-i18n="roots_sh">শেয়ার</span></button>
-            <button class="btn ghost navlike" id="rootsCopy" type="button"><span aria-hidden="true">📋</span><span data-i18n="roots_cp">কপি</span></button>
-            <button class="btn ghost navlike" id="rootsAgain" type="button"><span aria-hidden="true">🔄</span><span data-i18n="roots_ag">আবার</span></button>
+            <button class="btn ghost navlike" id="rootsDownload" type="button"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span data-i18n="roots_dl">ডাউনলোড</span></button>
+            <button class="btn ghost navlike" id="rootsShare" type="button"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span data-i18n="roots_sh">শেয়ার</span></button>
+            <button class="btn ghost navlike" id="rootsCopy" type="button"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span data-i18n="roots_cp">কপি</span></button>
+            <button class="btn ghost navlike" id="rootsAgain" type="button"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg><span data-i18n="roots_ag">আবার</span></button>
           </div>
           <p id="rootsMsg"></p>
         </div>
@@ -1863,7 +1863,7 @@ function battleCardHtml(b){
   const voted = !!pick;
   const side = (s, key, pct, count)=>{
     const isPick = pick === key;
-    return `<button type="button" class="vs-side${isPick ? " picked" : ""}" data-battle="${b.id}" data-side="${key}" ${voted ? "disabled" : ""}><span class="vs-emoji">${s.emoji}</span><span class="vs-name">${sideLabel(s)}</span>${voted ? `<span class="vs-pct">${fmt(pct)}%</span>` : ""}${isPick ? ` <span class="you">${t("battle_you")}</span>` : ""}</button>`;
+    return `<button type="button" class="vs-side${isPick ? " picked" : ""}" data-battle="${b.id}" data-side="${key}"><span class="vs-emoji">${s.emoji}</span><span class="vs-name">${sideLabel(s)}</span>${voted ? `<span class="vs-pct">${fmt(pct)}%</span>` : ""}${isPick ? ` <span class="you">${t("battle_you")}</span>` : ""}</button>`;
   };
   return `<article class="battle-card"><div class="eyebrow">⚔️ BATTLE #${fmt(b.num)}</div><h3>${lang === "bn" ? b.title.bn : b.title.en}</h3>${b.story ? `<p class="battle-story">${lang === "bn" ? b.story.bn : b.story.en}</p>` : ""}<div class="vs-row">${side(b.a, "a", c.pctA, c.ca)}<div class="vs-mid">VS</div>${side(b.b, "b", 100 - c.pctA, c.cb)}</div><div class="vs-bar"><i style="width:${voted ? c.pctA : 50}%"></i></div><div class="vs-meta">${voted ? fmt(c.total) + " " + t("battle_votes") + " · " + t("battle_live") : t("battle_live")}</div></article>`;
 }
@@ -1879,8 +1879,24 @@ function renderLatestBattle(){
 }
 async function voteBattle(id, sideKey){
   const b = (BATTLES || []).find(x=>x.id === id);
-  if(!b || myBattlePick(id)) return;
+  if(!b) return;
+  const oldPick = myBattlePick(id);
+  if(oldPick === sideKey) return; // already this side
   const side = sideKey === "a" ? b.a : b.b;
+  if(oldPick){
+    // Changing an existing vote: update the server vote first (one vote per
+    // device — the change_vote RPC updates the row for this voter), then the
+    // local pick. If the server update fails, nothing changes.
+    if(!sb) return;
+    try{
+      const {error} = await sb.rpc("change_vote", {p_experiment: "battle-" + id, p_voter: getVoterId(), p_option: side.key});
+      if(error) throw error;
+    }catch(e){ return; }
+    try{ localStorage.setItem(battlePickKey(id), sideKey); }catch(e){}
+    renderBattles(); renderLatestBattle();
+    try{ await fetchBattleCounts(); }catch(e){}
+    return;
+  }
   try{ localStorage.setItem(battlePickKey(id), sideKey); }catch(e){}
   renderBattles(); renderLatestBattle();
   if(sb){
