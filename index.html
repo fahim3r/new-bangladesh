@@ -1285,7 +1285,16 @@ async function refreshCloudState(){
       streak.count = data.streak; streak.last = cloudLast; saveStreak();
     }
     const serverTokens = data.tokens || 0;
-    tokens = Math.max(0, serverTokens + (tokens - tokensBase));
+    let hasBase = false;
+    try{ hasBase = localStorage.getItem("nb_tokens_base") !== null; }catch(e){}
+    if(!hasBase){
+      // Fresh device (no sync history): the local balance is just the 10-token
+      // default, not an earned delta — take the higher of server and local so
+      // the default is not added on top of the server balance.
+      tokens = Math.max(serverTokens, tokens);
+    } else {
+      tokens = Math.max(0, serverTokens + (tokens - tokensBase));
+    }
     if((data.tokens_awarded || 0) > tokensAwarded) tokensAwarded = data.tokens_awarded;
     tokensBase = serverTokens;
     saveTokens(); saveTokensBase(); renderTokens();
@@ -1855,7 +1864,7 @@ document.querySelectorAll(".sc-style-btn").forEach(b=>b.addEventListener("click"
   try{ localStorage.setItem("nb_card_style", cardStyle); }catch(e){}
   applyCardStyle();
 }));
-const BATTLES_FALLBACK = {"battles":[{"a":{"base":45210,"bn":"ঢাকা","emoji":"🏙️","en":"Dhaka","key":"Dhaka"},"b":{"base":37180,"bn":"চট্টগ্রাম","emoji":"🌊","en":"Chattogram","key":"Chattogram"},"id":"dhaka-chattogram","num":1,"story":{"bn":"দুই শহর, এক দেশ — রাজধানী নাকি বন্দরনগরী, কে এগিয়ে?","en":"Two cities, one country — the capital or the port city, who leads?"},"title":{"bn":"কোন শহর সেরা?","en":"Which city is the best?"}},{"a":{"base":58320,"bn":"ফুচকা","emoji":"🍢","en":"Fuchka","key":"Fuchka"},"b":{"base":29410,"bn":"বার্গার","emoji":"🍔","en":"Burger","key":"Burger"},"id":"fuchka-burger","num":2,"story":{"bn":"রাস্তার ধারের টক-ঝাল নাকি ফাস্টফুডের রাজা — তোমার পেট কী বলে?","en":"Street-side tangy spice or the fast-food king — what does your stomach say?"},"title":{"bn":"ফুচকা নাকি বার্গার?","en":"Fuchka or Burger?"}},{"a":{"base":51200,"bn":"বিরিয়ানি","emoji":"🍛","en":"Biryani","key":"Biryani"},"b":{"base":33800,"bn":"খিচুড়ি","emoji":"🍲","en":"Khichuri","key":"Khichuri"},"id":"biryani-khichuri","num":3,"story":{"bn":"উৎসবের রাজা নাকি বৃষ্টির দিনের সঙ্গী — কোনটা তোমার মন জয় করে?","en":"The king of festivals or the rainy day's companion — which wins your heart?"},"title":{"bn":"বিরিয়ানি নাকি খিচুড়ি?","en":"Biryani or Khichuri?"}},{"a":{"base":68900,"bn":"ক্রিকেট","emoji":"🏏","en":"Cricket","key":"Cricket"},"b":{"base":41300,"bn":"ফুটবল","emoji":"⚽","en":"Football","key":"Football"},"id":"cricket-football","num":4,"story":{"bn":"ব্যাট-বল নাকি গোল — বাংলাদেশের মাঠে কার জয়গান?","en":"Bat and ball or the goal — whose anthem echoes on Bangladesh's fields?"},"title":{"bn":"ক্রিকেট নাকি ফুটবল?","en":"Cricket or Football?"}}]};
+const BATTLES_FALLBACK = {"battles":[{"a":{"base":45210,"bn":"ঢাকা","emoji":"🏙️","en":"Dhaka","key":"Dhaka"},"b":{"base":37180,"bn":"চট্টগ্রাম","emoji":"🌊","en":"Chattogram","key":"Chattogram"},"id":"dhaka-chattogram","num":1,"story":{"bn":"দুই শহর, এক দেশ — রাজধানী নাকি বন্দরনগরী, কে এগিয়ে?","en":"Two cities, one country — the capital or the port city, who leads?"},"title":{"bn":"কোন শহর সেরা?","en":"Which city is the best?"}},{"a":{"base":58320,"bn":"ফুচকা","emoji":"🍢","en":"Fuchka","key":"Fuchka"},"b":{"base":29410,"bn":"বার্গার","emoji":"🍔","en":"Burger","key":"Burger"},"id":"fuchka-burger","num":2,"story":{"bn":"রাস্তার ধারের টক-ঝাল নাকি ফাস্টফুডের রাজা — তোমার পেট কী বলে?","en":"Street-side tangy spice or the fast-food king — what does your stomach say?"},"title":{"bn":"ফুচকা নাকি বার্গার?","en":"Fuchka or Burger?"}},{"a":{"base":51200,"bn":"বিরিয়ানি","emoji":"🍛","en":"Biryani","key":"Biryani"},"b":{"base":33800,"bn":"খিচুড়ি","emoji":"🍲","en":"Khichuri","key":"Khichuri"},"id":"biryani-khichuri","num":3,"story":{"bn":"উৎসবের রাজা নাকি বৃষ্টির দিনের সঙ্গী — কোনটা তোমার মন জয় করে?","en":"The king of festivals or the rainy day's companion — which wins your heart?"},"title":{"bn":"বিরিয়ানি নাকি খিচুড়ি?","en":"Biryani or Khichuri?"}},{"a":{"base":68900,"bn":"ক্রিকেট","emoji":"🏏","en":"Cricket","key":"Cricket"},"b":{"base":41300,"bn":"ফুটবল","emoji":"⚽","en":"Football","key":"Football"},"id":"cricket-football","num":4,"story":{"bn":"ব্যাট-বল নাকি গোল — বাংলাদেশের মাঠে কার জয়গান?","en":"Bat and ball or the goal — whose anthem echoes on Bangladesh's fields?"},"title":{"bn":"ক্রিকেট নাকি ফুটবল?","en":"Cricket or Football?"}},{"a":{"base":62400,"bn":"আর্জেন্টিনা","emoji":"🇦🇷","en":"Argentina","key":"Argentina"},"b":{"base":41800,"bn":"ব্রাজিল","emoji":"🇧🇷","en":"Brazil","key":"Brazil"},"id":"argentina-brazil","num":5,"story":{"bn":"বিশ্বকাপ এলেই বাংলাদেশ দুই ভাগ — নীল-সাদা নাকি হলুদ-সবুজ, তুমি কোন দলে?","en":"Every World Cup splits Bangladesh in two — blue-white or yellow-green, which side are you on?"},"title":{"bn":"আর্জেন্টিনা নাকি ব্রাজিল?","en":"Argentina or Brazil?"}},{"a":{"base":58900,"bn":"মেসি","emoji":"🐐","en":"Messi","key":"Messi"},"b":{"base":36100,"bn":"রোনালদো","emoji":"👑","en":"Ronaldo","key":"Ronaldo"},"id":"messi-ronaldo","num":6,"story":{"bn":"সর্বকালের সেরা নিয়ে তর্কের শেষ নেই — ছোট জাদুকর নাকি গোল মেশিন, তুমি কার পক্ষে?","en":"The greatest-of-all-time debate never ends — the little magician or the goal machine, whose side are you on?"},"title":{"bn":"মেসি নাকি রোনালদো?","en":"Messi or Ronaldo?"}},{"a":{"base":51040,"bn":"ইলিশ","emoji":"🐟","en":"Hilsa","key":"Hilsa"},"b":{"base":36960,"bn":"চিংড়ি","emoji":"🍤","en":"Prawn","key":"Prawn"},"id":"ilish-chingri","num":7,"story":{"bn":"বাঙালির পাতে দুই রাজা — জাতীয় মাছ নাকি চিংড়ির মালাইকারি, তোমার প্রিয় কোনটা?","en":"Two kings on the Bengali plate — the national fish or the prawn malai curry, which is your favourite?"},"title":{"bn":"ইলিশ নাকি চিংড়ি?","en":"Hilsa or Prawn?"}},{"a":{"base":66240,"bn":"চা","emoji":"🍵","en":"Tea","key":"Tea"},"b":{"base":25760,"bn":"কফি","emoji":"☕","en":"Coffee","key":"Coffee"},"id":"cha-coffee","num":8,"story":{"bn":"সকালের আড্ডা নাকি কাজের ফাঁকে চুমুক — ধোঁয়া ওঠা চা নাকি কফি, তুমি কোনটা ছাড়া পারো না?","en":"The morning adda or the work-break sip — steaming tea or coffee, which one can't you live without?"},"title":{"bn":"চা নাকি কফি?","en":"Tea or Coffee?"}}]};
 // ---------- battles: separate page, loaded via AJAX (battles.json) ----------
 let BATTLES = null;
 let battleLive = {}; // id -> {a:n, b:n}
@@ -2129,9 +2138,19 @@ document.getElementById("archiveList").addEventListener("click", async e=>{
 });
 
 // ---------- vote token + community ----------
-let tokens = 0, tokensAwarded = 0, tokenCelebrate = false;
-try{ tokens = parseInt(localStorage.getItem("nb_tokens") || "0", 10) || 0; }catch(e){}
+let tokens = 10, tokensAwarded = 0, tokenCelebrate = false;
+try{ tokens = parseInt(localStorage.getItem("nb_tokens") || "10", 10) || 0; }catch(e){}
 try{ tokensAwarded = parseInt(localStorage.getItem("nb_token_awarded") || "0", 10) || 0; }catch(e){}
+// Default 10 tokens for every user (Fahim, 2026-11-11): new users start at 10,
+// and existing users below 10 are topped up once. The nb_tokens_v10 flag makes
+// it one-time, so an admin reduction below 10 is not undone on the next load.
+try{
+  if(!localStorage.getItem("nb_tokens_v10")){
+    if(tokens < 10) tokens = 10;
+    localStorage.setItem("nb_tokens_v10", "1");
+    try{ localStorage.setItem("nb_tokens", String(tokens)); }catch(e2){}
+  }
+}catch(e){}
 function saveTokens(){ try{ localStorage.setItem("nb_tokens", String(tokens)); localStorage.setItem("nb_token_awarded", String(tokensAwarded)); }catch(e){} if(currentUser) pushStateToCloud(); }
 function awardTokens(){
   const earned = Math.floor(streak.count / 3);
